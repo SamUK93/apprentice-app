@@ -26,6 +26,22 @@ public class Profile {
     private String joinDate;
 
 
+    // Constructor
+    public Profile(String name, String description, List<String> skills, List<String> interests,
+                   String email, String baseLocation, String grade, String jobTitle, String joinDate) {
+
+        setName(name);
+        setDescription(description);
+        setAllSkills(skills);
+        setAllInterests(interests);
+        setEmail(email);
+        setBaseLocation(baseLocation);
+        setGrade(grade);
+        setJobTitle(jobTitle);
+        setJoinDate(joinDate);
+    }
+
+
     // Get
     public Long getId() { return this.id; }
 
