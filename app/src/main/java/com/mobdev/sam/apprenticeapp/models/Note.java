@@ -14,11 +14,12 @@ public class Note {
     private String content;
     //TODO Should tags be a string? Return to this when known
     private List<String> tags;
+    private List<Long> moduleIds;
     private boolean openToPublic;
 
 
     // Constructor
-    public Note(String name, String content, List<String> tags, boolean openToPublic) {
+    public Note(String name, String content, List<String> tags, List<Long> moduleIds, boolean openToPublic) {
         setName(name);
         setContent(content);
         setTags(tags);
@@ -43,6 +44,8 @@ public class Note {
         return this.tags;
     }
 
+    public List<Long> getModuleIds() { return this.moduleIds; }
+
     public boolean getOpenToPublic() {
         return this.openToPublic;
     }
@@ -66,6 +69,23 @@ public class Note {
 
     public Note setTags(List<String> tags) {
         this.tags = tags;
+        return this;
+    }
+
+    public Note setModuleIds(List<Long> moduleIds) {
+        this.moduleIds = moduleIds;
+        return this;
+    }
+
+    public Note addModuleIds(List<Long> moduleIds) {
+        for (Long moduleId : moduleIds)
+            addModuleId(moduleId);
+        return this;
+    }
+
+    public Note addModuleId(Long moduleId) {
+        if (!this.moduleIds.contains(moduleId))
+            moduleIds.add(moduleId);
         return this;
     }
 

@@ -25,10 +25,15 @@ public class Profile {
     //TODO: Make date instead of string?
     private String joinDate;
 
+    //Database/storage/associations
+    List<Note> associatedNotes;
+    List<Event> eventsAttending;
+    List<Module> assignedModules;
 
     // Constructor
     public Profile(String name, String description, List<String> skills, List<String> interests,
-                   String email, String baseLocation, String grade, String jobTitle, String joinDate) {
+                   String email, String baseLocation, String grade, String jobTitle, String joinDate,
+                   List<Note> associatedNotes, List<Event> eventsAttending, List<Module> assignedModules) {
 
         setName(name);
         setDescription(description);
@@ -164,6 +169,102 @@ public class Profile {
 
     public Profile setJoinDate(String joinDate) {
         this.joinDate = joinDate;
+        return this;
+    }
+
+
+    /**
+     * Overwrites the current notes with a new set of notes
+     * @param notes the skills to be set
+     */
+    public Profile setAllNotes(List<Note> notes) {
+        this.associatedNotes = notes;
+        return this;
+    }
+
+    /**
+     * Adds a list of notes, ignoring those that are already in the notes list for this profile
+     * @param notes the list of skills to be added
+     */
+    public Profile addNotes(List<Note> notes) {
+        for (Note note : notes) {
+            addNote(note);
+        }
+        return this;
+    }
+
+    /**
+     * Adds a note if it is not already in the notes list for this profile
+     * @param note the skill to be added
+     */
+    public Profile addNote(Note note) {
+        if (!this.associatedNotes.contains(note)) {
+            this.associatedNotes.add(note);
+        }
+        return this;
+    }
+
+
+    /**
+     * Overwrites the current events with a new set of events
+     * @param events the events to be set
+     */
+    public Profile setAllEvents(List<Event> events) {
+        this.eventsAttending = events;
+        return this;
+    }
+
+    /**
+     * Adds a list of events, ignoring those that are already in the events list for this profile
+     * @param events the list of events to be added
+     */
+    public Profile addEvents(List<Event> events) {
+        for (Event event : events) {
+            addEvent(event);
+        }
+        return this;
+    }
+
+    /**
+     * Adds an event if it is not already in the events list for this profile
+     * @param event the event to be added
+     */
+    public Profile addEvent(Event event) {
+        if (!this.eventsAttending.contains(event)) {
+            this.eventsAttending.add(event);
+        }
+        return this;
+    }
+
+
+    /**
+     * Overwrites the current modules with a new set of modules
+     * @param modules the skills to be set
+     */
+    public Profile setAllModules(List<Module> modules) {
+        this.assignedModules = modules;
+        return this;
+    }
+
+    /**
+     * Adds a list of modules, ignoring those that are already in the modules list for this profile
+     * @param modules the list of skills to be added
+     */
+    public Profile addModules(List<Module> modules) {
+        for (Module module : modules) {
+            addModule(module);
+        }
+        return this;
+    }
+
+    /**
+     * Adds a module if it is not already in the modules list for this profile
+     * @param module the module to be added
+     */
+    public Profile addModule(Module module) {
+        if (!this.assignedModules.contains(module)) {
+            this.assignedModules.add(module);
+        }
         return this;
     }
 }
