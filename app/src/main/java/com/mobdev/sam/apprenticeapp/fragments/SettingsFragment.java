@@ -22,4 +22,16 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         myView = inflater.inflate(R.layout.settings_layout, container, false);
         return myView;
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+
+        }
+
+        // Set main title
+        getActivity().setTitle("SETTINGS");
+
+    }
 }

@@ -7,32 +7,27 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@android:drawable/ic_menu_directions"
-            android:title="Home" />
+            android:title="@string/nav_home_text" />
         <item
             android:id="@+id/nav_study"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Study" />
+            android:title="@string/nav_study_text" />
         <item
             android:id="@+id/nav_social"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Social" />
+            android:title="@string/nav_social_text" />
         <item
             android:id="@+id/nav_calendar"
             android:icon="@android:drawable/ic_menu_my_calendar"
-            android:title="Calendar" />
+            android:title="@string/nav_calendar_text" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@android:drawable/ic_menu_myplaces"
+            android:title="@string/nav_profile_text" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/nav_settings_text" />
     </group>
-
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_profile"
-                android:icon="@android:drawable/ic_menu_myplaces"
-                android:title="Profile" />
-            <item
-                android:id="@+id/nav_settings"
-                android:icon="@drawable/ic_menu_manage"
-                android:title="Settings" />
-        </menu>
-    </item>
 
 </menu>

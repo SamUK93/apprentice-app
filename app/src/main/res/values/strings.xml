@@ -4,5 +4,18 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+
     <string name="action_settings">Settings</string>
+
+    <!-- Profile Page -->
+    <string name="capgemini_info_button">Capgemini Info</string>
+    <string name="interests_label">Interests</string>
+    <string name="skills_label">Skills</string>
+    <string name="save_profile_text">Save Profile</string>
+    <string name="nav_home_text">Home</string>
+    <string name="nav_study_text">Study</string>
+    <string name="nav_social_text">Social</string>
+    <string name="nav_calendar_text">Calendar</string>
+    <string name="nav_profile_text">Profile</string>
+    <string name="nav_settings_text">Settings</string>
 </resources>
