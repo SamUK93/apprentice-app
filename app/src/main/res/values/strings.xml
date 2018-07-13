@@ -7,15 +7,37 @@
 
     <string name="action_settings">Settings</string>
 
-    <!-- Profile Page -->
-    <string name="capgemini_info_button">Capgemini Info</string>
-    <string name="interests_label">Interests</string>
-    <string name="skills_label">Skills</string>
-    <string name="save_profile_text">Save Profile</string>
+
+    <!-- Nav links text -->
     <string name="nav_home_text">Home</string>
     <string name="nav_study_text">Study</string>
     <string name="nav_social_text">Social</string>
     <string name="nav_calendar_text">Calendar</string>
     <string name="nav_profile_text">Profile</string>
     <string name="nav_settings_text">Settings</string>
+
+
+    <!-- Profile Page -->
+    <string name="capgemini_info_button">Capgemini Info</string>
+    <string name="interests_label">Interests</string>
+    <string name="skills_label">Skills</string>
+    <string name="save_profile_text">Save Profile</string>
+
+
+    <!-- Study Page -->
+    <string name="my_modules_text">My Modules</string>
+    <string name="notes_text">Notes</string>
+
+
+    <!-- My Modules Page -->
+    <string name="current_modules_text">Current Modules</string>
+    <string name="previous_modules_text">Previous Modules</string>
+    <string name="upcoming_modules_text">Upcoming Modules</string>
+
+
+    <!-- Module Detail Page -->
+    <string name="view_notes_text">View Notes</string>
+    <string name="view_module_calendar_text">View Module Calendar</string>
+    <string name="community_related_workshops_text">Community / Related Workshops</string>
+    <string name="edit_tasks_text">Edit Tasks</string>
 </resources>

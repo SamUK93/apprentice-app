@@ -1,15 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/nameText"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/studyInfoBoxText"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="180dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="This is the study layout!" />
-</RelativeLayout>
+        android:layout_marginTop="20dp"
+        android:text="PLACEHOLDER STUDY INFO CARD TEXT PLACEHOLDER STUDY INFO CARD TEXT PLACEHOLDER STUDY INFO CARD TEXT PLACEHOLDER STUDY INFO CARD TEXT"
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/menuButtonsSection"
+        android:weightSum="2"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/myModulesButton"
+            android:layout_marginTop="20dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/my_modules_text"/>
+
+        <Button
+            android:id="@+id/notesButton"
+            android:layout_marginTop="20dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/notes_text"/>
+
+    </LinearLayout>
+
+</LinearLayout>
