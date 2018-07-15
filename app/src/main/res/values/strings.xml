@@ -40,4 +40,17 @@
     <string name="view_module_calendar_text">View Module Calendar</string>
     <string name="community_related_workshops_text">Community / Related Workshops</string>
     <string name="edit_tasks_text">Edit Tasks</string>
+
+
+    <!-- Notes Search Page -->
+    <string name="filter_general_custom_text">Filter by General/Custom Tags</string>
+    <string name="filter_modules_text">Filter by Modules</string>
+
+
+    <!-- Grid Diary Page -->
+    <string name="went_well_label_text">What went well today?</string>
+    <string name="not_go_well_label_text">What didn\'t go well today?</string>
+    <string name="grid_diary_additional_label_text">Additional notes?</string>
+    <string name="rate_day_label_text">How would you rate your day?</string>
+    <string name="save_day_text">Save Day</string>
 </resources>

@@ -5,6 +5,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
+    <!-- Info Box -->
     <TextView
         android:id="@+id/studyInfoBoxText"
         android:layout_width="match_parent"
@@ -17,6 +18,7 @@
         android:textSize="20dp"
         android:textStyle="bold" />
 
+    <!-- Menu buttons section -->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/menuButtonsSection"
         android:weightSum="2"
@@ -41,5 +43,7 @@
             android:text="@string/notes_text"/>
 
     </LinearLayout>
+
+
 
 </LinearLayout>

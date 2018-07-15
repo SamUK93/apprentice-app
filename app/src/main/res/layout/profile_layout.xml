@@ -10,6 +10,7 @@
         android:layout_height="fill_parent"
         android:orientation="vertical">
 
+        <!-- Name and Description -->
         <EditText
             android:id="@+id/nameText"
             android:layout_width="match_parent"
@@ -34,6 +35,7 @@
             android:textSize="15dp" />
 
 
+        <!-- Skills/Interests section -->
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/skillsInterestsSection"
             android:weightSum="2"
@@ -41,7 +43,7 @@
             android:layout_height="fill_parent"
             android:orientation="horizontal">
 
-
+            <!-- Skills section -->
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/skillsSection"
                 android:layout_width="0dp"
@@ -63,6 +65,7 @@
 
             </LinearLayout>
 
+            <!-- Interests section -->
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/interestsSection"
                 android:layout_width="0dp"
@@ -86,6 +89,7 @@
 
         </LinearLayout>
 
+        <!-- Capgemini Info and Save buttons -->
         <Button
             android:id="@+id/capgeminiInfoButton"
             android:layout_marginTop="20dp"

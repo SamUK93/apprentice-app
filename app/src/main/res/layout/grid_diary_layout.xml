@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/gridDiaryTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Friday, 15th June 2018"
+        android:textAlignment="center"
+        android:textSize="22dp"
+        android:textStyle="bold" />
+
+
+    <!-- What went well -->
+    <TextView
+        android:id="@+id/whatWentWellLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/went_well_label_text"
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/whatWentWellText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="This is some text that describes what went well today This is some text that describes what went well today This is some text that describes what went well today This is some text that describes what went well today"
+        android:textSize="11dp"/>
+
+
+    <!-- What didn't go well -->
+    <TextView
+        android:id="@+id/notGoWellLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/not_go_well_label_text"
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/notGoWellText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="This is some text that describes what didn't go well today This is some text that describes what didn't go well today This is some text that describes what didn't go well today This is some text that describes what didn't go well today "
+        android:textSize="11dp"/>
+
+
+    <!-- Additional notes -->
+    <TextView
+        android:id="@+id/gridDiaryAdditionalNotesLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/grid_diary_additional_label_text"
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/gridDiaryAdditionalNotesText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="This is some text that contains some additional notes This is some text that contains some additional notes This is some text that contains some additional notes This is some text that contains some additional notes "
+        android:textSize="11dp"/>
+
+
+    <!-- Rate day -->
+    <TextView
+        android:id="@+id/generalCustomLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/rate_day_label_text"
+        android:textAlignment="center"
+        android:textSize="18dp"
+        android:textStyle="bold" />
+
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/rateDaySlider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+    <!-- Save day button -->
+    <Button
+        android:id="@+id/saveDayButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save_day_text"
+        android:layout_marginTop="10dp"/>
+
+
+</LinearLayout>
