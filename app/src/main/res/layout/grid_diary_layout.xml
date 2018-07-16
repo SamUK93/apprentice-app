@@ -89,7 +89,7 @@
 
     <!-- Rate day -->
     <TextView
-        android:id="@+id/generalCustomLabel"
+        android:id="@+id/notesGeneralCustomLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"

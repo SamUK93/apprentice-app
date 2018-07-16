@@ -53,4 +53,14 @@
     <string name="grid_diary_additional_label_text">Additional notes?</string>
     <string name="rate_day_label_text">How would you rate your day?</string>
     <string name="save_day_text">Save Day</string>
+
+
+    <!-- Social Page -->
+    <string name="people_label_text">People</string>
+    <string name="events_label_text">Events</string>
+
+
+    <!-- Event Search Page -->
+    <string name="filter_by_interests_location_label_text">Filter by Interests/Location</string>
+    <string name="suggested_events_label_text">Suggested Events</string>
 </resources>

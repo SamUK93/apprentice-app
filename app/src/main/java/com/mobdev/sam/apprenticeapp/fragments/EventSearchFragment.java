@@ -15,7 +15,7 @@ import com.mobdev.sam.apprenticeapp.R;
  * Created by Sam on 02/07/2018.
  */
 
-public class NotesSearchFragment extends Fragment {
+public class EventSearchFragment extends Fragment {
 
     View myView;
 
@@ -26,7 +26,7 @@ public class NotesSearchFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.notes_search_layout, container, false);
+        myView = inflater.inflate(R.layout.event_search_layout, container, false);
 
         // LAYOUTS
         final LinearLayout containerLayout = myView.findViewById(R.id.container);
@@ -34,7 +34,7 @@ public class NotesSearchFragment extends Fragment {
 
         // SEARCH BOX
         searchView = myView.findViewById(R.id.notesSearchBox);
-        searchView.setQueryHint("Search notes...");
+        searchView.setQueryHint("Search events...");
 
 
         return myView;
@@ -48,7 +48,7 @@ public class NotesSearchFragment extends Fragment {
         }
 
         // Set main title
-        getActivity().setTitle("Notes Search");
+        getActivity().setTitle("Event Search");
 
     }
 }
