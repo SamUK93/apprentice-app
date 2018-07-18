@@ -24,6 +24,16 @@
     <string name="save_profile_text">Save Profile</string>
 
 
+    <!-- Capgemini Info Page -->
+    <string name="capgemini_info_title_text">Capgemini Info</string>
+    <string name="capgemini_email_label_text">Email</string>
+    <string name="capgemini_base_location_label_text">Base Location</string>
+    <string name="capgemini_info_grade_label_text">Grade</string>
+    <string name="capgemini_info_job_title_label_text">Job Title</string>
+    <string name="capgemini_info_join_date_label_text">Join Date</string>
+    <string name="save_text">SAVE</string>
+
+
     <!-- Study Page -->
     <string name="my_modules_text">My Modules</string>
     <string name="notes_text">Notes</string>

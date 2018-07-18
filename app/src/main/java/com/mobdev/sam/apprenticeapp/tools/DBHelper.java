@@ -14,8 +14,12 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "ApprenticeAppDB";
     private static final int DB_VERSION = 1;
 
-    // Profile
-    private static final String PROFILE_TABLE = "Profiles";
+    // My profile
+    private static final String MY_PROFILE_TABLE = "MyProfile";
+
+
+    // Profiles (public)
+    private static final String PROFILES_TABLE = "Profiles";
 
 
     // Notes
