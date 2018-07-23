@@ -1,12 +1,16 @@
 package com.mobdev.sam.apprenticeapp.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Model for a profile of a specific person
  */
 
-public class Profile {
+public class Profile implements Serializable {
 
     // Fields
     private Long id;
@@ -20,7 +24,7 @@ public class Profile {
     private String email;
     //TODO: Make some sort of location type instead of string?
     private String baseLocation;
-    private String grade;
+    private int grade;
     private String jobTitle;
     //TODO: Make date instead of string?
     private String joinDate;
@@ -32,7 +36,7 @@ public class Profile {
 
     // Constructor
     public Profile(String name, String description, List<String> skills, List<String> interests,
-                   String email, String baseLocation, String grade, String jobTitle, String joinDate,
+                   String email, String baseLocation, int grade, String jobTitle, String joinDate,
                    List<Note> associatedNotes, List<Event> eventsAttending, List<Module> assignedModules) {
 
         setName(name);
@@ -62,7 +66,7 @@ public class Profile {
 
     public String getBaseLocation() { return this.baseLocation; }
 
-    public String getGrade() { return this.grade; }
+    public int getGrade() { return this.grade; }
 
     public String getJobTitle() { return this.jobTitle; }
 
@@ -157,7 +161,7 @@ public class Profile {
         return this;
     }
 
-    public Profile setGrade(String grade) {
+    public Profile setGrade(int grade) {
         this.grade = grade;
         return this;
     }

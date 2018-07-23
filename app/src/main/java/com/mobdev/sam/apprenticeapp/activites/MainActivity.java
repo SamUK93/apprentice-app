@@ -1,5 +1,6 @@
 package com.mobdev.sam.apprenticeapp.activites;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,18 +22,29 @@ import com.mobdev.sam.apprenticeapp.fragments.ProfileFragment;
 import com.mobdev.sam.apprenticeapp.fragments.SettingsFragment;
 import com.mobdev.sam.apprenticeapp.fragments.SocialFragment;
 import com.mobdev.sam.apprenticeapp.fragments.StudyFragment;
+import com.mobdev.sam.apprenticeapp.models.Profile;
+import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    //**** USER ID! ****//
+    public Profile profile;
 
     FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // INTENT BUNDLE PARAMS ETC
+        Bundle params = getIntent().getExtras();
+        profile = (Profile)params.get("profile");
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -88,6 +100,10 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
+        Bundle bundle = new Bundle();
+        bundle.putLong("userId", profile.getId());
+
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -119,9 +135,11 @@ public class MainActivity extends AppCompatActivity
                     .commit();
         }
         else if (id == R.id.nav_profile) {
+            ProfileFragment profileFragment = new ProfileFragment();
+            profileFragment.setArguments(bundle);
             // Switch the current fragment to the 'Profile' Fragment
             fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, new ProfileFragment())
+                    .replace(R.id.content_frame, profileFragment)
                     .commit();
         }
         else if (id == R.id.nav_settings) {

@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.mobdev.sam.apprenticeapp.R;
+import com.mobdev.sam.apprenticeapp.models.Profile;
+import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 
 /**
  * Created by Sam on 02/07/2018.
@@ -19,6 +21,8 @@ import com.mobdev.sam.apprenticeapp.R;
 public class CapgeminiInfoFragment extends Fragment {
 
     View myView;
+    private DBHelper dbHelper;
+    private Profile profile;
 
     // UI Elements
     private EditText emailText;
@@ -34,6 +38,9 @@ public class CapgeminiInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.capgemini_info_layout, container, false);
+
+        Bundle params = getArguments();
+        profile = (Profile)params.getSerializable("profile");
 
         // LAYOUTS
         final LinearLayout containerLayout = myView.findViewById(R.id.container);
@@ -55,6 +62,30 @@ public class CapgeminiInfoFragment extends Fragment {
 
         // SAVE BUTTON
         saveButton = myView.findViewById(R.id.saveCapgeminiInfoButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                // Save button clicked
+                profile.setEmail(emailText.getText().toString());
+                profile.setBaseLocation(baseLocationText.getText().toString());
+                profile.setGrade(Integer.parseInt(gradeText.getText().toString()));
+                profile.setJobTitle(jobTitleText.getText().toString());
+                profile.setJoinDate(joinDateText.getText().toString());
+
+                dbHelper.updateProfile(profile);
+
+            }
+        });
+
+
+
+        // Set fields
+        emailText.setText(profile.getEmail());
+        baseLocationText.setText(profile.getBaseLocation());
+        gradeText.setText(String.valueOf(profile.getGrade()));
+        jobTitleText.setText(profile.getJobTitle());
+        joinDateText.setText(profile.getJoinDate());
 
 
         return myView;
@@ -64,11 +95,13 @@ public class CapgeminiInfoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-
+            profile = getArguments().getParcelable("profile");
         }
 
         // Set main title
         getActivity().setTitle("STUDY");
+
+        dbHelper = new DBHelper(getContext());
 
     }
 }

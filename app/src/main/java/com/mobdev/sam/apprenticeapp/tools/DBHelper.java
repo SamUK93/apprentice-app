@@ -1,8 +1,15 @@
 package com.mobdev.sam.apprenticeapp.tools;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.mobdev.sam.apprenticeapp.models.Profile;
+
+import java.util.List;
 
 /**
  * Created by Sam on 12/07/2018.
@@ -11,16 +18,29 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
     // DB
-    private static final String DB_NAME = "ApprenticeAppDB";
+    private static final String DB_NAME = "apprenticeAppDB";
     private static final int DB_VERSION = 1;
 
-    // My profile
-    private static final String MY_PROFILE_TABLE = "MyProfile";
+    // Profiles
+    private static final String PROFILE_TABLE = "Profiles";
+    private static final String PROFILE_ID = "id";
+    private static final String PROFILE_NAME = "name";
+    private static final String PROFILE_DESC = "description";
+    private static final String PROFILE_EMAIL = "email";
+    private static final String PROFILE_BASE = "baseLocation";
+    private static final String PROFILE_GRADE = "grade";
+    private static final String PROFILE_JOB_TITLE = "jobTitle";
+    private static final String PROFILE_JOIN_DATE = "joinDate";
 
+    // Skills
+    private static final String SKILLS_TABLE = "Skills";
+    private static final String SKILL_ID = "id";
+    private static final String SKILL_NAME = "name";
 
-    // Profiles (public)
-    private static final String PROFILES_TABLE = "Profiles";
-
+    // Interests
+    private static final String INTERESTS_TABLE = "Interests";
+    private static final String INTEREST_ID = "id";
+    private static final String INTEREST_NAME = "name";
 
     // Notes
     private static final String NOTES_TABLE = "Notes";
@@ -61,7 +81,31 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        // Create Profiles table
+        // Create My Profile table
+        String sql = "CREATE TABLE " + PROFILE_TABLE +
+                "(" + PROFILE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + PROFILE_NAME + " TEXT, " +
+                PROFILE_DESC + " TEXT, " + PROFILE_EMAIL + " TEXT, " +
+                PROFILE_BASE + " TEXT, " + PROFILE_GRADE + " INTEGER, " +
+                PROFILE_JOB_TITLE + " TEXT, " + PROFILE_JOIN_DATE + " TEXT);";
+        Log.i("DBHELPER", sql);
+        System.out.println(sql);
+        sqLiteDatabase.execSQL(sql);
+
+
+        // Create My Skills table
+        sql = "CREATE TABLE " + SKILLS_TABLE +
+                "(" + SKILL_ID + " INTEGER, " + SKILL_NAME + " TEXT);";
+        Log.i("DBHELPER", sql);
+        System.out.println(sql);
+        sqLiteDatabase.execSQL(sql);
+
+
+        // Create My Interests table
+        sql = "CREATE TABLE " + INTERESTS_TABLE +
+                "(" + INTEREST_ID + " INTEGER, " + INTEREST_NAME + " TEXT);";
+        Log.i("DBHELPER", sql);
+        System.out.println(sql);
+        sqLiteDatabase.execSQL(sql);
 
 
         // Create Notes table
@@ -88,6 +132,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // Create Contacts table
 
 
+        insertInitialFields(sqLiteDatabase);
     }
 
     @Override
@@ -97,6 +142,148 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     private void insertInitialFields(SQLiteDatabase db) {
+        ContentValues cv = new ContentValues();
+        cv.put(PROFILE_NAME, "Sam Ford");
+        cv.put(PROFILE_DESC, "Joined through the Higher Apprentice programme and joined the DSU business unit");
+        cv.put(PROFILE_EMAIL, "sam.ford@capgemini.com");
+        cv.put(PROFILE_BASE, "Holborn");
+        cv.put(PROFILE_GRADE, 4);
+        cv.put(PROFILE_JOB_TITLE, "Software Engineer");
+        cv.put(PROFILE_JOIN_DATE, "15/07/2013");
+        db.insert(PROFILE_TABLE,PROFILE_ID,cv);
 
+        ContentValues cv2 = new ContentValues();
+        cv2.put(PROFILE_NAME, "Steve Skeleton");
+        cv2.put(PROFILE_DESC, "Joined as a graduate, now working in the Brighton area on several projects");
+        cv2.put(PROFILE_EMAIL, "steve.skeleton@capgemini.com");
+        cv2.put(PROFILE_BASE, "Telford");
+        cv2.put(PROFILE_GRADE, 7);
+        cv2.put(PROFILE_JOB_TITLE, "Manager");
+        cv2.put(PROFILE_JOIN_DATE, "12/04/2015");
+        db.insert(PROFILE_TABLE,PROFILE_ID,cv2);
+
+        ContentValues cv3 = new ContentValues();
+        cv3.put(PROFILE_NAME, "Alison Crowler");
+        cv3.put(PROFILE_DESC, "Previously worked at IBM, have worked on several different accounts, most in India region");
+        cv3.put(PROFILE_EMAIL, "alison.crowler@capgemini.com");
+        cv3.put(PROFILE_BASE, "Aston");
+        cv3.put(PROFILE_GRADE, 6);
+        cv3.put(PROFILE_JOB_TITLE, "Business Analyst");
+        cv3.put(PROFILE_JOIN_DATE, "18/01/2005");
+        db.insert(PROFILE_TABLE,PROFILE_ID,cv3);
+    }
+
+
+    public Profile cursorToProfile(Cursor cursor) {
+        Long id = cursor.getLong(0);
+        String name = cursor.getString(1);
+        String desc = cursor.getString(2);
+        String email = cursor.getString(3);
+        String base = cursor.getString(4);
+        int grade = cursor.getInt(5);
+        String jobTitle = cursor.getString(6);
+        String joinDate = cursor.getString(7);
+
+        Profile profile = new Profile(name,desc,null,null,email,base,grade,jobTitle,joinDate,null,null,null);
+        profile.setId(id);
+        return profile;
+    }
+
+    /**
+     * Inserts a new profile in the database
+     * @param profile the profile to enter
+     * @return the ID of the newly entered profile
+     */
+    public long insertProfile(Profile profile) {
+        long myProfileId;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.i("DBHELPER", "Inserting new PROFILE with name " + profile.getName());
+        ContentValues cv1 = new ContentValues();
+
+        cv1.put(PROFILE_NAME, profile.getName());
+        Log.i("DBHELPER", "Name " + profile.getName());
+
+        cv1.put(PROFILE_DESC, profile.getDescription());
+        Log.i("DBHELPER", "Description " + profile.getDescription());
+
+        cv1.put(PROFILE_EMAIL, profile.getEmail());
+        Log.i("DBHELPER", "Email " + profile.getEmail());
+
+        cv1.put(PROFILE_BASE, profile.getBaseLocation());
+        Log.i("DBHELPER", "Base Location " + profile.getBaseLocation());
+
+        cv1.put(PROFILE_GRADE, profile.getGrade());
+        Log.i("DBHELPER", "Grade " + profile.getGrade());
+
+        cv1.put(PROFILE_JOB_TITLE, profile.getJobTitle());
+        Log.i("DBHELPER", "Job Title " + profile.getJobTitle());
+
+        cv1.put(PROFILE_JOIN_DATE, profile.getJoinDate());
+        Log.i("DBHELPER", "Join Date " + profile.getJoinDate());
+
+        myProfileId = db.insert(PROFILE_TABLE,PROFILE_ID,cv1);
+        Log.i("DBHELPER", "Inserted new PROFILE with id " + profile.getId());
+
+        profile.setId(myProfileId);
+        return myProfileId;
+    }
+
+    /**
+     * Updates a profile in the database
+     * @param profile the profile to update
+     */
+    public void updateProfile(Profile profile) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.i("DBHELPER", "Inserting new PROFILE with name " + profile.getName());
+        ContentValues cv1 = new ContentValues();
+
+        cv1.put(PROFILE_NAME, profile.getName());
+        Log.i("DBHELPER", "Name " + profile.getName());
+
+        cv1.put(PROFILE_DESC, profile.getDescription());
+        Log.i("DBHELPER", "Description " + profile.getDescription());
+
+        cv1.put(PROFILE_EMAIL, profile.getEmail());
+        Log.i("DBHELPER", "Email " + profile.getEmail());
+
+        cv1.put(PROFILE_BASE, profile.getBaseLocation());
+        Log.i("DBHELPER", "Base Location " + profile.getBaseLocation());
+
+        cv1.put(PROFILE_GRADE, profile.getGrade());
+        Log.i("DBHELPER", "Grade " + profile.getGrade());
+
+        cv1.put(PROFILE_JOB_TITLE, profile.getJobTitle());
+        Log.i("DBHELPER", "Job Title " + profile.getJobTitle());
+
+        cv1.put(PROFILE_JOIN_DATE, profile.getJoinDate());
+        Log.i("DBHELPER", "Join Date " + profile.getJoinDate());
+
+        db.update(PROFILE_TABLE,cv1,PROFILE_ID + " = ?",
+                new String[] { String.valueOf(profile.getId()) });
+        Log.i("DBHELPER", "Updated PROFILE with id " + profile.getId());
+
+        db.close();
+    }
+
+
+    /**
+     * Gets the profile with the specified ID from the database
+     * @param id the id of the profile to get
+     * @return the profile, or null if no profiles with the specified id were found
+     */
+    public Profile getProfile(Long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + PROFILE_TABLE + " WHERE " + PROFILE_ID + " = " + id, null);
+        if (cursor.getCount() < 1) {
+            return null;
+        }
+        else {
+            cursor.moveToFirst();
+            Profile profile = cursorToProfile(cursor);
+            cursor.close();
+            db.close();
+            return profile;
+        }
     }
 }

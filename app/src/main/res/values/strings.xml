@@ -73,4 +73,8 @@
     <!-- Event Search Page -->
     <string name="filter_by_interests_location_label_text">Filter by Interests/Location</string>
     <string name="suggested_events_label_text">Suggested Events</string>
+    <string name="log_in_title_text">Welcome. Log in or create an account!</string>
+    <string name="log_in_button_text">Log in</string>
+    <string name="create_account_button_text">Create account</string>
+    <string name="description_label_text">Description</string>
 </resources>

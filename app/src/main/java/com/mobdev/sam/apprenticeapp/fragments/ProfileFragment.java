@@ -12,7 +12,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.mobdev.sam.apprenticeapp.R;
-import com.mobdev.sam.apprenticeapp.activites.MainActivity;
+import com.mobdev.sam.apprenticeapp.models.Profile;
+import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 
 /**
  * Created by Sam on 02/07/2018.
@@ -21,6 +22,11 @@ import com.mobdev.sam.apprenticeapp.activites.MainActivity;
 public class ProfileFragment extends android.support.v4.app.Fragment {
 
     View myView;
+
+    private DBHelper dbHelper;
+    private Long id;
+    private String title;
+    private Profile myProfile;
 
     // UI Elements
     private EditText titleText;
@@ -32,6 +38,10 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.profile_layout, container, false);
+
+        myProfile = dbHelper.getProfile(id);
+
+
 
         // LAYOUTS
         final LinearLayout containerLayout = myView.findViewById(R.id.container);
@@ -51,8 +61,11 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("profile", myProfile);
                 // Create a new Capgemini Info fragment
-                Fragment capgeminiInfoFragment = new CapgeminiInfoFragment();
+                CapgeminiInfoFragment capgeminiInfoFragment = new CapgeminiInfoFragment();
+                capgeminiInfoFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
                 // Replace the current fragment with the new modules fragment
@@ -65,6 +78,24 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
         // SAVE BUTTON
         saveButton = myView.findViewById(R.id.profileSaveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                // Save button clicked
+                myProfile.setName(titleText.getText().toString());
+                myProfile.setDescription(descriptionText.getText().toString());
+
+                dbHelper.updateProfile(myProfile);
+
+            }
+        });
+
+
+
+        // Set all values to user's profile
+        titleText.setText(myProfile.getName());
+        descriptionText.setText(myProfile.getDescription());
 
 
         return myView;
@@ -74,11 +105,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-
+            id = getArguments().getLong("userId");
         }
-
-        // Set main title
-        getActivity().setTitle("PROFILE");
-
+        dbHelper = new DBHelper(getContext());
     }
 }
