@@ -2,17 +2,19 @@ package com.mobdev.sam.apprenticeapp.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.mobdev.sam.apprenticeapp.R;
 import com.mobdev.sam.apprenticeapp.models.Profile;
+import com.mobdev.sam.apprenticeapp.models.Skill;
 import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 
 /**
@@ -50,6 +52,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         final LinearLayout skillsInterestsLayout = myView.findViewById(R.id.skillsInterestsSection);
         final LinearLayout skillsLayout = myView.findViewById(R.id.skillsSection);
         final LinearLayout skillsHeaderLayout = myView.findViewById(R.id.skillsHeaderSection);
+        final LinearLayout currentSkillsLayour = myView.findViewById(R.id.currentSkillsSection);
         final LinearLayout interestsLayout = myView.findViewById(R.id.interestsSection);
         final LinearLayout interestsHeaderLayout = myView.findViewById(R.id.interestsHeaderSection);
 
@@ -69,17 +72,24 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
                 bundle.putSerializable("profile", myProfile);
                 bundle.putString("searchType", "skills");
                 // Create a new Search fragment
-                BasicSearchFragment basicSearchFragment = new BasicSearchFragment();
-                basicSearchFragment.setArguments(bundle);
+                AddSkillsInterestsFragment addSkillsInterestsFragment = new AddSkillsInterestsFragment();
+                addSkillsInterestsFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
                 // Replace the current fragment with the new search fragment
-                transaction.replace(R.id.content_frame,basicSearchFragment);
+                transaction.replace(R.id.content_frame, addSkillsInterestsFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
         });
+
+        // SKILLS
+        for (Skill skill : myProfile.getSkills()) {
+            TextView skillRow = new TextView(getContext());
+            skillRow.setText(skill.getName());
+            skillsLayout.addView(skillRow);
+        }
 
         // ADD INTEREST BUTTON
         addInterestButton = myView.findViewById(R.id.addInterestButton);
@@ -91,17 +101,24 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
                 bundle.putSerializable("profile", myProfile);
                 bundle.putString("searchType", "interests");
                 // Create a new Search fragment
-                BasicSearchFragment basicSearchFragment = new BasicSearchFragment();
-                basicSearchFragment.setArguments(bundle);
+                AddSkillsInterestsFragment addSkillsInterestsFragment = new AddSkillsInterestsFragment();
+                addSkillsInterestsFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
                 // Replace the current fragment with the new search fragment
-                transaction.replace(R.id.content_frame,basicSearchFragment);
+                transaction.replace(R.id.content_frame, addSkillsInterestsFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
         });
+
+        // INTERESTS
+        for (Skill interest : myProfile.getInterests()) {
+            TextView interestRow = new TextView(getContext());
+            interestRow.setText(interest.getName());
+            interestsLayout.addView(interestRow);
+        }
 
         // CAPGEMINI INFO BUTTON
         capgeminiInfoButton = myView.findViewById(R.id.capgeminiInfoButton);

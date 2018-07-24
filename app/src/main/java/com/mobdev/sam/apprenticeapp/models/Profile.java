@@ -16,8 +16,8 @@ public class Profile implements Serializable {
     private Long id;
     private String name;
     private String description;
-    private List<String> skills;
-    private List<String> interests;
+    private List<Skill> skills;
+    private List<Skill> interests;
 
     // TODO: Add more fields? Split into separate class?
     // Capgemini info fields
@@ -35,7 +35,7 @@ public class Profile implements Serializable {
     List<Module> assignedModules;
 
     // Constructor
-    public Profile(String name, String description, List<String> skills, List<String> interests,
+    public Profile(String name, String description, List<Skill> skills, List<Skill> interests,
                    String email, String baseLocation, int grade, String jobTitle, String joinDate,
                    List<Note> associatedNotes, List<Event> eventsAttending, List<Module> assignedModules) {
 
@@ -58,9 +58,9 @@ public class Profile implements Serializable {
 
     public String getDescription() { return this.description; }
 
-    public List<String> getSkills() { return this.skills; }
+    public List<Skill> getSkills() { return this.skills; }
 
-    public List<String> getInterests() { return this.interests; }
+    public List<Skill> getInterests() { return this.interests; }
 
     public String getEmail() { return this.email; }
 
@@ -93,7 +93,7 @@ public class Profile implements Serializable {
      * Overwrites the current skills with a new set of skills
      * @param skills the skills to be set
      */
-    public Profile setAllSkills(List<String> skills) {
+    public Profile setAllSkills(List<Skill> skills) {
         this.skills = skills;
         return this;
     }
@@ -102,8 +102,8 @@ public class Profile implements Serializable {
      * Adds a list of skills, ignoring those that are already in the skills list for this profile
      * @param skills the list of skills to be added
      */
-    public Profile addSkills(List<String> skills) {
-        for (String skill : skills) {
+    public Profile addSkills(List<Skill> skills) {
+        for (Skill skill : skills) {
             addSkill(skill);
         }
         return this;
@@ -113,7 +113,7 @@ public class Profile implements Serializable {
      * Adds a skill if it is not already in the skills list for this profile
      * @param skill the skill to be added
      */
-    public Profile addSkill(String skill) {
+    public Profile addSkill(Skill skill) {
         if (!this.skills.contains(skill)) {
             this.skills.add(skill);
         }
@@ -124,7 +124,7 @@ public class Profile implements Serializable {
      * Overwrites the current interests with a new set of interests
      * @param interests the interests to be set
      */
-    public Profile setAllInterests(List<String> interests) {
+    public Profile setAllInterests(List<Skill> interests) {
         this.interests = interests;
         return this;
     }
@@ -133,8 +133,8 @@ public class Profile implements Serializable {
      * Adds a list of interests, ignoring those that are already in the interests list for this profile
      * @param interests the list of interests to be added
      */
-    public Profile addInterests(List<String> interests) {
-        for (String interest : interests) {
+    public Profile addInterests(List<Skill> interests) {
+        for (Skill interest : interests) {
             addInterest(interest);
         }
         return this;
@@ -144,7 +144,7 @@ public class Profile implements Serializable {
      * Adds a interest if it is not already in the interests list for this profile
      * @param interest the interest to be added
      */
-    public Profile addInterest(String interest) {
+    public Profile addInterest(Skill interest) {
         if (!this.interests.contains(interest)) {
             this.interests.add(interest);
         }
