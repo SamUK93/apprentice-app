@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <!-- Search box -->
+    <android.support.v7.widget.SearchView
+        android:id="@+id/notesSearchBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+
+    </android.support.v7.widget.SearchView>
+
+
+</LinearLayout>

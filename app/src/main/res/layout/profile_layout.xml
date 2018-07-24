@@ -38,30 +38,48 @@
         <!-- Skills/Interests section -->
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/skillsInterestsSection"
-            android:weightSum="2"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="2">
 
             <!-- Skills section -->
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/skillsSection"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="fill_parent"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/skillsLabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/skills_label"
-                    android:textAlignment="center"
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/skillsHeaderSection"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:id="@+id/skillsLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="1"
+                        android:text="@string/skills_label"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/addSkillButton"
+                        android:layout_width="0dp"
+                        android:layout_height="fill_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="1"
+                        android:text="@string/add_button_text" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -69,21 +87,39 @@
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/interestsSection"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="fill_parent"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/interestsLabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/interests_label"
-                    android:textAlignment="center"
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/interestsHeaderSection"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:id="@+id/interestsLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="1"
+                        android:text="@string/interests_label"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/addInterestButton"
+                        android:layout_width="0dp"
+                        android:layout_height="fill_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="1"
+                        android:text="@string/add_button_text" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -92,17 +128,17 @@
         <!-- Capgemini Info and Save buttons -->
         <Button
             android:id="@+id/capgeminiInfoButton"
-            android:layout_marginTop="20dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/capgemini_info_button"/>
+            android:layout_marginTop="20dp"
+            android:text="@string/capgemini_info_button" />
 
         <Button
             android:id="@+id/profileSaveButton"
-            android:layout_marginTop="20dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/save_profile_text"/>
+            android:layout_marginTop="20dp"
+            android:text="@string/save_profile_text" />
 
     </LinearLayout>
 </ScrollView>

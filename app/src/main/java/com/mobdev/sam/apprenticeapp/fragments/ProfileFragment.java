@@ -31,6 +31,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     // UI Elements
     private EditText titleText;
     private EditText descriptionText;
+    private Button addSkillButton;
+    private Button addInterestButton;
     private Button capgeminiInfoButton;
     private Button saveButton;
 
@@ -47,13 +49,59 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         final LinearLayout containerLayout = myView.findViewById(R.id.container);
         final LinearLayout skillsInterestsLayout = myView.findViewById(R.id.skillsInterestsSection);
         final LinearLayout skillsLayout = myView.findViewById(R.id.skillsSection);
+        final LinearLayout skillsHeaderLayout = myView.findViewById(R.id.skillsHeaderSection);
         final LinearLayout interestsLayout = myView.findViewById(R.id.interestsSection);
+        final LinearLayout interestsHeaderLayout = myView.findViewById(R.id.interestsHeaderSection);
 
         // TITLE
         titleText = myView.findViewById(R.id.nameText);
 
         // DESCRIPTION
         descriptionText = myView.findViewById(R.id.descriptionText);
+
+        // ADD SKILL BUTTON
+        addSkillButton = myView.findViewById(R.id.addSkillButton);
+        addSkillButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("profile", myProfile);
+                bundle.putString("searchType", "skills");
+                // Create a new Search fragment
+                BasicSearchFragment basicSearchFragment = new BasicSearchFragment();
+                basicSearchFragment.setArguments(bundle);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+                // Replace the current fragment with the new search fragment
+                transaction.replace(R.id.content_frame,basicSearchFragment);
+                // Add transaction to the back stack and commit
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
+
+        // ADD INTEREST BUTTON
+        addInterestButton = myView.findViewById(R.id.addInterestButton);
+        addInterestButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("profile", myProfile);
+                bundle.putString("searchType", "interests");
+                // Create a new Search fragment
+                BasicSearchFragment basicSearchFragment = new BasicSearchFragment();
+                basicSearchFragment.setArguments(bundle);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+                // Replace the current fragment with the new search fragment
+                transaction.replace(R.id.content_frame,basicSearchFragment);
+                // Add transaction to the back stack and commit
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
 
         // CAPGEMINI INFO BUTTON
         capgeminiInfoButton = myView.findViewById(R.id.capgeminiInfoButton);
