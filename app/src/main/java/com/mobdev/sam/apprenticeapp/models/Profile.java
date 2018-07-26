@@ -2,6 +2,7 @@ package com.mobdev.sam.apprenticeapp.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.io.Serializable;
 import java.util.List;
@@ -121,6 +122,23 @@ public class Profile implements Serializable {
     }
 
     /**
+     * Removes a skill specified by the skill name
+     * @param skillName a string value representing the skill to be removed
+     */
+    public Profile removeSkillByName(String skillName) {
+        Skill skillToRemove = null;
+        for (Skill skill : this.skills) {
+            if (skill.getName().equals(skillName)) {
+                Log.i("REMOVESKILL", "REMOVING SKILL WITH NAME - " + skillName);
+                skillToRemove = skill;
+                break;
+            }
+        }
+        this.skills.remove(skillToRemove);
+        return this;
+    }
+
+    /**
      * Overwrites the current interests with a new set of interests
      * @param interests the interests to be set
      */
@@ -148,6 +166,23 @@ public class Profile implements Serializable {
         if (!this.interests.contains(interest)) {
             this.interests.add(interest);
         }
+        return this;
+    }
+
+    /**
+     * Removes a interest specified by the interest name
+     * @param interestName a string value representing the interest to be removed
+     */
+    public Profile removeInterestByName(String interestName) {
+        Skill interestToRemove = null;
+        for (Skill interest : this.interests) {
+            if (interest.getName().equals(interestName)) {
+                Log.i("REMOVEINTEREST", "REMOVING INTEREST WITH NAME - " + interestName);
+                interestToRemove = interest;
+                break;
+            }
+        }
+        this.interests.remove(interestToRemove);
         return this;
     }
 

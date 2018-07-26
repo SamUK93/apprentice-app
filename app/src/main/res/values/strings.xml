@@ -80,4 +80,9 @@
     <string name="edit_button_text">EDIT</string>
     <string name="current_skills_label_text">Current Skills</string>
     <string name="remove_button_text">REMOVE</string>
+    <string name="add_new_skill_text">Add a new skill</string>
+    <string name="new_skill_name_label_text">Skill name:</string>
+    <string name="button_add_text">ADD</string>
+    <string name="category_label_text">Category:</string>
+    <string name="cancel_text">CANCEL</string>
 </resources>

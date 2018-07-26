@@ -111,7 +111,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "(" + SKILL_NAME + " TEXT, " + CATEGORY_ID + " INTEGER, " + PROFILE_ID +
                 " INTEGER, FOREIGN KEY (" + CATEGORY_ID + ") REFERENCES " +
                 CATEGORIES_TABLE + " (" + CATEGORY_ID + "), FOREIGN KEY (" + PROFILE_ID + ") REFERENCES " +
-                PROFILE_TABLE + " (" + PROFILE_ID + "), UNIQUE (" + SKILL_NAME + "));";
+                PROFILE_TABLE + " (" + PROFILE_ID + "));";
         Log.i("DBHELPER", sql);
         System.out.println(sql);
         sqLiteDatabase.execSQL(sql);
@@ -122,7 +122,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "(" + INTEREST_NAME + " TEXT, " + CATEGORY_ID + " INTEGER, " + PROFILE_ID +
                 " INTEGER, FOREIGN KEY (" + CATEGORY_ID + ") REFERENCES " +
                 CATEGORIES_TABLE + " (" + CATEGORY_ID + "), FOREIGN KEY (" + PROFILE_ID + ") REFERENCES " +
-                PROFILE_TABLE + " (" + PROFILE_ID + "), UNIQUE (" + INTEREST_NAME + "));";
+                PROFILE_TABLE + " (" + PROFILE_ID + "));";
         Log.i("DBHELPER", sql);
         System.out.println(sql);
         sqLiteDatabase.execSQL(sql);
@@ -319,6 +319,74 @@ public class DBHelper extends SQLiteOpenHelper {
         return skills;
     }
 
+
+    /**
+     * Updates a profile's skills in the database
+     * @param profileId the profile to update
+     */
+    public void updateSkills(Long profileId, List<Skill> skills) {
+        Log.i("DBHELPER", "Updating skills for profile with id - " + profileId);
+
+        // Delete all skills for profile
+        deleteSkills(profileId);
+
+        // Add all new new updated skills for profile
+        insertSkills(profileId,skills);
+    }
+
+    public void insertSkills(Long profileId, List<Skill> skills) {
+
+        Log.i("DBHELPER", "Inserting skills for profile with id - " + profileId);
+
+        for (Skill skill : skills) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues cv1 = new ContentValues();
+
+            cv1.put(SKILL_NAME,skill.getName());
+            cv1.put(CATEGORY_ID,skill.getCategoryId());
+            cv1.put(PROFILE_ID,skill.getProfileId());
+
+            db.insert(SKILLS_TABLE, null, cv1);
+        }
+    }
+
+    public void deleteSkills(Long profileId) {
+        Log.i("DBHELPER", "Deleting skills for profile with id - " + profileId);
+
+        // Delete all skills for profile
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(SKILLS_TABLE, PROFILE_ID + " = ?",
+                new String[] { String.valueOf(profileId) });
+        db.close();
+    }
+
+    public List<Skill> getAllSkillsUnique() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + SKILLS_TABLE, null);
+        List<Skill> skills = new ArrayList<>();
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            skills.add(cursorToSkill(cursor));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+
+        List<String> skillNames = new ArrayList<>();
+        List<Skill> uniqueSkills = new ArrayList<>();
+        for (Skill skill : skills) {
+            if (!skillNames.contains(skill.getName())) {
+                skillNames.add(skill.getName());
+                uniqueSkills.add(skill);
+            }
+        }
+        return uniqueSkills;
+    }
+
+
+
     public List<Skill> getAllInterestsForProfile(Long profileId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + INTERESTS_TABLE + " WHERE " + PROFILE_ID + " = " + profileId, null);
@@ -335,8 +403,70 @@ public class DBHelper extends SQLiteOpenHelper {
         return skills;
     }
 
+    /**
+     * Updates a profile's skills in the database
+     * @param profileId the profile to update
+     */
+    public void updateInterests(Long profileId, List<Skill> skills) {
+        Log.i("DBHELPER", "Updating interests for profile with id - " + profileId);
 
+        // Delete all interests for profile
+        deleteInterests(profileId);
 
+        // Add all new updated interests for profile
+        insertInterests(profileId,skills);
+    }
+
+    public void insertInterests(Long profileId, List<Skill> interests) {
+
+        Log.i("DBHELPER", "Inserting interests for profile with id - " + profileId);
+
+        for (Skill interest : interests) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues cv1 = new ContentValues();
+
+            cv1.put(INTEREST_NAME,interest.getName());
+            cv1.put(CATEGORY_ID,interest.getCategoryId());
+            cv1.put(PROFILE_ID,interest.getProfileId());
+
+            db.insert(INTERESTS_TABLE, null, cv1);
+        }
+    }
+
+    public void deleteInterests(Long profileId) {
+        Log.i("DBHELPER", "Deleting interests for profile with id - " + profileId);
+
+        // Delete all interests for profile
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(INTERESTS_TABLE, PROFILE_ID + " = ?",
+                new String[] { String.valueOf(profileId) });
+        db.close();
+    }
+
+    public List<Skill> getAllInterestsUnique() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + INTERESTS_TABLE, null);
+        List<Skill> interests = new ArrayList<>();
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            interests.add(cursorToSkill(cursor));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+
+        List<String> interestNames = new ArrayList<>();
+        List<Skill> uniqueInterests = new ArrayList<>();
+        for (Skill interest : interests) {
+            if (!interestNames.contains(interest.getName())) {
+                interestNames.add(interest.getName());
+                uniqueInterests.add(interest);
+            }
+        }
+        return uniqueInterests;
+    }
 
 
 
