@@ -85,4 +85,5 @@
     <string name="button_add_text">ADD</string>
     <string name="category_label_text">Category:</string>
     <string name="cancel_text">CANCEL</string>
+    <string name="existing_skill_label_text">Add an existing skill from the community</string>
 </resources>

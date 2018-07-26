@@ -35,6 +35,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
     int numSkillsRemoved = 0;
     int newSkillsNum = 0;
     Long newSkillCategoryId;
+    Skill newExistingSkill;
     List<Skill> originalSkills = new ArrayList<>();
     final List<TextView> skills = new ArrayList<>();
     final List<Button> removeButtons = new ArrayList<>();
@@ -43,6 +44,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
     private EditText newSkillText;
     private Spinner categorySpinner;
     private Button addSkillButton;
+    private Spinner skillSpinner;
     private Button saveButton;
     private Button cancelButton;
 
@@ -65,11 +67,11 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         // ADD CURRENT SKILLS AND BUTTONS
         if (type == "skills") {
             for (Skill skill : profile.getSkills()) {
-                addSkill(skill,type);
+                addSkill(skill, type);
             }
         } else if (type == "interests") {
             for (Skill interest : profile.getInterests()) {
-                addSkill(interest,type);
+                addSkill(interest, type);
             }
         }
 
@@ -118,13 +120,56 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                 // Add skill button clicked
                 newSkillsNum++;
                 String skillName = newSkillText.getText().toString();
-                Skill skill = new Skill(skillName,newSkillCategoryId,profile.getId());
+                Skill skill = new Skill(skillName, newSkillCategoryId, profile.getId());
                 profile.addSkill(skill);
-                dbHelper.updateSkills(profile.getId(),profile.getSkills());
-                addSkill(skill,type);
+                dbHelper.updateSkills(profile.getId(), profile.getSkills());
+                addSkill(skill, type);
             }
         });
 
+
+        // EXISTING SKILL SPINNER
+        // Get all skills
+        List<Skill> existingSkills = dbHelper.getAllSkillsInteretsUnique();
+
+        skillSpinner = myView.findViewById(R.id.skillSpinner);
+
+        final SkillSpinnerAdapter skillSpinnerAdapter = new SkillSpinnerAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, existingSkills);
+        skillSpinner.setAdapter(skillSpinnerAdapter);
+        //TODO: REMOVE
+        /*if (visitedPlace.getAssociatedHolidayId() != null) {
+            for (Holiday holiday : holidays) {
+                if (holiday.getId().equals(visitedPlace.getAssociatedHolidayId())) {
+                    associatedHoliday.setSelection(holidays.indexOf(holiday));
+                }
+            }*/
+
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Skill skill = skillSpinnerAdapter.getItem(i);
+                newExistingSkill = skill;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        addSkillButton = myView.findViewById(R.id.addSkillButton);
+        addSkillButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Add skill button clicked
+                newSkillsNum++;
+                String skillName = newSkillText.getText().toString();
+                Skill skill = new Skill(skillName, newSkillCategoryId, profile.getId());
+                profile.addSkill(skill);
+                dbHelper.updateSkills(profile.getId(), profile.getSkills());
+                addSkill(skill, type);
+            }
+        });
 
 
         ///////////////////////////
@@ -155,11 +200,10 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                         Log.i("NEW SKILLS:: ", s.getName());
                     }
                     profile.setAllSkills(originalSkills);
-                    dbHelper.updateSkills(profile.getId(),originalSkills);
-                }
-                else if (type == "interests") {
+                    dbHelper.updateSkills(profile.getId(), originalSkills);
+                } else if (type == "interests") {
                     profile.setAllInterests(originalSkills);
-                    dbHelper.updateInterests(profile.getId(),originalSkills);
+                    dbHelper.updateInterests(profile.getId(), originalSkills);
                 }
 
                 getFragmentManager().popBackStackImmediate();
@@ -180,8 +224,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
 
             if (type == "skills") {
                 originalSkills = profile.getSkills();
-            }
-            else if (type == "interests") {
+            } else if (type == "interests") {
                 originalSkills = profile.getInterests();
             }
         }
@@ -195,8 +238,9 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
 
     /**
      * Adds a new skill name and remove button to the view
+     *
      * @param skill the skill to add
-     * @param type the type of skill (skill or interest)
+     * @param type  the type of skill (skill or interest)
      */
     private void addSkill(Skill skill, String type) {
         if (type == "skills") {
@@ -234,8 +278,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                     dbHelper.updateSkills(profile.getId(), profile.getSkills());
                 }
             });
-        }
-        else if (type == "interests") {
+        } else if (type == "interests") {
             TextView interestNameRow = new TextView(getContext());
             interestNameRow.setText(skill.getName());
             skillNameSection.addView(interestNameRow);
@@ -266,7 +309,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                     removeButtons.remove(removeButton);
 
                     numSkillsRemoved++;
-                    dbHelper.updateInterests(profile.getId(),profile.getInterests());
+                    dbHelper.updateInterests(profile.getId(), profile.getInterests());
                 }
             });
         }

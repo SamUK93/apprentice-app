@@ -1,137 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/container"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:layout_height="fill_parent">
 
-    <!-- Current Skills -->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/currentSkillsSection"
+        android:id="@+id/container"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/currentSkillsLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:text="@string/current_skills_label_text"
-            android:textAlignment="center"
-            android:textSize="23dp"
-            android:textStyle="bold" />
-
+        <!-- Current Skills -->
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/skillsListSection"
+            android:id="@+id/currentSkillsSection"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/skillNamesSection"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_marginTop="20dp"
-                android:layout_weight="1"
-                android:orientation="vertical"></LinearLayout>
-
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/skillButtonsSection"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_marginTop="20dp"
-                android:layout_weight="1"
-                android:orientation="vertical"></LinearLayout>
-
-        </LinearLayout>
-
-
-        <!-- Add New Skill -->
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/newSkillSection"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/newSkillLabel"
+                android:id="@+id/currentSkillsLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
-                android:text="@string/add_new_skill_text"
+                android:text="@string/current_skills_label_text"
                 android:textAlignment="center"
                 android:textSize="23dp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/newSkillNameLabel"
-                android:layout_width="match_parent"
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/skillsListSection"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:text="@string/new_skill_name_label_text"
-                android:textAlignment="center"
-                android:textSize="15dp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:weightSum="2">
 
-            <EditText
-                android:id="@+id/newSkillText"
-                android:layout_width="match_parent"
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/skillNamesSection"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"></LinearLayout>
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/skillButtonsSection"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"></LinearLayout>
+
+            </LinearLayout>
+
+
+            <!-- Add New Skill -->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/newSkillSection"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:hint="Enter skill name.."
-                android:textSize="11dp" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/categoryLabel"
-                android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/newSkillLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/add_new_skill_text"
+                    android:textAlignment="center"
+                    android:textSize="23dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/newSkillNameLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/new_skill_name_label_text"
+                    android:textAlignment="center"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/newSkillText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:hint="Enter skill name.."
+                    android:textSize="11dp" />
+
+                <TextView
+                    android:id="@+id/categoryLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/category_label_text"
+                    android:textAlignment="center"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/categorySpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></Spinner>
+
+                <Button
+                    android:id="@+id/addSkillButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/button_add_text" />
+
+            </LinearLayout>
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/existingSkillSection"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:text="@string/category_label_text"
-                android:textAlignment="center"
-                android:textSize="15dp"
-                android:textStyle="bold" />
+                android:orientation="vertical">
 
-            <Spinner
-                android:id="@+id/categorySpinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-            </Spinner>
+                <TextView
+                    android:id="@+id/existingSkillLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/existing_skill_label_text"
+                    android:textAlignment="center"
+                    android:textSize="23dp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/skillSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></Spinner>
+
+                <Button
+                    android:id="@+id/addExistingSkillButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/button_add_text" />
+
+            </LinearLayout>
 
             <Button
-                android:id="@+id/addSkillButton"
-                android:layout_width="wrap_content"
+                android:id="@+id/saveNewSkillsButton"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="@string/button_add_text" />
+                android:text="@string/save_text" />
+
+            <Button
+                android:id="@+id/cancelNewSkillsButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/cancel_text" />
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/saveNewSkillsButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/save_text" />
-
-        <Button
-            android:id="@+id/cancelNewSkillsButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/cancel_text" />
 
     </LinearLayout>
-
-
-</LinearLayout>
+</ScrollView>

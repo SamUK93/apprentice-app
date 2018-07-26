@@ -470,6 +470,20 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
+    public List<Skill> getAllSkillsInteretsUnique() {
+        List<Skill> skills = getAllSkillsUnique();
+        List<Skill> interests = getAllInterestsUnique();
+
+        for (Skill interest : interests) {
+            if (!skills.contains(interest)) {
+                skills.add(interest);
+            }
+        }
+        return skills;
+    }
+
+
+
     public Category cursorToCategory(Cursor cursor) {
         Long id = cursor.getLong(0);
         String name = cursor.getString(1);
