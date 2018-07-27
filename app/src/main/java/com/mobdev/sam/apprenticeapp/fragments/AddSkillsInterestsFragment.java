@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
 import com.mobdev.sam.apprenticeapp.models.Category;
@@ -35,6 +36,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
     int numSkillsRemoved = 0;
     int newSkillsNum = 0;
     Long newSkillCategoryId;
+    Long filterCategoryId;
     Skill newExistingSkill;
     List<Skill> originalSkills = new ArrayList<>();
     final List<TextView> skills = new ArrayList<>();
@@ -46,6 +48,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
     private Button addSkillButton;
     private Spinner categoryFilterSpinner;
     private Spinner skillSpinner;
+    private Button addExistingSkillButton;
     private Button saveButton;
     private Button cancelButton;
 
@@ -104,6 +107,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.i("EXISTING DEBUG INFO:: ", "CHANGED! 1");
                 Category category = spinnerAdapter.getItem(i);
                 newSkillCategoryId = category.getId();
             }
@@ -118,13 +122,66 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         addSkillButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                boolean alreadyHasSkill = false;
+                boolean skillAlreadyExists = false;
+                Skill existingSkill = null;
+
                 // Add skill button clicked
-                newSkillsNum++;
+
+                // Get a list of all the exiting unique skills
+                List<Skill> allExistingSkills = dbHelper.getAllSkillsInterestsUnique();
+                // Get the current skills and interests of the user
+                List<Skill> userExistingSkills = dbHelper.getAllSkillsAndInterestsForProfile(profile.getId());
+
+                // Get the skill name
                 String skillName = newSkillText.getText().toString();
-                Skill skill = new Skill(skillName, newSkillCategoryId, profile.getId());
-                profile.addSkill(skill);
-                dbHelper.updateSkills(profile.getId(), profile.getSkills());
-                addSkill(skill, type);
+
+                // Check if the user has the skill already
+                for (Skill skill : userExistingSkills) {
+                    if (skillName.toUpperCase().equals(skill.getName().toUpperCase())) {
+                        alreadyHasSkill = true;
+                        break;
+                    }
+                }
+
+                // Check if the skill already exists in the database
+                for (Skill skill : allExistingSkills) {
+                    if (skillName.toUpperCase().equals(skill.getName().toUpperCase())) {
+                        skillAlreadyExists = true;
+                        existingSkill = skill;
+                        existingSkill.setProfileId(profile.getId());
+                        break;
+                    }
+                }
+
+                // If the user doesn't already have the skill
+                if (!alreadyHasSkill) {
+                    Skill skill = new Skill(skillName, newSkillCategoryId, profile.getId());
+
+                    if (skillAlreadyExists) {
+                        // Skill already exists in database, so use that skill rather than creating a new one
+                        Toast.makeText(getActivity(), "Skill with same name already exists, added with category - " + existingSkill.getCategoryId(), Toast.LENGTH_LONG).show();
+                        skill = existingSkill;
+                    }
+                    newSkillsNum++;
+
+                    if (type == "skills") {
+                        // Add the skill to the profile and update database
+                        profile.addSkill(skill);
+                        dbHelper.updateSkills(profile.getId(), profile.getSkills());
+                    }
+                    else if (type == "interests") {
+                        // Add the interest to the profile and update database
+                        profile.addInterest(skill);
+                        dbHelper.updateInterests(profile.getId(), profile.getInterests());
+                    }
+                    // Add the skill to the UI
+                    addSkill(skill, type);
+                }
+                else {
+                    Toast.makeText(getActivity(), "You already have that skill or interest! - ", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 
@@ -133,8 +190,8 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         // NEW SKILL CATEGORY FILTER SPINNER
         categoryFilterSpinner = myView.findViewById(R.id.categoryFilterSpinner);
 
-        final CategorySpinnerAdapter categoryFilterSpinnerAdapter = new CategorySpinnerAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, categories);
-        categoryFilterSpinner.setAdapter(categoryFilterSpinnerAdapter);
+        //final CategorySpinnerAdapter categoryFilterSpinnerAdapter = new CategorySpinnerAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, categories);
+        categoryFilterSpinner.setAdapter(spinnerAdapter);
         //TODO: REMOVE
         /*if (visitedPlace.getAssociatedHolidayId() != null) {
             for (Holiday holiday : holidays) {
@@ -146,8 +203,12 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         categoryFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Category category = categoryFilterSpinnerAdapter.getItem(i);
-                newSkillCategoryId = category.getId();
+                Log.i("EXISTING DEBUG INFO:: ", "CHANGED! 2");
+                Category category = spinnerAdapter.getItem(i);
+                filterCategoryId = category.getId();
+                List<Skill> filteredSkills = dbHelper.getAllSkillsInterestsUniqueInCategory(filterCategoryId);
+                final SkillSpinnerAdapter skillSpinnerAdapter = new SkillSpinnerAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, filteredSkills);
+                skillSpinner.setAdapter(skillSpinnerAdapter);
             }
 
             @Override
@@ -174,10 +235,11 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                 }
             }*/
 
-        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        skillSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Skill skill = skillSpinnerAdapter.getItem(i);
+                Log.i("EXISTING DEBUG INFO:: ", "CHANGED! 3");
                 newExistingSkill = skill;
             }
 
@@ -187,17 +249,49 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
             }
         });
 
-        addSkillButton = myView.findViewById(R.id.addSkillButton);
-        addSkillButton.setOnClickListener(new View.OnClickListener() {
+        addExistingSkillButton = myView.findViewById(R.id.addExistingSkillButton);
+        addExistingSkillButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Add skill button clicked
-                newSkillsNum++;
-                String skillName = newSkillText.getText().toString();
-                Skill skill = new Skill(skillName, newSkillCategoryId, profile.getId());
-                profile.addSkill(skill);
-                dbHelper.updateSkills(profile.getId(), profile.getSkills());
-                addSkill(skill, type);
+                boolean alreadyHasSkill = false;
+                Skill skill = (Skill)skillSpinner.getSelectedItem();
+
+                // Get a list of all the exiting unique skills
+                List<Skill> allExistingSkills = dbHelper.getAllSkillsInterestsUnique();
+                // Get the current skills and interests of the user
+                List<Skill> userExistingSkills = dbHelper.getAllSkillsAndInterestsForProfile(profile.getId());
+
+                // Check if the user has the skill already
+                for (Skill existingSkill : userExistingSkills) {
+                    Log.i("EXISTING DEBUG INFO:: ", "User skill - " + existingSkill.getName());
+                    if (skill.getName().toUpperCase().equals(existingSkill.getName().toUpperCase())) {
+                        alreadyHasSkill = true;
+                        break;
+                    }
+                }
+
+                // If the user doesn't already have the skill
+                if(!alreadyHasSkill) {
+                    newSkillsNum++;
+
+                    skill.setProfileId(profile.getId());
+                    if (type == "skills") {
+                        // Add the skill to the profile and update database
+                        profile.addSkill(skill);
+                        dbHelper.updateSkills(profile.getId(), profile.getSkills());
+                    }
+                    else if (type == "interests") {
+                        // Add the interest to the profile and update database
+                        profile.addInterest(skill);
+                        dbHelper.updateInterests(profile.getId(), profile.getInterests());
+                    }
+
+                    addSkill(skill, type);
+                }
+                else {
+                    Toast.makeText(getActivity(), "You already have that skill or interest! - ", Toast.LENGTH_LONG).show();
+                }
             }
         });
 

@@ -339,6 +339,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Log.i("DBHELPER", "Inserting skills for profile with id - " + profileId);
 
         for (Skill skill : skills) {
+            Log.i("DBHELPER", "Adding skill  - " + skill.getName());
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues cv1 = new ContentValues();
 
@@ -364,6 +365,31 @@ public class DBHelper extends SQLiteOpenHelper {
     public List<Skill> getAllSkillsUnique() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + SKILLS_TABLE, null);
+        List<Skill> skills = new ArrayList<>();
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            skills.add(cursorToSkill(cursor));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+
+        List<String> skillNames = new ArrayList<>();
+        List<Skill> uniqueSkills = new ArrayList<>();
+        for (Skill skill : skills) {
+            if (!skillNames.contains(skill.getName())) {
+                skillNames.add(skill.getName());
+                uniqueSkills.add(skill);
+            }
+        }
+        return uniqueSkills;
+    }
+
+    public List<Skill> getAllSkillsUniqueInCategory(Long categoryId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + SKILLS_TABLE + " WHERE " + CATEGORY_ID
+                + " = " + categoryId, null);
         List<Skill> skills = new ArrayList<>();
         cursor.moveToFirst();
 
@@ -468,6 +494,31 @@ public class DBHelper extends SQLiteOpenHelper {
         return uniqueInterests;
     }
 
+    public List<Skill> getAllInterestsUniqueInCategory(Long categoryId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + INTERESTS_TABLE + " WHERE " + CATEGORY_ID +
+                " = " + categoryId, null);
+        List<Skill> interests = new ArrayList<>();
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            interests.add(cursorToSkill(cursor));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+
+        List<String> interestNames = new ArrayList<>();
+        List<Skill> uniqueInterests = new ArrayList<>();
+        for (Skill interest : interests) {
+            if (!interestNames.contains(interest.getName())) {
+                interestNames.add(interest.getName());
+                uniqueInterests.add(interest);
+            }
+        }
+        return uniqueInterests;
+    }
+
 
 
     public List<Skill> getAllSkillsInterestsUnique() {
@@ -478,6 +529,28 @@ public class DBHelper extends SQLiteOpenHelper {
             if (!skills.contains(interest)) {
                 skills.add(interest);
             }
+        }
+        return skills;
+    }
+
+    public List<Skill> getAllSkillsInterestsUniqueInCategory(Long categoryId) {
+        List<Skill> skills = getAllSkillsUniqueInCategory(categoryId);
+        List<Skill> interests = getAllInterestsUniqueInCategory(categoryId);
+
+        for (Skill interest : interests) {
+            if (!skills.contains(interest)) {
+                skills.add(interest);
+            }
+        }
+        return skills;
+    }
+
+    public List<Skill> getAllSkillsAndInterestsForProfile(Long profileId) {
+        List<Skill> skills = getAllSkillsForProfile(profileId);
+        List<Skill> interests = getAllInterestsForProfile(profileId);
+
+        for (Skill interest : interests) {
+            skills.add(interest);
         }
         return skills;
     }
