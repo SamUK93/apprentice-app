@@ -470,7 +470,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
-    public List<Skill> getAllSkillsInteretsUnique() {
+    public List<Skill> getAllSkillsInterestsUnique() {
         List<Skill> skills = getAllSkillsUnique();
         List<Skill> interests = getAllInterestsUnique();
 

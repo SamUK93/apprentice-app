@@ -44,6 +44,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
     private EditText newSkillText;
     private Spinner categorySpinner;
     private Button addSkillButton;
+    private Spinner categoryFilterSpinner;
     private Spinner skillSpinner;
     private Button saveButton;
     private Button cancelButton;
@@ -128,9 +129,38 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         });
 
 
+
+        // NEW SKILL CATEGORY FILTER SPINNER
+        categoryFilterSpinner = myView.findViewById(R.id.categoryFilterSpinner);
+
+        final CategorySpinnerAdapter categoryFilterSpinnerAdapter = new CategorySpinnerAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, categories);
+        categoryFilterSpinner.setAdapter(categoryFilterSpinnerAdapter);
+        //TODO: REMOVE
+        /*if (visitedPlace.getAssociatedHolidayId() != null) {
+            for (Holiday holiday : holidays) {
+                if (holiday.getId().equals(visitedPlace.getAssociatedHolidayId())) {
+                    associatedHoliday.setSelection(holidays.indexOf(holiday));
+                }
+            }*/
+
+        categoryFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Category category = categoryFilterSpinnerAdapter.getItem(i);
+                newSkillCategoryId = category.getId();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+
         // EXISTING SKILL SPINNER
         // Get all skills
-        List<Skill> existingSkills = dbHelper.getAllSkillsInteretsUnique();
+        List<Skill> existingSkills = dbHelper.getAllSkillsInterestsUnique();
 
         skillSpinner = myView.findViewById(R.id.skillSpinner);
 

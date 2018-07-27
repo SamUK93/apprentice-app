@@ -86,4 +86,5 @@
     <string name="category_label_text">Category:</string>
     <string name="cancel_text">CANCEL</string>
     <string name="existing_skill_label_text">Add an existing skill from the community</string>
+    <string name="filter_by_category_text">Filter by category</string>
 </resources>
