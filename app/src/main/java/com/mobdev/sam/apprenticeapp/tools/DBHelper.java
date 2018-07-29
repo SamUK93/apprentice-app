@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.mobdev.sam.apprenticeapp.models.Category;
+import com.mobdev.sam.apprenticeapp.models.Contact;
 import com.mobdev.sam.apprenticeapp.models.Profile;
 import com.mobdev.sam.apprenticeapp.models.Skill;
 
@@ -79,6 +80,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Contacts
     private static final String CONTACTS_TABLE = "Contacts";
+    private static final String CONTACT_ID = "contactId";
 
 
     public DBHelper(Context context) {
@@ -150,6 +152,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
         // Create Contacts table
+        sql = "CREATE TABLE " + CONTACTS_TABLE +
+                "(" + PROFILE_ID + " INTEGER, " + CONTACT_ID + " INTEGER, FOREIGN KEY (" + PROFILE_ID + ") REFERENCES " +
+                PROFILE_TABLE + " (" + PROFILE_ID + "));";
+        Log.i("DBHELPER", sql);
+        System.out.println(sql);
+        sqLiteDatabase.execSQL(sql);
 
 
         insertInitialFields(sqLiteDatabase);
@@ -579,6 +587,49 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return categories;
+    }
+
+
+
+    public Contact cursorToContact(Cursor cursor) {
+        Long profileId = cursor.getLong(0);
+        Long contactId = cursor.getLong(1);
+
+        Contact contact = new Contact(profileId,contactId);
+        return contact;
+    }
+
+    public List<Contact> getAllContacts() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + CONTACTS_TABLE, null);
+        List<Contact> contacts = new ArrayList<>();
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            contacts.add(cursorToContact(cursor));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        db.close();
+        return contacts;
+    }
+
+    public List<Contact> getAllContactsForProfile(Long profileId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + CONTACTS_TABLE + " WHERE "
+                + PROFILE_ID + " = " + profileId, null);
+        List<Contact> contacts = new ArrayList<>();
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            contacts.add(cursorToContact(cursor));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        db.close();
+        return contacts;
     }
 
 

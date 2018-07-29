@@ -87,4 +87,9 @@
     <string name="cancel_text">CANCEL</string>
     <string name="existing_skill_label_text">Add an existing skill from the community</string>
     <string name="filter_by_category_text">Filter by category</string>
+    <string name="suggested_people_label_text">Suggested People</string>
+    <string name="contacts_text">Contacts</string>
+    <string name="find_new_contacts_button_text">FIND NEW CONTACTS</string>
+    <string name="suggested_contacts_label_text">Suggested Contacts</string>
+
 </resources>

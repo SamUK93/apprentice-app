@@ -257,8 +257,6 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                 boolean alreadyHasSkill = false;
                 Skill skill = (Skill)skillSpinner.getSelectedItem();
 
-                // Get a list of all the exiting unique skills
-                List<Skill> allExistingSkills = dbHelper.getAllSkillsInterestsUnique();
                 // Get the current skills and interests of the user
                 List<Skill> userExistingSkills = dbHelper.getAllSkillsAndInterestsForProfile(profile.getId());
 
