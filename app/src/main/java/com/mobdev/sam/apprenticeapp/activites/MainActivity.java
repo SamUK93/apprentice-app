@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity
                     .commit();
         }
         else if (id == R.id.nav_profile) {
+            bundle.putBoolean("owner", true);
             ProfileFragment profileFragment = new ProfileFragment();
             profileFragment.setArguments(bundle);
             // Switch the current fragment to the 'Profile' Fragment

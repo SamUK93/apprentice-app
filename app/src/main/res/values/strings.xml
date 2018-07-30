@@ -91,5 +91,7 @@
     <string name="contacts_text">Contacts</string>
     <string name="find_new_contacts_button_text">FIND NEW CONTACTS</string>
     <string name="suggested_contacts_label_text">Suggested Contacts</string>
+    <string name="add_contact_button_text">ADD CONTACT</string>
+    <string name="remove_contact_button_text">REMOVE CONTACT</string>
 
 </resources>

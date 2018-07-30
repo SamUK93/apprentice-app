@@ -95,6 +95,9 @@ public class Profile implements Serializable {
      * @param skills the skills to be set
      */
     public Profile setAllSkills(List<Skill> skills) {
+        for (Skill skill : skills) {
+            Log.i("SKILLADD:::","ADDING SKILL - " + skill.getName());
+        }
         this.skills = skills;
         return this;
     }

@@ -428,15 +428,18 @@ public class DBHelper extends SQLiteOpenHelper {
         List<ProfileReason> matchingProfiles = new ArrayList<>();
         List<Long> profileIdsTotal = new ArrayList<>();
 
+        // For each of the skills specified
         for (Skill skill : skills) {
 
             List<Long> profileIds = new ArrayList<>();
 
+            // Get all Profile IDs that have that skill
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor cursor = db.rawQuery("SELECT * FROM " + SKILLS_TABLE + " WHERE " + SKILL_NAME
                     + " = '" + skill.getName() + "';", null);
             cursor.moveToFirst();
 
+            // Add all profile ids to list
             while (!cursor.isAfterLast()) {
                 profileIds.add(cursor.getLong(2));
                 cursor.moveToNext();
@@ -444,11 +447,14 @@ public class DBHelper extends SQLiteOpenHelper {
             cursor.close();
             db.close();
 
+            // For each matching profile id
             for (Long profileId : profileIds) {
                 if (!profileIdsTotal.contains(profileId)) {
+                    // If profile not already matched (with a previous skill) create a new 'profile reason' and add to list
                     matchingProfiles.add(new ProfileReason(getProfile(profileId), "Because shares skill(s) - " + skill.getName()));
                     profileIdsTotal.add(profileId);
                 } else {
+                    // Profile already matched on a previous skill, so add to existing 'profile reason' with new skill
                     for (ProfileReason profileReason : matchingProfiles) {
                         if (profileReason.profile.getId().equals(profileId)) {
                             profileReason.reason += ", " + skill.getName();
@@ -457,8 +463,6 @@ public class DBHelper extends SQLiteOpenHelper {
                     }
                 }
             }
-
-
         }
 
         return matchingProfiles;
@@ -572,6 +576,80 @@ public class DBHelper extends SQLiteOpenHelper {
         return uniqueInterests;
     }
 
+    public List<ProfileReason> getAllProfilesSameInterests(List<Skill> interests) {
+
+        List<ProfileReason> matchingProfiles = new ArrayList<>();
+        List<Long> profileIdsTotal = new ArrayList<>();
+
+        for (Skill interest : interests) {
+            // For each of the interests specified
+
+            List<Long> profileIds = new ArrayList<>();
+
+            // Get all Profile IDs that have that interest
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT * FROM " + INTERESTS_TABLE + " WHERE " + INTEREST_NAME
+                    + " = '" + interest.getName() + "';", null);
+            cursor.moveToFirst();
+
+            // Add all profile ids to list
+            while (!cursor.isAfterLast()) {
+                profileIds.add(cursor.getLong(2));
+                cursor.moveToNext();
+            }
+            cursor.close();
+            db.close();
+
+            for (Long profileId : profileIds) {
+                // For each matching profile id
+                if (!profileIdsTotal.contains(profileId)) {
+                    // If profile not already matched (with a previous interest) create a new 'profile reason' and add to list
+                    matchingProfiles.add(new ProfileReason(getProfile(profileId), "Because shares interest(s) - " + interest.getName()));
+                    profileIdsTotal.add(profileId);
+                } else {
+                    // Profile already matched on a previous interest, so add to existing 'profile reason' with new interest
+                    for (ProfileReason profileReason : matchingProfiles) {
+                        if (profileReason.profile.getId().equals(profileId)) {
+                            profileReason.reason += ", " + interest.getName();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return matchingProfiles;
+    }
+
+
+    public List<ProfileReason> getAllProfilesAllCriteria(List<Skill> skills, List<Skill> interests) {
+        // Get all profiles with matching skills and interests
+        List<ProfileReason> matchingSkills = getAllProfilesSameSkills(skills);
+        List<ProfileReason> matchingInterests = getAllProfilesSameInterests(interests);
+
+        List<ProfileReason> newProfilesToAdd = new ArrayList<>();
+
+        for (ProfileReason interestMatch : matchingInterests) {
+            // For each matching interest
+            boolean newProfile = true;
+            for (ProfileReason skillMatch : matchingSkills) {
+                // Check all matching skills, if same profile, append interests
+                if (skillMatch.profile.getId().equals(interestMatch.profile.getId())) {
+                    Log.i("CONTACTMATCH::", "Profile already has match, appending");
+                    skillMatch.reason += "\nand\n" + interestMatch.reason;
+                    newProfile = false;
+                    break;
+                }
+            }
+            if (newProfile)
+                // New profile with no previous matches, add to list of new profile matches
+                newProfilesToAdd.add(interestMatch);
+        }
+        // Add all new profile matches
+        matchingSkills.addAll(newProfilesToAdd);
+        return matchingSkills;
+    }
+
 
     public List<Skill> getAllSkillsInterestsUnique() {
         List<Skill> skills = getAllSkillsUnique();
@@ -672,6 +750,26 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return contacts;
+    }
+
+    public void insertContact(Long profileId, Long contactId) {
+        Log.i("DBHELPER", "Adding new contact profile with id - " + profileId);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv1 = new ContentValues();
+
+        cv1.put(PROFILE_ID, profileId);
+        cv1.put(CONTACT_ID, contactId);
+
+        db.insert(CONTACTS_TABLE, null, cv1);
+    }
+
+    public void deleteContact(Long profileId, Long contactId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(CONTACTS_TABLE, PROFILE_ID + " = ? AND " + CONTACT_ID + " = ?",
+                new String[]{String.valueOf(profileId),String.valueOf(contactId)});
+        db.close();
     }
 
 

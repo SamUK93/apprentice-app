@@ -148,5 +148,19 @@
             android:layout_marginTop="20dp"
             android:text="@string/save_profile_text" />
 
+        <Button
+            android:id="@+id/addContactButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/add_contact_button_text" />
+
+        <Button
+            android:id="@+id/removeContactButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/remove_contact_button_text" />
+
     </LinearLayout>
 </ScrollView>
