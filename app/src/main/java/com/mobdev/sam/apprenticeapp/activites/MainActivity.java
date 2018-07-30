@@ -124,8 +124,10 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_social) {
             // Switch the current fragment to the 'Social' Fragment
+            SocialFragment socialFragment = new SocialFragment();
+            socialFragment.setArguments(bundle);
             fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, new SocialFragment())
+                    .replace(R.id.content_frame, socialFragment)
                     .commit();
         }
         else if (id == R.id.nav_calendar) {

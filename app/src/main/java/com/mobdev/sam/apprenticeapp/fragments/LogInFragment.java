@@ -59,6 +59,8 @@ public class LogInFragment extends android.support.v4.app.Fragment {
                     Toast.makeText(getActivity(), "ID not recognised!", Toast.LENGTH_LONG).show();
                 }
                 else {
+                    profile.setAllSkills(dbHelper.getAllSkillsForProfile(profile.getId()));
+                    profile.setAllInterests(dbHelper.getAllInterestsForProfile(profile.getId()));
                     // Start a new main activity and pass the new profile
                     final Intent intent = new Intent(getActivity(), MainActivity.class);
                     intent.putExtra("profile",profile);

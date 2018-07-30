@@ -10,6 +10,7 @@ import android.util.Log;
 import com.mobdev.sam.apprenticeapp.models.Category;
 import com.mobdev.sam.apprenticeapp.models.Contact;
 import com.mobdev.sam.apprenticeapp.models.Profile;
+import com.mobdev.sam.apprenticeapp.models.ProfileReason;
 import com.mobdev.sam.apprenticeapp.models.Skill;
 
 import java.util.ArrayList;
@@ -178,13 +179,14 @@ public class DBHelper extends SQLiteOpenHelper {
         String jobTitle = cursor.getString(6);
         String joinDate = cursor.getString(7);
 
-        Profile profile = new Profile(name,desc,new ArrayList<Skill>(),new ArrayList<Skill>(),email,base,grade,jobTitle,joinDate,null,null,null);
+        Profile profile = new Profile(name, desc, new ArrayList<Skill>(), new ArrayList<Skill>(), email, base, grade, jobTitle, joinDate, null, null, null);
         profile.setId(id);
         return profile;
     }
 
     /**
      * Inserts a new profile in the database
+     *
      * @param profile the profile to enter
      * @return the ID of the newly entered profile
      */
@@ -216,7 +218,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv1.put(PROFILE_JOIN_DATE, profile.getJoinDate());
         Log.i("DBHELPER", "Join Date " + profile.getJoinDate());
 
-        myProfileId = db.insert(PROFILE_TABLE,PROFILE_ID,cv1);
+        myProfileId = db.insert(PROFILE_TABLE, PROFILE_ID, cv1);
         Log.i("DBHELPER", "Inserted new PROFILE with id " + profile.getId());
 
         profile.setId(myProfileId);
@@ -225,6 +227,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     /**
      * Updates a profile in the database
+     *
      * @param profile the profile to update
      */
     public void updateProfile(Profile profile) {
@@ -253,8 +256,8 @@ public class DBHelper extends SQLiteOpenHelper {
         cv1.put(PROFILE_JOIN_DATE, profile.getJoinDate());
         Log.i("DBHELPER", "Join Date " + profile.getJoinDate());
 
-        db.update(PROFILE_TABLE,cv1,PROFILE_ID + " = ?",
-                new String[] { String.valueOf(profile.getId()) });
+        db.update(PROFILE_TABLE, cv1, PROFILE_ID + " = ?",
+                new String[]{String.valueOf(profile.getId())});
         Log.i("DBHELPER", "Updated PROFILE with id " + profile.getId());
 
         db.close();
@@ -263,6 +266,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     /**
      * Gets the profile with the specified ID from the database
+     *
      * @param id the id of the profile to get
      * @return the profile, or null if no profiles with the specified id were found
      */
@@ -271,8 +275,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM " + PROFILE_TABLE + " WHERE " + PROFILE_ID + " = " + id, null);
         if (cursor.getCount() < 1) {
             return null;
-        }
-        else {
+        } else {
             cursor.moveToFirst();
             Profile profile = cursorToProfile(cursor);
 
@@ -301,13 +304,12 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-
     public Skill cursorToSkill(Cursor cursor) {
         String name = cursor.getString(0);
         Long categoryId = cursor.getLong(1);
         Long profileId = cursor.getLong(2);
 
-        Skill skill = new Skill(name,categoryId,profileId);
+        Skill skill = new Skill(name, categoryId, profileId);
         return skill;
     }
 
@@ -330,6 +332,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     /**
      * Updates a profile's skills in the database
+     *
      * @param profileId the profile to update
      */
     public void updateSkills(Long profileId, List<Skill> skills) {
@@ -339,7 +342,7 @@ public class DBHelper extends SQLiteOpenHelper {
         deleteSkills(profileId);
 
         // Add all new new updated skills for profile
-        insertSkills(profileId,skills);
+        insertSkills(profileId, skills);
     }
 
     public void insertSkills(Long profileId, List<Skill> skills) {
@@ -351,9 +354,9 @@ public class DBHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues cv1 = new ContentValues();
 
-            cv1.put(SKILL_NAME,skill.getName());
-            cv1.put(CATEGORY_ID,skill.getCategoryId());
-            cv1.put(PROFILE_ID,skill.getProfileId());
+            cv1.put(SKILL_NAME, skill.getName());
+            cv1.put(CATEGORY_ID, skill.getCategoryId());
+            cv1.put(PROFILE_ID, skill.getProfileId());
 
             db.insert(SKILLS_TABLE, null, cv1);
         }
@@ -366,7 +369,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.delete(SKILLS_TABLE, PROFILE_ID + " = ?",
-                new String[] { String.valueOf(profileId) });
+                new String[]{String.valueOf(profileId)});
         db.close();
     }
 
@@ -420,6 +423,47 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
+    public List<ProfileReason> getAllProfilesSameSkills(List<Skill> skills) {
+
+        List<ProfileReason> matchingProfiles = new ArrayList<>();
+        List<Long> profileIdsTotal = new ArrayList<>();
+
+        for (Skill skill : skills) {
+
+            List<Long> profileIds = new ArrayList<>();
+
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT * FROM " + SKILLS_TABLE + " WHERE " + SKILL_NAME
+                    + " = '" + skill.getName() + "';", null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                profileIds.add(cursor.getLong(2));
+                cursor.moveToNext();
+            }
+            cursor.close();
+            db.close();
+
+            for (Long profileId : profileIds) {
+                if (!profileIdsTotal.contains(profileId)) {
+                    matchingProfiles.add(new ProfileReason(getProfile(profileId), "Because shares skill(s) - " + skill.getName()));
+                    profileIdsTotal.add(profileId);
+                } else {
+                    for (ProfileReason profileReason : matchingProfiles) {
+                        if (profileReason.profile.getId().equals(profileId)) {
+                            profileReason.reason += ", " + skill.getName();
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+        }
+
+        return matchingProfiles;
+    }
+
 
     public List<Skill> getAllInterestsForProfile(Long profileId) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -439,6 +483,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     /**
      * Updates a profile's skills in the database
+     *
      * @param profileId the profile to update
      */
     public void updateInterests(Long profileId, List<Skill> skills) {
@@ -448,7 +493,7 @@ public class DBHelper extends SQLiteOpenHelper {
         deleteInterests(profileId);
 
         // Add all new updated interests for profile
-        insertInterests(profileId,skills);
+        insertInterests(profileId, skills);
     }
 
     public void insertInterests(Long profileId, List<Skill> interests) {
@@ -459,9 +504,9 @@ public class DBHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues cv1 = new ContentValues();
 
-            cv1.put(INTEREST_NAME,interest.getName());
-            cv1.put(CATEGORY_ID,interest.getCategoryId());
-            cv1.put(PROFILE_ID,interest.getProfileId());
+            cv1.put(INTEREST_NAME, interest.getName());
+            cv1.put(CATEGORY_ID, interest.getCategoryId());
+            cv1.put(PROFILE_ID, interest.getProfileId());
 
             db.insert(INTERESTS_TABLE, null, cv1);
         }
@@ -474,7 +519,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.delete(INTERESTS_TABLE, PROFILE_ID + " = ?",
-                new String[] { String.valueOf(profileId) });
+                new String[]{String.valueOf(profileId)});
         db.close();
     }
 
@@ -528,7 +573,6 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-
     public List<Skill> getAllSkillsInterestsUnique() {
         List<Skill> skills = getAllSkillsUnique();
         List<Skill> interests = getAllInterestsUnique();
@@ -564,12 +608,11 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-
     public Category cursorToCategory(Cursor cursor) {
         Long id = cursor.getLong(0);
         String name = cursor.getString(1);
 
-        Category category = new Category(id,name);
+        Category category = new Category(id, name);
         return category;
     }
 
@@ -590,12 +633,11 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-
     public Contact cursorToContact(Cursor cursor) {
         Long profileId = cursor.getLong(0);
         Long contactId = cursor.getLong(1);
 
-        Contact contact = new Contact(profileId,contactId);
+        Contact contact = new Contact(profileId, contactId);
         return contact;
     }
 
@@ -633,8 +675,6 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-
-
     private void insertInitialFields(SQLiteDatabase db) {
         //////////////
         // PROFILES //
@@ -647,7 +687,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put(PROFILE_GRADE, 4);
         cv.put(PROFILE_JOB_TITLE, "Software Engineer");
         cv.put(PROFILE_JOIN_DATE, "15/07/2013");
-        db.insert(PROFILE_TABLE,PROFILE_ID,cv);
+        db.insert(PROFILE_TABLE, PROFILE_ID, cv);
 
         ContentValues cv2 = new ContentValues();
         cv2.put(PROFILE_NAME, "Steve Skeleton");
@@ -657,7 +697,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv2.put(PROFILE_GRADE, 7);
         cv2.put(PROFILE_JOB_TITLE, "Manager");
         cv2.put(PROFILE_JOIN_DATE, "12/04/2015");
-        db.insert(PROFILE_TABLE,PROFILE_ID,cv2);
+        db.insert(PROFILE_TABLE, PROFILE_ID, cv2);
 
         ContentValues cv3 = new ContentValues();
         cv3.put(PROFILE_NAME, "Alison Crowler");
@@ -667,7 +707,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv3.put(PROFILE_GRADE, 6);
         cv3.put(PROFILE_JOB_TITLE, "Business Analyst");
         cv3.put(PROFILE_JOIN_DATE, "18/01/2005");
-        db.insert(PROFILE_TABLE,PROFILE_ID,cv3);
+        db.insert(PROFILE_TABLE, PROFILE_ID, cv3);
 
 
         ////////////////
@@ -675,23 +715,23 @@ public class DBHelper extends SQLiteOpenHelper {
         ////////////////
         ContentValues cv16 = new ContentValues();
         cv16.put(CATEGORY_NAME, "Development");
-        db.insert(CATEGORIES_TABLE,CATEGORY_ID,cv16);
+        db.insert(CATEGORIES_TABLE, CATEGORY_ID, cv16);
 
         ContentValues cv17 = new ContentValues();
         cv17.put(CATEGORY_NAME, "Design");
-        db.insert(CATEGORIES_TABLE,CATEGORY_ID,cv17);
+        db.insert(CATEGORIES_TABLE, CATEGORY_ID, cv17);
 
         ContentValues cv18 = new ContentValues();
         cv18.put(CATEGORY_NAME, "Testing");
-        db.insert(CATEGORIES_TABLE,CATEGORY_ID,cv18);
+        db.insert(CATEGORIES_TABLE, CATEGORY_ID, cv18);
 
         ContentValues cv19 = new ContentValues();
         cv19.put(CATEGORY_NAME, "Project Management");
-        db.insert(CATEGORIES_TABLE,CATEGORY_ID,cv19);
+        db.insert(CATEGORIES_TABLE, CATEGORY_ID, cv19);
 
         ContentValues cv20 = new ContentValues();
         cv20.put(CATEGORY_NAME, "Business Analyst");
-        db.insert(CATEGORIES_TABLE,CATEGORY_ID,cv20);
+        db.insert(CATEGORIES_TABLE, CATEGORY_ID, cv20);
 
 
         //////////////
@@ -701,37 +741,37 @@ public class DBHelper extends SQLiteOpenHelper {
         cv4.put(SKILL_NAME, "SQL");
         cv4.put(CATEGORY_ID, 1);
         cv4.put(PROFILE_ID, 3);
-        db.insert(SKILLS_TABLE,null,cv4);
+        db.insert(SKILLS_TABLE, null, cv4);
 
         ContentValues cv5 = new ContentValues();
         cv5.put(SKILL_NAME, "Java");
         cv5.put(CATEGORY_ID, 1);
         cv5.put(PROFILE_ID, 1);
-        db.insert(SKILLS_TABLE,null,cv5);
+        db.insert(SKILLS_TABLE, null, cv5);
 
         ContentValues cv6 = new ContentValues();
         cv6.put(SKILL_NAME, "UI Design");
         cv6.put(CATEGORY_ID, 2);
         cv6.put(PROFILE_ID, 3);
-        db.insert(SKILLS_TABLE,null,cv6);
+        db.insert(SKILLS_TABLE, null, cv6);
 
         ContentValues cv7 = new ContentValues();
         cv7.put(SKILL_NAME, "Requirements Gathering");
         cv7.put(CATEGORY_ID, 5);
         cv7.put(PROFILE_ID, 2);
-        db.insert(SKILLS_TABLE,null,cv7);
+        db.insert(SKILLS_TABLE, null, cv7);
 
         ContentValues cv8 = new ContentValues();
         cv8.put(SKILL_NAME, "Requirements Analysis");
         cv8.put(CATEGORY_ID, 5);
         cv8.put(PROFILE_ID, 1);
-        db.insert(SKILLS_TABLE,null,cv8);
+        db.insert(SKILLS_TABLE, null, cv8);
 
         ContentValues cv9 = new ContentValues();
         cv9.put(SKILL_NAME, "Test Automation");
         cv9.put(CATEGORY_ID, 3);
         cv9.put(PROFILE_ID, 3);
-        db.insert(SKILLS_TABLE,null,cv9);
+        db.insert(SKILLS_TABLE, null, cv9);
 
 
         /////////////////
@@ -741,36 +781,36 @@ public class DBHelper extends SQLiteOpenHelper {
         cv10.put(INTEREST_NAME, "Test Planning");
         cv10.put(CATEGORY_ID, 3);
         cv10.put(PROFILE_ID, 1);
-        db.insert(INTERESTS_TABLE,null,cv10);
+        db.insert(INTERESTS_TABLE, null, cv10);
 
         ContentValues cv11 = new ContentValues();
         cv11.put(INTEREST_NAME, "Test Automation");
         cv11.put(CATEGORY_ID, 3);
         cv11.put(PROFILE_ID, 1);
-        db.insert(INTERESTS_TABLE,null,cv11);
+        db.insert(INTERESTS_TABLE, null, cv11);
 
         ContentValues cv12 = new ContentValues();
         cv12.put(INTEREST_NAME, "Deployment");
         cv12.put(CATEGORY_ID, 1);
         cv12.put(PROFILE_ID, 3);
-        db.insert(INTERESTS_TABLE,null,cv12);
+        db.insert(INTERESTS_TABLE, null, cv12);
 
         ContentValues cv13 = new ContentValues();
         cv13.put(INTEREST_NAME, "AGILE");
         cv13.put(CATEGORY_ID, 4);
         cv13.put(PROFILE_ID, 2);
-        db.insert(INTERESTS_TABLE,null,cv13);
+        db.insert(INTERESTS_TABLE, null, cv13);
 
         ContentValues cv14 = new ContentValues();
         cv14.put(INTEREST_NAME, "Database Management");
         cv14.put(CATEGORY_ID, 1);
         cv14.put(PROFILE_ID, 1);
-        db.insert(INTERESTS_TABLE,null,cv14);
+        db.insert(INTERESTS_TABLE, null, cv14);
 
         ContentValues cv15 = new ContentValues();
         cv15.put(INTEREST_NAME, "Requirements Gathering");
         cv15.put(CATEGORY_ID, 5);
         cv15.put(PROFILE_ID, 3);
-        db.insert(INTERESTS_TABLE,null,cv15);
+        db.insert(INTERESTS_TABLE, null, cv15);
     }
 }

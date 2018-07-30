@@ -62,7 +62,7 @@ public class PeopleFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            id = getArguments().getLong("userId");
+            myProfile = (Profile)getArguments().getSerializable("profile");
         }
         dbHelper = new DBHelper(getContext());
 
