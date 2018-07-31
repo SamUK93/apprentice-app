@@ -69,6 +69,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Events
     private static final String EVENTS_TABLE = "Events";
+    private static final String EVENT_ID = "eventId";
+    private static final String EVENT_NAME = "name";
+    private static final String EVENT_DESCRIPTION = "description";
+    private static final String EVENT_LOCATION = "location";
+    private static final String EVENT_DATE = "date";
+    private static final String EVENT_GOOD_FOR = "goodFor";
+    private static final String EVENT_PREREQUISITES = "prerequisites";
+
 
 
     // Event Attendees
@@ -144,9 +152,24 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
         // Create Events table
+        sql = "CREATE TABLE " + EVENTS_TABLE +
+                "(" + EVENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + EVENT_NAME + " TEXT, " +
+                EVENT_DESCRIPTION + " TEXT, " + EVENT_LOCATION + " TEXT, " +
+                EVENT_DATE + " TEXT, " + EVENT_GOOD_FOR + " TEXT, " +
+                EVENT_PREREQUISITES + " TEXT);";
+        Log.i("DBHELPER", sql);
+        System.out.println(sql);
+        sqLiteDatabase.execSQL(sql);
 
 
         // Create Event Attendees table
+        sql = "CREATE TABLE " + EVENT_ATTENDEES_TABLE +
+                "(" + EVENT_ID + " INTEGER, " + PROFILE_ID + " INTEGER, FOREIGN KEY (" + EVENT_ID + ") REFERENCES " +
+                EVENTS_TABLE + " (" + EVENT_ID + "), FOREIGN KEY (" + PROFILE_ID + ") REFERENCES " +
+                PROFILE_TABLE + " (" + PROFILE_ID + "));";
+        Log.i("DBHELPER", sql);
+        System.out.println(sql);
+        sqLiteDatabase.execSQL(sql);
 
 
         // Create Grid Diary table
