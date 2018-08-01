@@ -24,7 +24,7 @@
                 android:weightSum="2">
 
                 <TextView
-                    android:id="@+id/ContactsLabel"
+                    android:id="@+id/contactsLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"

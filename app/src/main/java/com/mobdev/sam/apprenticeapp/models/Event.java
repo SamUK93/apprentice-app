@@ -1,12 +1,13 @@
 package com.mobdev.sam.apprenticeapp.models;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Model for an event
  */
 
-public class Event {
+public class Event implements Serializable {
 
     private Long eventId;
     private String name;
@@ -17,10 +18,11 @@ public class Event {
     private String goodFor;
     private String prerequisites;
     private List<Skill> relatedSkills;
+    private Long creatorId;
 
 
     // Constructor
-    public Event(String name, String description, String location, String date, String goodFor, String prerequisites, List<Skill> relatedSkills) {
+    public Event(String name, String description, String location, String date, String goodFor, String prerequisites, List<Skill> relatedSkills, Long creatorId) {
         setName(name);
         setDescription(description);
         setLocation(location);
@@ -28,6 +30,7 @@ public class Event {
         setGoodFor(goodFor);
         setPrerequisites(prerequisites);
         setAllRelatedSkills(relatedSkills);
+        setCreatorId(creatorId);
     }
 
 
@@ -47,6 +50,8 @@ public class Event {
     public String getPrerequisites() { return this.prerequisites; }
 
     public List<Skill> getRelatedSkills() { return this.relatedSkills; }
+
+    public Long getCreatorId() { return this.creatorId; }
 
 
     // Set
@@ -82,6 +87,11 @@ public class Event {
 
     public Event setPrerequisites(String prerequisites) {
         this.prerequisites = prerequisites;
+        return this;
+    }
+
+    public Event setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
         return this;
     }
 

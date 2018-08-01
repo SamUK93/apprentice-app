@@ -93,5 +93,20 @@
     <string name="suggested_contacts_label_text">Suggested Contacts</string>
     <string name="add_contact_button_text">ADD CONTACT</string>
     <string name="remove_contact_button_text">REMOVE CONTACT</string>
+    <string name="find_new_events_button_text">FIND NEW EVENTS</string>
+    <string name="view_attendees_button_text">VIEW ATTENDEES</string>
+    <string name="date_label">Date:</string>
+    <string name="location_label">location:</string>
+    <string name="date_label_text">Date</string>
+    <string name="location_label_text">Location</string>
+    <string name="good_for_label_text">Good For</string>
+    <string name="prerequisites_label_text">Prerequisites</string>
+    <string name="related_skills_label_text">Related Skills</string>
+    <string name="attend_button_text">ATTEND</string>
+    <string name="save_event_button_text">SAVE EVENT</string>
+    <string name="share_button_text">SHARE</string>
+    <string name="cancel_attendance_button_text">CANCEL ATTENDANCE</string>
+    <string name="create_new_event_button_text">CREATE NEW EVENT</string>
+    <string name="events_created_by_you_label_text">Events Created By You</string>
 
 </resources>

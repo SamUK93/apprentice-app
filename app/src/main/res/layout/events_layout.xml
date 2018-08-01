@@ -9,24 +9,94 @@
         android:layout_height="fill_parent"
         android:orientation="vertical">
 
-        <!-- Suggested People Section -->
+        <!-- Events Section -->
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/suggestedEventsSection"
+            android:id="@+id/eventsSection"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/suggestedEventsLabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:text="@string/suggested_events_label_text"
-                android:textAlignment="center"
-                android:textSize="23dp"
-                android:textStyle="bold" />
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/eventsHeaderSection"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/eventsLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:text="@string/events_label_text"
+                    android:textAlignment="center"
+                    android:textSize="23dp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/findNewEventsButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/find_new_events_button_text" />
+
+                <Button
+                    android:id="@+id/createNewEventButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/create_new_event_button_text" />
+
+            </LinearLayout>
+
+            <!-- Events Attending Section -->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/eventsAttendingSection"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/attendingEventsLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:text="Events You Are Attending"
+                    android:textAlignment="center"
+                    android:textSize="23dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Events Created Section -->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/eventsCreatedSection"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/createdEventsLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/events_created_by_you_label_text"
+                    android:textAlignment="center"
+                    android:textSize="23dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+
+
+
 
         </LinearLayout>
 

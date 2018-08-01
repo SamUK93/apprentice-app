@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,7 @@ public class NewContactFragment extends android.support.v4.app.Fragment {
 
         // Get profiles with similar interests and skills to populate the 'Suggested Contacts' section
         List<ProfileReason> matchingProfiles = dbHelper.getAllProfilesAllCriteria(myProfile.getSkills(),myProfile.getInterests());
+        Log.i("EVENTMATCH::", "TOTAL PROFILES MATCHED = " + matchingProfiles.size());
 
         // Get current contacts of user
         List<Contact> contacts = dbHelper.getAllContactsForProfile(myProfile.getId());
@@ -61,6 +63,7 @@ public class NewContactFragment extends android.support.v4.app.Fragment {
         for (ProfileReason profile : matchingProfiles) {
             if (contactIds.contains(profile.profile.getId())) {
                 profilesToRemove.add(profile);
+                Log.i("EVENTMATCH::", "REMOVING EXISTING CONTACT with ID " + profile.profile.getId());
             }
             // Remove users own profile from the list
             else if (myProfile.getId().equals(profile.profile.getId())) {

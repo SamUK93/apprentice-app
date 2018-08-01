@@ -11,12 +11,14 @@ public class Skill implements Serializable {
     private String name;
     private Long categoryId;
     private Long profileId;
+    private Long eventId;
 
     // Constructor
-    public Skill(String name, Long categoryId, Long profileId) {
+    public Skill(String name, Long categoryId, Long profileId, Long eventId) {
         setName(name);
         setCategoryId(categoryId);
         setProfileId(profileId);
+        setEventId(eventId);
     }
 
 
@@ -34,6 +36,10 @@ public class Skill implements Serializable {
         return this.profileId;
     }
 
+    public Long getEventId() {
+        return this.eventId;
+    }
+
 
     // Set
 
@@ -47,5 +53,9 @@ public class Skill implements Serializable {
 
     public void setProfileId(Long profileId) {
         this.profileId = profileId;
+    }
+
+    public void setEventId(Long eventId) {
+        this.eventId = eventId;
     }
 }

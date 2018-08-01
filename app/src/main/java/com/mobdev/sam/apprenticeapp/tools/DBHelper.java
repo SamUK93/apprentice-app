@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.mobdev.sam.apprenticeapp.models.Category;
 import com.mobdev.sam.apprenticeapp.models.Contact;
+import com.mobdev.sam.apprenticeapp.models.Event;
+import com.mobdev.sam.apprenticeapp.models.EventReason;
 import com.mobdev.sam.apprenticeapp.models.Profile;
 import com.mobdev.sam.apprenticeapp.models.ProfileReason;
 import com.mobdev.sam.apprenticeapp.models.Skill;
@@ -76,6 +78,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String EVENT_DATE = "date";
     private static final String EVENT_GOOD_FOR = "goodFor";
     private static final String EVENT_PREREQUISITES = "prerequisites";
+    private static final String EVENT_CREATOR = "creatorId";
 
 
 
@@ -120,9 +123,10 @@ public class DBHelper extends SQLiteOpenHelper {
         // Create Skills table
         sql = "CREATE TABLE " + SKILLS_TABLE +
                 "(" + SKILL_NAME + " TEXT, " + CATEGORY_ID + " INTEGER, " + PROFILE_ID +
-                " INTEGER, FOREIGN KEY (" + CATEGORY_ID + ") REFERENCES " +
+                " INTEGER, " + EVENT_ID + " INTEGER, FOREIGN KEY (" + CATEGORY_ID + ") REFERENCES " +
                 CATEGORIES_TABLE + " (" + CATEGORY_ID + "), FOREIGN KEY (" + PROFILE_ID + ") REFERENCES " +
-                PROFILE_TABLE + " (" + PROFILE_ID + "));";
+                PROFILE_TABLE + " (" + PROFILE_ID + "), FOREIGN KEY (" + EVENT_ID + ") REFERENCES " +
+                EVENTS_TABLE + " (" + EVENT_ID + "));";
         Log.i("DBHELPER", sql);
         System.out.println(sql);
         sqLiteDatabase.execSQL(sql);
@@ -131,9 +135,10 @@ public class DBHelper extends SQLiteOpenHelper {
         // Create Interests table
         sql = "CREATE TABLE " + INTERESTS_TABLE +
                 "(" + INTEREST_NAME + " TEXT, " + CATEGORY_ID + " INTEGER, " + PROFILE_ID +
-                " INTEGER, FOREIGN KEY (" + CATEGORY_ID + ") REFERENCES " +
+                " INTEGER, " + EVENT_ID + " INTEGER, FOREIGN KEY (" + CATEGORY_ID + ") REFERENCES " +
                 CATEGORIES_TABLE + " (" + CATEGORY_ID + "), FOREIGN KEY (" + PROFILE_ID + ") REFERENCES " +
-                PROFILE_TABLE + " (" + PROFILE_ID + "));";
+                PROFILE_TABLE + " (" + PROFILE_ID + "), FOREIGN KEY (" + EVENT_ID + ") REFERENCES " +
+                EVENTS_TABLE + " (" + EVENT_ID + "));";
         Log.i("DBHELPER", sql);
         System.out.println(sql);
         sqLiteDatabase.execSQL(sql);
@@ -156,7 +161,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 "(" + EVENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + EVENT_NAME + " TEXT, " +
                 EVENT_DESCRIPTION + " TEXT, " + EVENT_LOCATION + " TEXT, " +
                 EVENT_DATE + " TEXT, " + EVENT_GOOD_FOR + " TEXT, " +
-                EVENT_PREREQUISITES + " TEXT);";
+                EVENT_PREREQUISITES + " TEXT, " + EVENT_CREATOR + " INTEGER, FOREIGN KEY (" + EVENT_CREATOR + ") REFERENCES " +
+                PROFILE_TABLE + " (" + PROFILE_ID + "));";
         Log.i("DBHELPER", sql);
         System.out.println(sql);
         sqLiteDatabase.execSQL(sql);
@@ -331,8 +337,9 @@ public class DBHelper extends SQLiteOpenHelper {
         String name = cursor.getString(0);
         Long categoryId = cursor.getLong(1);
         Long profileId = cursor.getLong(2);
+        Long eventId = cursor.getLong(3);
 
-        Skill skill = new Skill(name, categoryId, profileId);
+        Skill skill = new Skill(name, categoryId, profileId, eventId);
         return skill;
     }
 
@@ -352,25 +359,54 @@ public class DBHelper extends SQLiteOpenHelper {
         return skills;
     }
 
+    public List<Skill> getAllSkillsForEvent(Long eventId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + SKILLS_TABLE + " WHERE " + EVENT_ID + " = " + eventId, null);
+        List<Skill> skills = new ArrayList<>();
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            skills.add(cursorToSkill(cursor));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        db.close();
+        return skills;
+    }
+
 
     /**
      * Updates a profile's skills in the database
      *
      * @param profileId the profile to update
      */
-    public void updateSkills(Long profileId, List<Skill> skills) {
+    public void updateSkillsProfile(Long profileId, List<Skill> skills) {
         Log.i("DBHELPER", "Updating skills for profile with id - " + profileId);
 
         // Delete all skills for profile
-        deleteSkills(profileId);
+        deleteSkillsProfile(profileId);
 
         // Add all new new updated skills for profile
-        insertSkills(profileId, skills);
+        insertSkillsProfile(skills);
     }
 
-    public void insertSkills(Long profileId, List<Skill> skills) {
+    /**
+     * Updates a event's skills in the database
+     *
+     * @param eventId the event to update
+     */
+    public void updateSkillsEvent(Long eventId, List<Skill> skills) {
+        Log.i("DBHELPER", "Updating skills for event with id - " + eventId);
 
-        Log.i("DBHELPER", "Inserting skills for profile with id - " + profileId);
+        // Delete all skills for profile
+        deleteSkillsEvent(eventId);
+
+        // Add all new new updated skills for profile
+        insertSkillsEvent(skills);
+    }
+
+    public void insertSkillsProfile(List<Skill> skills) {
 
         for (Skill skill : skills) {
             Log.i("DBHELPER", "Adding skill  - " + skill.getName());
@@ -381,11 +417,26 @@ public class DBHelper extends SQLiteOpenHelper {
             cv1.put(CATEGORY_ID, skill.getCategoryId());
             cv1.put(PROFILE_ID, skill.getProfileId());
 
-            db.insert(SKILLS_TABLE, null, cv1);
+            db.insert(SKILLS_TABLE, EVENT_ID, cv1);
         }
     }
 
-    public void deleteSkills(Long profileId) {
+    public void insertSkillsEvent(List<Skill> skills) {
+
+        for (Skill skill : skills) {
+            Log.i("DBHELPER", "Adding skill  - " + skill.getName());
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues cv1 = new ContentValues();
+
+            cv1.put(SKILL_NAME, skill.getName());
+            cv1.put(CATEGORY_ID, skill.getCategoryId());
+            cv1.put(EVENT_ID, skill.getEventId());
+
+            db.insert(SKILLS_TABLE, PROFILE_ID, cv1);
+        }
+    }
+
+    public void deleteSkillsProfile(Long profileId) {
         Log.i("DBHELPER", "Deleting skills for profile with id - " + profileId);
 
         // Delete all skills for profile
@@ -393,6 +444,17 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.delete(SKILLS_TABLE, PROFILE_ID + " = ?",
                 new String[]{String.valueOf(profileId)});
+        db.close();
+    }
+
+    public void deleteSkillsEvent(Long eventId) {
+        Log.i("DBHELPER", "Deleting skills for event with id - " + eventId);
+
+        // Delete all skills for profile
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(SKILLS_TABLE, EVENT_ID + " = ?",
+                new String[]{String.valueOf(eventId)});
         db.close();
     }
 
@@ -459,7 +521,7 @@ public class DBHelper extends SQLiteOpenHelper {
             // Get all Profile IDs that have that skill
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor cursor = db.rawQuery("SELECT * FROM " + SKILLS_TABLE + " WHERE " + SKILL_NAME
-                    + " = '" + skill.getName() + "';", null);
+                    + " = '" + skill.getName() + "' AND " + PROFILE_ID + " IS NOT NULL;", null);
             cursor.moveToFirst();
 
             // Add all profile ids to list
@@ -474,7 +536,7 @@ public class DBHelper extends SQLiteOpenHelper {
             for (Long profileId : profileIds) {
                 if (!profileIdsTotal.contains(profileId)) {
                     // If profile not already matched (with a previous skill) create a new 'profile reason' and add to list
-                    matchingProfiles.add(new ProfileReason(getProfile(profileId), "Because shares skill(s) - " + skill.getName()));
+                    matchingProfiles.add(new ProfileReason(getProfile(profileId), "Because has skill(s) - " + skill.getName()));
                     profileIdsTotal.add(profileId);
                 } else {
                     // Profile already matched on a previous skill, so add to existing 'profile reason' with new skill
@@ -627,7 +689,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 // For each matching profile id
                 if (!profileIdsTotal.contains(profileId)) {
                     // If profile not already matched (with a previous interest) create a new 'profile reason' and add to list
-                    matchingProfiles.add(new ProfileReason(getProfile(profileId), "Because shares interest(s) - " + interest.getName()));
+                    matchingProfiles.add(new ProfileReason(getProfile(profileId), "Because has interest(s) - " + interest.getName()));
                     profileIdsTotal.add(profileId);
                 } else {
                     // Profile already matched on a previous interest, so add to existing 'profile reason' with new interest
@@ -646,9 +708,15 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     public List<ProfileReason> getAllProfilesAllCriteria(List<Skill> skills, List<Skill> interests) {
+        // Combine to get a total match (all skills match with all interests, cross matching)
+        skills.addAll(interests);
+
         // Get all profiles with matching skills and interests
         List<ProfileReason> matchingSkills = getAllProfilesSameSkills(skills);
-        List<ProfileReason> matchingInterests = getAllProfilesSameInterests(interests);
+        List<ProfileReason> matchingInterests = getAllProfilesSameInterests(skills);
+
+        Log.i("EVENTMATCH::", "MATCHED " + matchingSkills.size() + " profiles for skills!");
+        Log.i("EVENTMATCH::", "MATCHED " + matchingInterests.size() + " profiles for interests!");
 
         List<ProfileReason> newProfilesToAdd = new ArrayList<>();
 
@@ -775,6 +843,40 @@ public class DBHelper extends SQLiteOpenHelper {
         return contacts;
     }
 
+    /**
+     * Gets the event with the specified ID from the database
+     *
+     * @param id the id of the event to get
+     * @return the event, or null if no profiles with the specified id were found
+     */
+    public Event getEvent(Long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql1 = "SELECT * FROM " + EVENTS_TABLE + " WHERE " + EVENT_ID + " = " + id;
+        Cursor cursor = db.rawQuery("SELECT * FROM " + EVENTS_TABLE + " WHERE " + EVENT_ID + " = " + id, null);
+        Log.i("DBHELPER", sql1);
+        if (cursor.getCount() < 1) {
+            return null;
+        } else {
+            cursor.moveToFirst();
+            Event event = cursorToEvent(cursor);
+
+            // Get all related skills, and add to event
+            String sql = "SELECT * FROM " + SKILLS_TABLE + " WHERE " + EVENT_ID + " = " + id;
+            Cursor cursor2 = db.rawQuery("SELECT * FROM " + SKILLS_TABLE + " WHERE " + EVENT_ID + " = " + id, null);
+            Log.i("DBHELPER", sql);
+            cursor2.moveToFirst();
+            while (!cursor2.isAfterLast()) {
+                event.addRelatedSkill(cursorToSkill(cursor2));
+                cursor2.moveToNext();
+            }
+
+            cursor2.close();
+            cursor.close();
+            db.close();
+            return event;
+        }
+    }
+
     public void insertContact(Long profileId, Long contactId) {
         Log.i("DBHELPER", "Adding new contact profile with id - " + profileId);
 
@@ -793,6 +895,262 @@ public class DBHelper extends SQLiteOpenHelper {
         db.delete(CONTACTS_TABLE, PROFILE_ID + " = ? AND " + CONTACT_ID + " = ?",
                 new String[]{String.valueOf(profileId),String.valueOf(contactId)});
         db.close();
+    }
+
+
+    /**
+     * Inserts a new event in the database
+     *
+     * @param event the event to enter
+     * @return the ID of the newly entered event
+     */
+    public long insertEvent(Event event) {
+        long eventId;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.i("DBHELPER", "Inserting new EVENT with name " + event.getName());
+        ContentValues cv1 = new ContentValues();
+
+        cv1.put(EVENT_NAME, event.getName());
+        Log.i("DBHELPER", "Name " + event.getName());
+
+        cv1.put(EVENT_DESCRIPTION, event.getDescription());
+        Log.i("DBHELPER", "Description " + event.getDescription());
+
+        cv1.put(EVENT_LOCATION, event.getLocation());
+        Log.i("DBHELPER", "Location " + event.getLocation());
+
+        cv1.put(EVENT_DATE, event.getDate());
+        Log.i("DBHELPER", "Date " + event.getDate());
+
+        cv1.put(EVENT_GOOD_FOR, event.getGoodFor());
+        Log.i("DBHELPER", "Good for " + event.getGoodFor());
+
+        cv1.put(EVENT_PREREQUISITES, event.getPrerequisites());
+        Log.i("DBHELPER", "Prerequisites " + event.getPrerequisites());
+
+        cv1.put(EVENT_CREATOR, event.getCreatorId());
+        Log.i("DBHELPER", "Creator ID " + event.getCreatorId());
+
+        eventId = db.insert(EVENTS_TABLE, EVENT_ID, cv1);
+        Log.i("DBHELPER", "Inserted new EVENT with id " + event.getEventId());
+
+        event.setEventId(eventId);
+        return eventId;
+    }
+
+    /**
+     * Updates an event in the database
+     *
+     * @param event the event to update
+     * @return the ID of the newly entered event
+     */
+    public void updateEvent(Event event) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.i("DBHELPER", "Inserting new EVENT with name " + event.getName());
+        ContentValues cv1 = new ContentValues();
+
+        cv1.put(EVENT_NAME, event.getName());
+        Log.i("DBHELPER", "Name " + event.getName());
+
+        cv1.put(EVENT_DESCRIPTION, event.getDescription());
+        Log.i("DBHELPER", "Description " + event.getDescription());
+
+        cv1.put(EVENT_LOCATION, event.getLocation());
+        Log.i("DBHELPER", "Location " + event.getLocation());
+
+        cv1.put(EVENT_DATE, event.getDate());
+        Log.i("DBHELPER", "Date " + event.getDate());
+
+        cv1.put(EVENT_GOOD_FOR, event.getGoodFor());
+        Log.i("DBHELPER", "Good for " + event.getGoodFor());
+
+        cv1.put(EVENT_PREREQUISITES, event.getPrerequisites());
+        Log.i("DBHELPER", "Prerequisites " + event.getPrerequisites());
+
+        db.update(EVENTS_TABLE, cv1, EVENT_ID + " = ?",
+                new String[]{String.valueOf(event.getEventId())});
+        Log.i("DBHELPER", "Updated PROFILE with id " + event.getEventId());
+    }
+
+    public void deleteEvent(Long eventId) {
+        Log.i("DBHELPER", "Deleting event with id - " + eventId);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Delete all skills for event
+        deleteSkillsEvent(eventId);
+
+        // Delete event
+        db.delete(EVENTS_TABLE, EVENT_ID + " = ?",
+                new String[]{String.valueOf(eventId)});
+        db.close();
+    }
+
+    /**
+     * Inserts a new event attendee in the database
+     *
+     * @param eventId the ID of the event
+     * @param profileId the ID of the profile
+     */
+    public void insertEventAttendee(Long eventId, Long profileId) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.i("DBHELPER", "Inserting new EVENT ATTENDEE with (event id  " + eventId + ", profile id " + profileId);
+        ContentValues cv1 = new ContentValues();
+
+        cv1.put(EVENT_ID, eventId);
+
+        cv1.put(PROFILE_ID, profileId);
+
+        db.insert(EVENT_ATTENDEES_TABLE, null, cv1);
+        Log.i("DBHELPER", "Inserted new EVENT ATTENDEE with (event id  " + eventId + ", profile id " + profileId);
+    }
+
+    public void deleteEventAttendee(Long eventId, Long profileId) {
+        Log.i("DBHELPER", "Deleting event with id - " + eventId);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Delete event
+        db.delete(EVENT_ATTENDEES_TABLE, EVENT_ID + " = ? AND " + PROFILE_ID + " = ?",
+                new String[]{String.valueOf(eventId), String.valueOf(profileId)});
+        db.close();
+    }
+
+    public List<Event> getAllEventsProfileAttending(Long profileId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Log.i("DBHELPER::", "SELECT * FROM " + EVENT_ATTENDEES_TABLE + " WHERE "
+                + PROFILE_ID + " = " + profileId);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + EVENT_ATTENDEES_TABLE + " WHERE "
+                + PROFILE_ID + " = " + profileId, null);
+        List<Long> eventIds = new ArrayList<>();
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            eventIds.add(cursor.getLong(0));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        db.close();
+        Log.i("EVENTMATCH::", "USER IS ATTENDING " + eventIds.size() + " events!");
+
+        List<Event> attendingEvents = new ArrayList<>();
+        for (Long eventId : eventIds) {
+            attendingEvents.add(getEvent(eventId));
+        }
+        return attendingEvents;
+    }
+
+    public List<EventReason> getAllEventsAllCriteria(List<Skill> skills, List<Skill> interests) {
+        // Get all events with matching skills and interests
+        List<EventReason> matchingSkills = getAllEventsSameSkills(skills);
+        List<EventReason> matchingInterests = getAllEventsSameSkills(interests);
+
+        Log.i("EVENTMATCH::", "MATCHED " + matchingSkills.size() + " events for skills!");
+        Log.i("EVENTMATCH::", "MATCHED " + matchingInterests.size() + " events for interests!");
+
+        List<EventReason> newEventsToAdd = new ArrayList<>();
+
+        for (EventReason interestMatch : matchingInterests) {
+            // For each matching interest
+            boolean newProfile = true;
+            for (EventReason skillMatch : matchingSkills) {
+                // Check all matching skills, if same profile, append interests
+                if (skillMatch.event.getEventId().equals(interestMatch.event.getEventId())) {
+                    Log.i("EVENTMATCH::", "Event already has match, appending");
+                    skillMatch.reason += "\nand\n" + interestMatch.reason;
+                    newProfile = false;
+                    break;
+                }
+            }
+            if (newProfile)
+                // New profile with no previous matches, add to list of new profile matches
+                newEventsToAdd.add(interestMatch);
+        }
+        // Add all new profile matches
+        matchingSkills.addAll(newEventsToAdd);
+        return matchingSkills;
+    }
+
+    public List<EventReason> getAllEventsSameSkills(List<Skill> skills) {
+
+        List<EventReason> matchingEvents = new ArrayList<>();
+        List<Long> eventIdsTotal = new ArrayList<>();
+
+        // For each of the skills specified
+        for (Skill skill : skills) {
+
+            List<Long> eventIds = new ArrayList<>();
+
+            // Get all Event IDs that have that skill
+            Log.i("EVENTDEBUG:::","SELECT * FROM " + SKILLS_TABLE + " WHERE " + SKILL_NAME
+                    + " = '" + skill.getName() + "' AND " + EVENT_ID + " IS NOT NULL;");
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT * FROM " + SKILLS_TABLE + " WHERE " + SKILL_NAME
+                    + " = '" + skill.getName() + "' AND " + EVENT_ID + " IS NOT NULL;", null);
+            cursor.moveToFirst();
+
+            // Add all event ids to list
+            while (!cursor.isAfterLast()) {
+                eventIds.add(cursor.getLong(3));
+                cursor.moveToNext();
+            }
+            cursor.close();
+            db.close();
+
+            // For each matching event id
+            for (Long eventId : eventIds) {
+                if (!eventIdsTotal.contains(eventId)) {
+                    // If profile not already matched (with a previous skill) create a new 'profile reason' and add to list
+                    matchingEvents.add(new EventReason(getEvent(eventId), "Because good for people with your skill(s) or interest(s) - " + skill.getName()));
+                    eventIdsTotal.add(eventId);
+                } else {
+                    // Event already matched on a previous skill, so add to existing 'event reason' with new skill
+                    for (EventReason eventReason : matchingEvents) {
+                        if (eventReason.event.getEventId().equals(eventId)) {
+                            eventReason.reason += ", " + skill.getName();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return matchingEvents;
+    }
+
+    public List<Event> getAllEventsCreatedByUser(Long profileId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + EVENTS_TABLE + " WHERE "
+                + EVENT_CREATOR + " = " + profileId, null);
+        List<Event> events = new ArrayList<>();
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            events.add(cursorToEvent(cursor));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        db.close();
+        return events;
+    }
+
+    public Event cursorToEvent(Cursor cursor) {
+        Long eventId = cursor.getLong(0);
+        String name = cursor.getString(1);
+        String description = cursor.getString(2);
+        String location = cursor.getString(3);
+        String date = cursor.getString(4);
+        String goodFor = cursor.getString(5);
+        String prerequisites = cursor.getString(6);
+        Long creatorId = cursor.getLong(7);
+
+        Event event = new Event(name,description,location,date,goodFor,prerequisites,new ArrayList<Skill>(),creatorId);
+        event.setEventId(eventId);
+        return event;
     }
 
 
@@ -858,41 +1216,47 @@ public class DBHelper extends SQLiteOpenHelper {
         //////////////
         //  SKILLS  //
         //////////////
-        ContentValues cv4 = new ContentValues();
+        /*ContentValues cv4 = new ContentValues();
         cv4.put(SKILL_NAME, "SQL");
         cv4.put(CATEGORY_ID, 1);
         cv4.put(PROFILE_ID, 3);
-        db.insert(SKILLS_TABLE, null, cv4);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv4);
 
         ContentValues cv5 = new ContentValues();
         cv5.put(SKILL_NAME, "Java");
         cv5.put(CATEGORY_ID, 1);
         cv5.put(PROFILE_ID, 1);
-        db.insert(SKILLS_TABLE, null, cv5);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv5);
 
         ContentValues cv6 = new ContentValues();
         cv6.put(SKILL_NAME, "UI Design");
         cv6.put(CATEGORY_ID, 2);
         cv6.put(PROFILE_ID, 3);
-        db.insert(SKILLS_TABLE, null, cv6);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv6);
 
         ContentValues cv7 = new ContentValues();
         cv7.put(SKILL_NAME, "Requirements Gathering");
         cv7.put(CATEGORY_ID, 5);
         cv7.put(PROFILE_ID, 2);
-        db.insert(SKILLS_TABLE, null, cv7);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv7);
 
         ContentValues cv8 = new ContentValues();
         cv8.put(SKILL_NAME, "Requirements Analysis");
         cv8.put(CATEGORY_ID, 5);
         cv8.put(PROFILE_ID, 1);
-        db.insert(SKILLS_TABLE, null, cv8);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv8);
 
         ContentValues cv9 = new ContentValues();
         cv9.put(SKILL_NAME, "Test Automation");
         cv9.put(CATEGORY_ID, 3);
         cv9.put(PROFILE_ID, 3);
-        db.insert(SKILLS_TABLE, null, cv9);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv9);
+
+        ContentValues cv21 = new ContentValues();
+        cv21.put(SKILL_NAME, "Time Management");
+        cv21.put(CATEGORY_ID, 4);
+        cv21.put(EVENT_ID, 1);
+        db.insert(SKILLS_TABLE, PROFILE_ID, cv21);
 
 
         /////////////////
@@ -932,6 +1296,19 @@ public class DBHelper extends SQLiteOpenHelper {
         cv15.put(INTEREST_NAME, "Requirements Gathering");
         cv15.put(CATEGORY_ID, 5);
         cv15.put(PROFILE_ID, 3);
-        db.insert(INTERESTS_TABLE, null, cv15);
+        db.insert(INTERESTS_TABLE, null, cv15);*/
+
+
+        /////////////////
+        //    EVENTS   //
+        /////////////////
+        /*ContentValues cv22 = new ContentValues();
+        cv22.put(EVENT_NAME, "Managing Your Time: The Basics");
+        cv22.put(EVENT_DESCRIPTION, "Goes over the basics of how to manage your time when working on complex, fast paced projects, including how to avoid stress and other common issues.");
+        cv22.put(EVENT_LOCATION, "18 Force Road, SW12 4EP, London");
+        cv22.put(EVENT_DATE, "14/12/2018");
+        cv22.put(EVENT_GOOD_FOR, "People that have very time-restricted roles, where time management is an issue");
+        cv22.put(EVENT_PREREQUISITES, "General understanding of the different stages of a project, including deadlines, and due dates.");
+        db.insert(EVENTS_TABLE, EVENT_ID, cv22);*/
     }
 }

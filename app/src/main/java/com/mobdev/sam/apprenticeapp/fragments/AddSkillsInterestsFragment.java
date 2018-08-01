@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
 import com.mobdev.sam.apprenticeapp.models.Category;
+import com.mobdev.sam.apprenticeapp.models.Event;
 import com.mobdev.sam.apprenticeapp.models.Profile;
 import com.mobdev.sam.apprenticeapp.models.Skill;
 import com.mobdev.sam.apprenticeapp.tools.DBHelper;
@@ -32,6 +33,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
     View myView;
     DBHelper dbHelper;
     Profile profile;
+    Event event;
     String type;
     int numSkillsRemoved = 0;
     int newSkillsNum = 0;
@@ -76,6 +78,10 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         } else if (type == "interests") {
             for (Skill interest : profile.getInterests()) {
                 addSkill(interest, type);
+            }
+        } else if (type == "event") {
+            for (Skill skill : event.getRelatedSkills()) {
+                addSkill(skill,type);
             }
         }
 
@@ -128,16 +134,23 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
 
                 // Add skill button clicked
 
+                //TODO: MAKE THIS WORK FOR EVENTS!
                 // Get a list of all the exiting unique skills
                 List<Skill> allExistingSkills = dbHelper.getAllSkillsInterestsUnique();
-                // Get the current skills and interests of the user
-                List<Skill> userExistingSkills = dbHelper.getAllSkillsAndInterestsForProfile(profile.getId());
+                // Get the current skills and interests of the user or event
+                List<Skill> existingSkills = new ArrayList<>();
+                if (type == "skills" || type == "interests") {
+                    existingSkills = dbHelper.getAllSkillsAndInterestsForProfile(profile.getId());
+                }
+                else if (type == "event") {
+                    existingSkills = dbHelper.getAllSkillsForEvent(event.getEventId());
+                }
 
                 // Get the skill name
                 String skillName = newSkillText.getText().toString();
 
-                // Check if the user has the skill already
-                for (Skill skill : userExistingSkills) {
+                // Check if the user or event has the skill already
+                for (Skill skill : existingSkills) {
                     if (skillName.toUpperCase().equals(skill.getName().toUpperCase())) {
                         alreadyHasSkill = true;
                         break;
@@ -149,14 +162,27 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                     if (skillName.toUpperCase().equals(skill.getName().toUpperCase())) {
                         skillAlreadyExists = true;
                         existingSkill = skill;
-                        existingSkill.setProfileId(profile.getId());
+                        if (type == "skills" || type == "interests") {
+                            existingSkill.setEventId(null);
+                            existingSkill.setProfileId(profile.getId());
+                        } else if (type == "event") {
+                            existingSkill.setProfileId(null);
+                            existingSkill.setEventId(event.getEventId());
+                        }
+
                         break;
                     }
                 }
 
                 // If the user doesn't already have the skill
+                Skill skill = null;
                 if (!alreadyHasSkill) {
-                    Skill skill = new Skill(skillName, newSkillCategoryId, profile.getId());
+                    if (type == "skills" || type == "interests") {
+                        skill = new Skill(skillName, newSkillCategoryId, profile.getId(), null);
+                    } else if (type == "event") {
+                        skill = new Skill(skillName, newSkillCategoryId, null, event.getEventId());
+                    }
+
 
                     if (skillAlreadyExists) {
                         // Skill already exists in database, so use that skill rather than creating a new one
@@ -168,20 +194,28 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                     if (type == "skills") {
                         // Add the skill to the profile and update database
                         profile.addSkill(skill);
-                        dbHelper.updateSkills(profile.getId(), profile.getSkills());
+                        dbHelper.updateSkillsProfile(profile.getId(), profile.getSkills());
                     }
                     else if (type == "interests") {
                         // Add the interest to the profile and update database
                         profile.addInterest(skill);
                         dbHelper.updateInterests(profile.getId(), profile.getInterests());
                     }
+                    else if (type == "event") {
+                        // Add the skill to the event and update the database
+                        event.addRelatedSkill(skill);
+                        dbHelper.updateSkillsEvent(event.getEventId(), event.getRelatedSkills());
+                    }
                     // Add the skill to the UI
                     addSkill(skill, type);
                 }
                 else {
-                    Toast.makeText(getActivity(), "You already have that skill or interest! - ", Toast.LENGTH_LONG).show();
+                    if (type == "event") {
+                        Toast.makeText(getActivity(), "The event already has that related skill!", Toast.LENGTH_LONG).show();
+                    } else if (type == "skills" || type == "interests") {
+                        Toast.makeText(getActivity(), "You already have that skill or interest!", Toast.LENGTH_LONG).show();
+                    }
                 }
-
             }
         });
 
@@ -258,10 +292,16 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                 Skill skill = (Skill)skillSpinner.getSelectedItem();
 
                 // Get the current skills and interests of the user
-                List<Skill> userExistingSkills = dbHelper.getAllSkillsAndInterestsForProfile(profile.getId());
+                List<Skill> existingSkills = new ArrayList<>();
+                if (type == "event") {
+                    existingSkills = dbHelper.getAllSkillsForEvent(event.getEventId());
+                } else {
+                    existingSkills = dbHelper.getAllSkillsAndInterestsForProfile(profile.getId());
+                }
+
 
                 // Check if the user has the skill already
-                for (Skill existingSkill : userExistingSkills) {
+                for (Skill existingSkill : existingSkills) {
                     Log.i("EXISTING DEBUG INFO:: ", "User skill - " + existingSkill.getName());
                     if (skill.getName().toUpperCase().equals(existingSkill.getName().toUpperCase())) {
                         alreadyHasSkill = true;
@@ -273,16 +313,28 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                 if(!alreadyHasSkill) {
                     newSkillsNum++;
 
-                    skill.setProfileId(profile.getId());
+                    if (type == "event") {
+                        skill.setEventId(event.getEventId());
+                        skill.setProfileId(null);
+                    } else {
+                        skill.setProfileId(profile.getId());
+                        skill.setEventId(null);
+                    }
+
                     if (type == "skills") {
                         // Add the skill to the profile and update database
                         profile.addSkill(skill);
-                        dbHelper.updateSkills(profile.getId(), profile.getSkills());
+                        dbHelper.updateSkillsProfile(profile.getId(), profile.getSkills());
                     }
                     else if (type == "interests") {
                         // Add the interest to the profile and update database
                         profile.addInterest(skill);
                         dbHelper.updateInterests(profile.getId(), profile.getInterests());
+                    }
+                    else if (type == "event") {
+                        // Add the skill to the event and update database
+                        event.addRelatedSkill(skill);
+                        dbHelper.updateSkillsEvent(event.getEventId(), event.getRelatedSkills());
                     }
 
                     addSkill(skill, type);
@@ -322,7 +374,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                         Log.i("NEW SKILLS:: ", s.getName());
                     }
                     profile.setAllSkills(originalSkills);
-                    dbHelper.updateSkills(profile.getId(), originalSkills);
+                    dbHelper.updateSkillsProfile(profile.getId(), originalSkills);
                 } else if (type == "interests") {
                     profile.setAllInterests(originalSkills);
                     dbHelper.updateInterests(profile.getId(), originalSkills);
@@ -342,12 +394,16 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         if (getArguments() != null) {
             Bundle params = getArguments();
             profile = (Profile) params.getSerializable("profile");
+            event = (Event) params.getSerializable("event");
             type = params.getString("searchType");
 
             if (type == "skills") {
                 originalSkills = profile.getSkills();
             } else if (type == "interests") {
                 originalSkills = profile.getInterests();
+            }
+            else if (type == "event") {
+                originalSkills = event.getRelatedSkills();
             }
         }
 
@@ -397,7 +453,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                     removeButtons.remove(removeButton);
 
                     numSkillsRemoved++;
-                    dbHelper.updateSkills(profile.getId(), profile.getSkills());
+                    dbHelper.updateSkillsProfile(profile.getId(), profile.getSkills());
                 }
             });
         } else if (type == "interests") {
@@ -432,6 +488,40 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
 
                     numSkillsRemoved++;
                     dbHelper.updateInterests(profile.getId(), profile.getInterests());
+                }
+            });
+        } else if (type == "event") {
+            TextView skillNameRow = new TextView(getContext());
+            skillNameRow.setText(skill.getName());
+            skillNameSection.addView(skillNameRow);
+            skills.add(skillNameRow);
+
+            final Button removeButton = new Button(getContext());
+            removeButton.setText(R.string.remove_button_text);
+            skillButtonSection.addView(removeButton);
+            removeButtons.add(removeButton);
+
+            removeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Remove note button clicked
+
+                    // Get the index of the remove button in the list of buttons
+                    int i = removeButtons.indexOf(removeButton);
+
+                    // Remove the interest from the profile
+                    event.removeRelatedSkillByName(skills.get(i).getText().toString());
+
+                    // Remove both the note and the remove button from the view
+                    skillNameSection.removeView(skills.get(i));
+                    skillButtonSection.removeView(removeButtons.get(i));
+
+                    // Remove both the note and remove button from their respective lists
+                    skills.remove(i);
+                    removeButtons.remove(removeButton);
+
+                    numSkillsRemoved++;
+                    dbHelper.updateSkillsEvent(event.getEventId(), event.getRelatedSkills());
                 }
             });
         }
