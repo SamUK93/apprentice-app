@@ -169,7 +169,7 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
 
         // ATTEND BUTTON
         attendButton = myView.findViewById(R.id.attendButton);
-        if (isAttending || isNew)
+        if (isAttending || isNew || owner)
             attendButton.setVisibility(View.INVISIBLE);
 
         attendButton.setOnClickListener(new View.OnClickListener() {
@@ -182,8 +182,9 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
 
         // SAVE BUTTON
         saveButton = myView.findViewById(R.id.eventSaveButton);
-        if (!owner || !isNew)
+        if (!owner)
             saveButton.setVisibility(View.INVISIBLE);
+
         saveButton.setOnClickListener(new View.OnClickListener() {
 
             @Override

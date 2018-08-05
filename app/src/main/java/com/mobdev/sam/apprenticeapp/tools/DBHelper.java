@@ -63,6 +63,22 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Modules
     private static final String MODULES_TABLE = "Modules";
+    private static final String MODULE_ID = "moduleId";
+    private static final String MODULE_NAME = "name";
+    private static final String MODULE_DESCRIPTION = "description";
+
+
+    // Module deadlines
+    private static final String MODULE_DEADLINES_TABLE = "ModuleDeadlines";
+    private static final String MODULE_DEADLINES_NAME = "name";
+    private static final String MODULE_DEADLINE_DATE = "deadline";
+
+
+    // Module tasks
+    private static final String MODULE_TASKS = "ModuleTasks";
+    private static final String MODULE_TASK_NAME = "name";
+    private static final String MODULE_TASK_DEADLINE = "deadline";
+
 
 
     // Module Participants
@@ -151,9 +167,43 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
         // Create Modules table
+        sql = "CREATE TABLE " + MODULES_TABLE +
+                "(" + MODULE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + MODULE_NAME + " TEXT, " +
+                MODULE_DESCRIPTION + " TEXT);";
+        Log.i("DBHELPER", sql);
+        System.out.println(sql);
+        sqLiteDatabase.execSQL(sql);
+
+
+        // Create Module Deadlines table
+        sql = "CREATE TABLE " + MODULE_DEADLINES_NAME +
+                "(" + MODULE_DEADLINES_NAME + " TEXT, " + MODULE_DEADLINES_NAME + " TEXT, " +
+                MODULE_DEADLINE_DATE + " TEXT, " + MODULE_ID + " INTEGER, FOREIGN KEY (" + MODULE_ID + ") REFERENCES " +
+                MODULES_TABLE + " (" + MODULE_ID + "));";
+        Log.i("DBHELPER", sql);
+        System.out.println(sql);
+        sqLiteDatabase.execSQL(sql);
+
+
+        // Create Module Tasks table
+        sql = "CREATE TABLE " + MODULE_PARTICIPANTS_TABLE +
+                "(" + MODULE_ID + " INTEGER, " + MODULE_TASK_NAME + " TEXT, " + MODULE_TASK_DEADLINE +
+                " TEXT, " + PROFILE_ID + " INTEGER, FOREIGN KEY (" + MODULE_ID + ") REFERENCES " +
+                MODULES_TABLE + " (" + MODULE_ID + "), FOREIGN KEY (" + PROFILE_ID + ") REFERENCES " +
+                PROFILE_TABLE + " (" + PROFILE_ID + "));";
+        Log.i("DBHELPER", sql);
+        System.out.println(sql);
+        sqLiteDatabase.execSQL(sql);
 
 
         // Create Module Participants table
+        sql = "CREATE TABLE " + MODULE_PARTICIPANTS_TABLE +
+                "(" + MODULE_ID + " INTEGER, " + PROFILE_ID + " INTEGER, FOREIGN KEY (" + MODULE_ID + ") REFERENCES " +
+                MODULES_TABLE + " (" + MODULE_ID + "), FOREIGN KEY (" + PROFILE_ID + ") REFERENCES " +
+                PROFILE_TABLE + " (" + PROFILE_ID + "));";
+        Log.i("DBHELPER", sql);
+        System.out.println(sql);
+        sqLiteDatabase.execSQL(sql);
 
 
         // Create Events table
@@ -1310,5 +1360,14 @@ public class DBHelper extends SQLiteOpenHelper {
         cv22.put(EVENT_GOOD_FOR, "People that have very time-restricted roles, where time management is an issue");
         cv22.put(EVENT_PREREQUISITES, "General understanding of the different stages of a project, including deadlines, and due dates.");
         db.insert(EVENTS_TABLE, EVENT_ID, cv22);*/
+
+
+        ////////////////
+        //   MODULES  //
+        ////////////////
+        ContentValues cv23 = new ContentValues();
+        cv23.put(MODULE_NAME, "Datamining");
+        cv23.put(MODULE_DESCRIPTION, "What is datamining? What is it used for? This module will take you through the uses and applications of datamining, and goes into other subjects such as machine learning, AI, neural networks.");
+        db.insert(MODULES_TABLE, MODULE_ID, cv23);
     }
 }
