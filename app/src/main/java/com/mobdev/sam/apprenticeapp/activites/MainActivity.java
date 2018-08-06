@@ -1,6 +1,7 @@
 package com.mobdev.sam.apprenticeapp.activites;
 
 import android.content.Context;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.mobdev.sam.apprenticeapp.R;
+import com.mobdev.sam.apprenticeapp.fragments.AdminFragment;
 import com.mobdev.sam.apprenticeapp.fragments.CalendarFragment;
 import com.mobdev.sam.apprenticeapp.fragments.HomeFragment;
 import com.mobdev.sam.apprenticeapp.fragments.ProfileFragment;
@@ -56,12 +58,17 @@ public class MainActivity extends AppCompatActivity
         });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Menu navMenu = navigationView.getMenu();
+        if (!profile.getIsAdmin()) {
+            navMenu.findItem(R.id.nav_admin).setVisible(false);
+        }
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -149,6 +156,12 @@ public class MainActivity extends AppCompatActivity
             // Switch the current fragment to the 'Settings' Fragment
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, new SettingsFragment())
+                    .commit();
+        }
+        else if (id == R.id.nav_admin) {
+            // Switch the current fragment to the 'Settings' Fragment
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, new AdminFragment())
                     .commit();
         }
 

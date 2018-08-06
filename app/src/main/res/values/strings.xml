@@ -108,5 +108,6 @@
     <string name="cancel_attendance_button_text">CANCEL ATTENDANCE</string>
     <string name="create_new_event_button_text">CREATE NEW EVENT</string>
     <string name="events_created_by_you_label_text">Events Created By You</string>
+    <string name="nav_admin_text">Admin</string>
 
 </resources>

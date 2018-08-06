@@ -29,6 +29,7 @@ public class Profile implements Serializable {
     private String jobTitle;
     //TODO: Make date instead of string?
     private String joinDate;
+    private boolean isAdmin;
 
     //Database/storage/associations
     List<Note> associatedNotes;
@@ -38,7 +39,7 @@ public class Profile implements Serializable {
     // Constructor
     public Profile(String name, String description, List<Skill> skills, List<Skill> interests,
                    String email, String baseLocation, int grade, String jobTitle, String joinDate,
-                   List<Note> associatedNotes, List<Event> eventsAttending, List<Module> assignedModules) {
+                   List<Note> associatedNotes, List<Event> eventsAttending, List<Module> assignedModules, boolean isAdmin) {
 
         setName(name);
         setDescription(description);
@@ -49,6 +50,7 @@ public class Profile implements Serializable {
         setGrade(grade);
         setJobTitle(jobTitle);
         setJoinDate(joinDate);
+        setIsAdmin(isAdmin);
     }
 
 
@@ -72,6 +74,8 @@ public class Profile implements Serializable {
     public String getJobTitle() { return this.jobTitle; }
 
     public String getJoinDate() { return this.joinDate; }
+
+    public boolean getIsAdmin() { return this.isAdmin; }
 
 
     // Set
@@ -307,6 +311,11 @@ public class Profile implements Serializable {
         if (!this.assignedModules.contains(module)) {
             this.assignedModules.add(module);
         }
+        return this;
+    }
+
+    public Profile setIsAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
         return this;
     }
 }

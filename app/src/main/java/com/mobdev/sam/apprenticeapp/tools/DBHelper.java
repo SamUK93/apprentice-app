@@ -38,6 +38,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String PROFILE_GRADE = "grade";
     private static final String PROFILE_JOB_TITLE = "jobTitle";
     private static final String PROFILE_JOIN_DATE = "joinDate";
+    private static final String PROFILE_IS_ADMIN = "isAdmin";
 
     // Skills
     private static final String SKILLS_TABLE = "Skills";
@@ -75,7 +76,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     // Module tasks
-    private static final String MODULE_TASKS = "ModuleTasks";
+    private static final String MODULE_TASKS_TABLE = "ModuleTasks";
     private static final String MODULE_TASK_NAME = "name";
     private static final String MODULE_TASK_DEADLINE = "deadline";
 
@@ -122,7 +123,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "(" + PROFILE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + PROFILE_NAME + " TEXT, " +
                 PROFILE_DESC + " TEXT, " + PROFILE_EMAIL + " TEXT, " +
                 PROFILE_BASE + " TEXT, " + PROFILE_GRADE + " INTEGER, " +
-                PROFILE_JOB_TITLE + " TEXT, " + PROFILE_JOIN_DATE + " TEXT);";
+                PROFILE_JOB_TITLE + " TEXT, " + PROFILE_JOIN_DATE + " TEXT, " + PROFILE_IS_ADMIN + " INTEGER);";
         Log.i("DBHELPER", sql);
         System.out.println(sql);
         sqLiteDatabase.execSQL(sql);
@@ -176,8 +177,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
         // Create Module Deadlines table
-        sql = "CREATE TABLE " + MODULE_DEADLINES_NAME +
-                "(" + MODULE_DEADLINES_NAME + " TEXT, " + MODULE_DEADLINES_NAME + " TEXT, " +
+        sql = "CREATE TABLE " + MODULE_DEADLINES_TABLE +
+                "(" + MODULE_DEADLINES_NAME + " TEXT" +
                 MODULE_DEADLINE_DATE + " TEXT, " + MODULE_ID + " INTEGER, FOREIGN KEY (" + MODULE_ID + ") REFERENCES " +
                 MODULES_TABLE + " (" + MODULE_ID + "));";
         Log.i("DBHELPER", sql);
@@ -186,7 +187,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
         // Create Module Tasks table
-        sql = "CREATE TABLE " + MODULE_PARTICIPANTS_TABLE +
+        sql = "CREATE TABLE " + MODULE_TASKS_TABLE +
                 "(" + MODULE_ID + " INTEGER, " + MODULE_TASK_NAME + " TEXT, " + MODULE_TASK_DEADLINE +
                 " TEXT, " + PROFILE_ID + " INTEGER, FOREIGN KEY (" + MODULE_ID + ") REFERENCES " +
                 MODULES_TABLE + " (" + MODULE_ID + "), FOREIGN KEY (" + PROFILE_ID + ") REFERENCES " +
@@ -249,6 +250,8 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public Profile cursorToProfile(Cursor cursor) {
+        boolean isAdmin = false;
+
         Long id = cursor.getLong(0);
         String name = cursor.getString(1);
         String desc = cursor.getString(2);
@@ -257,8 +260,13 @@ public class DBHelper extends SQLiteOpenHelper {
         int grade = cursor.getInt(5);
         String jobTitle = cursor.getString(6);
         String joinDate = cursor.getString(7);
+        if (cursor.getInt(8) == 1) {
+            isAdmin = true;
+        } else if (cursor.getInt(8) == 0) {
+            isAdmin = false;
+        }
 
-        Profile profile = new Profile(name, desc, new ArrayList<Skill>(), new ArrayList<Skill>(), email, base, grade, jobTitle, joinDate, null, null, null);
+        Profile profile = new Profile(name, desc, new ArrayList<Skill>(), new ArrayList<Skill>(), email, base, grade, jobTitle, joinDate, null, null, null, isAdmin);
         profile.setId(id);
         return profile;
     }
@@ -296,6 +304,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
         cv1.put(PROFILE_JOIN_DATE, profile.getJoinDate());
         Log.i("DBHELPER", "Join Date " + profile.getJoinDate());
+
+        cv1.put(PROFILE_IS_ADMIN, profile.getIsAdmin());
+        Log.i("DBHELPER", "Is Admin " + profile.getIsAdmin());
 
         myProfileId = db.insert(PROFILE_TABLE, PROFILE_ID, cv1);
         Log.i("DBHELPER", "Inserted new PROFILE with id " + profile.getId());
@@ -1216,6 +1227,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put(PROFILE_GRADE, 4);
         cv.put(PROFILE_JOB_TITLE, "Software Engineer");
         cv.put(PROFILE_JOIN_DATE, "15/07/2013");
+        cv.put(PROFILE_IS_ADMIN, 1);
         db.insert(PROFILE_TABLE, PROFILE_ID, cv);
 
         ContentValues cv2 = new ContentValues();
@@ -1226,6 +1238,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv2.put(PROFILE_GRADE, 7);
         cv2.put(PROFILE_JOB_TITLE, "Manager");
         cv2.put(PROFILE_JOIN_DATE, "12/04/2015");
+        cv2.put(PROFILE_IS_ADMIN, 0);
         db.insert(PROFILE_TABLE, PROFILE_ID, cv2);
 
         ContentValues cv3 = new ContentValues();
@@ -1236,6 +1249,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv3.put(PROFILE_GRADE, 6);
         cv3.put(PROFILE_JOB_TITLE, "Business Analyst");
         cv3.put(PROFILE_JOIN_DATE, "18/01/2005");
+        cv3.put(PROFILE_IS_ADMIN, 0);
         db.insert(PROFILE_TABLE, PROFILE_ID, cv3);
 
 

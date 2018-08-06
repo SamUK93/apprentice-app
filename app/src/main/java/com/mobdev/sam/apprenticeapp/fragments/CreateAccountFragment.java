@@ -83,7 +83,7 @@ public class CreateAccountFragment extends android.support.v4.app.Fragment {
                 String jobTitle = jobTitleText.getText().toString();
                 String joinDate = joinDateText.getText().toString();
 
-                Profile profile = new Profile(name,description,new ArrayList<Skill>(),new ArrayList<Skill>(),email,baseLocation,grade,jobTitle,joinDate,null,null,null);
+                Profile profile = new Profile(name,description,new ArrayList<Skill>(),new ArrayList<Skill>(),email,baseLocation,grade,jobTitle,joinDate,null,null,null, false);
 
                 // Add the new account to the database
                 Long id = dbHelper.insertProfile(profile);
