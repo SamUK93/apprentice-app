@@ -1,95 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/container"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:layout_height="fill_parent">
 
-    <!-- Info Box -->
-    <TextView
-        android:id="@+id/moduleInfoBoxText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:text="PLACEHOLDER MODULE INFO CARD TEXT PLACEHOLDER MODULE INFO CARD TEXT PLACEHOLDER MODULE INFO CARD TEXT PLACEHOLDER MODULE INFO CARD TEXT"
-        android:textAlignment="center"
-        android:textSize="20dp"
-        android:textStyle="bold" />
-
-
-    <!-- Menu buttons section -->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/menuButtonsSection"
+        android:id="@+id/container"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/viewNotesButton"
+        <!-- Name and Description -->
+        <EditText
+            android:id="@+id/nameText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
+            android:hint="Enter name..."
+            android:textAlignment="center"
+            android:textSize="30dp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/descriptionText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/view_notes_text"/>
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:hint="Enter description..."
+            android:textAlignment="center"
+            android:textSize="15dp" />
 
-        <Button
-            android:id="@+id/viewCalendarButton"
-            android:layout_marginTop="5dp"
-            android:layout_width="wrap_content"
+        <!-- Info Box -->
+        <TextView
+            android:id="@+id/moduleInfoBoxText"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/view_module_calendar_text"/>
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="PLACEHOLDER MODULE INFO CARD TEXT PLACEHOLDER MODULE INFO CARD TEXT PLACEHOLDER MODULE INFO CARD TEXT PLACEHOLDER MODULE INFO CARD TEXT"
+            android:textAlignment="center"
+            android:textSize="20dp"
+            android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/communityButton"
-            android:layout_marginTop="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/community_related_workshops_text"/>
 
-
-        <!-- Tasks section -->
+        <!-- Menu buttons section -->
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/tasksSection"
-            android:weightSum="2"
+            android:id="@+id/menuButtonsSection"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <!-- Tasks list -->
+            <Button
+                android:id="@+id/viewParticipantsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/view_participants_button_text" />
+
+            <Button
+                android:id="@+id/viewDeadlinesButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/view_deadlines_button_text" />
+
+            <Button
+                android:id="@+id/viewNotesButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/view_notes_text" />
+
+            <Button
+                android:id="@+id/viewCalendarButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/view_module_calendar_text" />
+
+            <Button
+                android:id="@+id/communityButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/community_related_workshops_text" />
+
+
+            <!-- Tasks section -->
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/taskListSection"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:id="@+id/tasksSection"
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:weightSum="2">
 
-                <TextView
-                    android:id="@+id/tasksListLabel"
-                    android:layout_width="match_parent"
+                <!-- Tasks list -->
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/taskListSection"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tasksListLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="20dp"
+                        android:text="Tasks / To Do List"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- Edit tasks button -->
+                <Button
+                    android:id="@+id/editTasksButton"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:text="Tasks / To Do List"
-                    android:textAlignment="center"
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:text="@string/edit_tasks_text" />
 
             </LinearLayout>
 
-            <!-- Edit tasks button -->
             <Button
-                android:id="@+id/editTasksButton"
-                android:layout_marginTop="5dp"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:id="@+id/saveModuleButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/edit_tasks_text"/>
+                android:layout_marginTop="5dp"
+                android:text="@string/save_text" />
 
         </LinearLayout>
 
-
     </LinearLayout>
-
-</LinearLayout>
+</ScrollView>

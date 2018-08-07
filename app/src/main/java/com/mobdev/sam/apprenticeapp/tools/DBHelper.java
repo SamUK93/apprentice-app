@@ -9,8 +9,10 @@ import android.util.Log;
 
 import com.mobdev.sam.apprenticeapp.models.Category;
 import com.mobdev.sam.apprenticeapp.models.Contact;
+import com.mobdev.sam.apprenticeapp.models.Deadline;
 import com.mobdev.sam.apprenticeapp.models.Event;
 import com.mobdev.sam.apprenticeapp.models.EventReason;
+import com.mobdev.sam.apprenticeapp.models.Module;
 import com.mobdev.sam.apprenticeapp.models.Profile;
 import com.mobdev.sam.apprenticeapp.models.ProfileReason;
 import com.mobdev.sam.apprenticeapp.models.Skill;
@@ -71,7 +73,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Module deadlines
     private static final String MODULE_DEADLINES_TABLE = "ModuleDeadlines";
-    private static final String MODULE_DEADLINES_NAME = "name";
+    private static final String MODULE_DEADLINE_ID = "deadlineId";
+    private static final String MODULE_DEADLINE_NAME = "name";
     private static final String MODULE_DEADLINE_DATE = "deadline";
 
 
@@ -178,7 +181,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // Create Module Deadlines table
         sql = "CREATE TABLE " + MODULE_DEADLINES_TABLE +
-                "(" + MODULE_DEADLINES_NAME + " TEXT" +
+                "(" + MODULE_DEADLINE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + MODULE_DEADLINE_NAME + " TEXT" +
                 MODULE_DEADLINE_DATE + " TEXT, " + MODULE_ID + " INTEGER, FOREIGN KEY (" + MODULE_ID + ") REFERENCES " +
                 MODULES_TABLE + " (" + MODULE_ID + "));";
         Log.i("DBHELPER", sql);
@@ -1212,6 +1215,215 @@ public class DBHelper extends SQLiteOpenHelper {
         Event event = new Event(name,description,location,date,goodFor,prerequisites,new ArrayList<Skill>(),creatorId);
         event.setEventId(eventId);
         return event;
+    }
+
+
+
+    // MODULE
+    /**
+     * Inserts a new module in the database
+     *
+     * @param module the module to enter
+     * @return the ID of the newly entered module
+     */
+    public long insertModule(Module module) {
+        long moduleId;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.i("DBHELPER", "Inserting new MODULE with name " + module.getName());
+        ContentValues cv1 = new ContentValues();
+
+        cv1.put(MODULE_NAME, module.getName());
+        Log.i("DBHELPER", "Name " + module.getName());
+
+        cv1.put(MODULE_DESCRIPTION, module.getDescription());
+        Log.i("DBHELPER", "Description " + module.getDescription());
+
+        moduleId = db.insert(EVENTS_TABLE, EVENT_ID, cv1);
+
+        module.setModuleId(moduleId);
+        Log.i("DBHELPER", "Inserted new MODULE with id " + module.getModuleId());
+
+        return moduleId;
+    }
+
+    /**
+     * Updates an event in the database
+     *
+     * @param module the module to update
+     * @return the ID of the newly updated module
+     */
+    public void updateModule(Module module) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.i("DBHELPER", "Inserting new module with name " + module.getName());
+        ContentValues cv1 = new ContentValues();
+
+        cv1.put(MODULE_NAME, module.getName());
+        Log.i("DBHELPER", "Name " + module.getName());
+
+        cv1.put(MODULE_DESCRIPTION, module.getDescription());
+        Log.i("DBHELPER", "Description " + module.getDescription());
+
+        db.update(MODULES_TABLE, cv1, MODULE_ID + " = ?",
+                new String[]{String.valueOf(module.getModuleId())});
+        Log.i("DBHELPER", "Updated MODULE with id " + module.getModuleId());
+    }
+
+    /**
+     * Gets the event with the specified ID from the database
+     *
+     * @param id the id of the event to get
+     * @return the event, or null if no profiles with the specified id were found
+     */
+    public Module getModule(Long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql1 = "SELECT * FROM " + MODULES_TABLE + " WHERE " + MODULE_ID + " = " + id;
+        Cursor cursor = db.rawQuery("SELECT * FROM " + MODULES_TABLE + " WHERE " + MODULE_ID + " = " + id, null);
+        Log.i("DBHELPER", sql1);
+        if (cursor.getCount() < 1) {
+            return null;
+        } else {
+            cursor.moveToFirst();
+            Module module = cursorToModule(cursor);
+
+            // Get all deadlines, and add to module
+            String sql = "SELECT * FROM " + MODULE_DEADLINES_TABLE + " WHERE " + MODULE_ID + " = " + id;
+            Cursor cursor2 = db.rawQuery("SELECT * FROM " + MODULE_DEADLINES_TABLE + " WHERE " + MODULE_ID + " = " + id, null);
+            Log.i("DBHELPER", sql);
+            cursor2.moveToFirst();
+            while (!cursor2.isAfterLast()) {
+                module.addDeadline(cursorToDeadline(cursor2));
+                cursor2.moveToNext();
+            }
+
+            cursor2.close();
+
+            // Get all participants, and add to module
+            String sql2 = "SELECT * FROM " + MODULE_PARTICIPANTS_TABLE + " WHERE " + MODULE_ID + " = " + id;
+            Cursor cursor3 = db.rawQuery("SELECT * FROM " + MODULE_PARTICIPANTS_TABLE + " WHERE " + MODULE_ID + " = " + id, null);
+            Log.i("DBHELPER", sql2);
+            cursor3.moveToFirst();
+            while (!cursor3.isAfterLast()) {
+                module.addModuleParticipant(cursor3.getLong(1));
+                cursor3.moveToNext();
+            }
+
+            cursor3.close();
+
+            cursor.close();
+            db.close();
+            return module;
+        }
+    }
+
+
+    public Module cursorToModule(Cursor cursor) {
+        Long moduleId = cursor.getLong(0);
+        String name = cursor.getString(1);
+        String description = cursor.getString(2);
+
+        Module module = new Module(name,description,new ArrayList<Deadline>(),new ArrayList<Long>());
+        module.setModuleId(moduleId);
+        return module;
+    }
+
+
+
+    public Deadline cursorToDeadline(Cursor cursor) {
+        Long deadlineId = cursor.getLong(0);
+        String name = cursor.getString(1);
+        String date = cursor.getString(2);
+        Long moduleId = cursor.getLong(3);
+
+        Deadline deadline = new Deadline(name,date,moduleId);
+        deadline.setDeadlineId(deadlineId);
+        return deadline;
+    }
+
+
+    /**
+     * Updates a module's participants in the database
+     *
+     * @param moduleId the module to update
+     */
+    public void updateParticipants(Long moduleId, List<Long> participants) {
+        Log.i("DBHELPER", "Updating participants for module with id - " + moduleId);
+
+        // Delete all interests for profile
+        deleteParticipants(moduleId);
+
+        // Add all new updated interests for profile
+        insertParticipants(moduleId, participants);
+    }
+
+    public void insertParticipants(Long moduleId, List<Long> participants) {
+
+        Log.i("DBHELPER", "Inserting participants for module with id - " + moduleId);
+
+        for (Long participant : participants) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues cv1 = new ContentValues();
+
+            cv1.put(MODULE_ID, moduleId);
+            cv1.put(PROFILE_ID, participant);
+
+            db.insert(MODULE_PARTICIPANTS_TABLE, null, cv1);
+        }
+    }
+
+    public void deleteParticipants(Long moduleId) {
+        Log.i("DBHELPER", "Deleting participants for module with id - " + moduleId);
+
+        // Delete all participants for module
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(MODULE_PARTICIPANTS_TABLE, MODULE_ID + " = ?",
+                new String[]{String.valueOf(moduleId)});
+        db.close();
+    }
+
+
+    /**
+     * Updates a module's deadlines in the database
+     *
+     * @param moduleId the module to update
+     */
+    public void updateDeadlines(Long moduleId, List<Deadline> deadlines) {
+        Log.i("DBHELPER", "Updating deadlines for module with id - " + moduleId);
+
+        // Delete all deadlines for module
+        deleteDeadlines(moduleId);
+
+        // Add all new updated deadlines for module
+        insertDeadlines(moduleId, deadlines);
+    }
+
+    public void insertDeadlines(Long moduleId, List<Deadline> deadlines) {
+
+        Log.i("DBHELPER", "Inserting deadlines for module with id - " + moduleId);
+
+        for (Deadline deadline : deadlines) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues cv1 = new ContentValues();
+
+            cv1.put(MODULE_DEADLINE_NAME, deadline.getName());
+            cv1.put(MODULE_DEADLINE_DATE, deadline.getDate());
+            cv1.put(MODULE_ID, moduleId);
+
+            db.insert(MODULE_DEADLINES_TABLE, MODULE_DEADLINE_ID, cv1);
+        }
+    }
+
+    public void deleteDeadlines(Long moduleId) {
+        Log.i("DBHELPER", "Deleting deadlines for module with id - " + moduleId);
+
+        // Delete all deadlines for module
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(MODULE_DEADLINES_TABLE, MODULE_ID + " = ?",
+                new String[]{String.valueOf(moduleId)});
+        db.close();
     }
 
 

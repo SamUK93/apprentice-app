@@ -109,5 +109,7 @@
     <string name="create_new_event_button_text">CREATE NEW EVENT</string>
     <string name="events_created_by_you_label_text">Events Created By You</string>
     <string name="nav_admin_text">Admin</string>
+    <string name="view_participants_button_text">VIEW PARTICIPANTS</string>
+    <string name="view_deadlines_button_text">VIEW DEADLINES</string>
 
 </resources>
