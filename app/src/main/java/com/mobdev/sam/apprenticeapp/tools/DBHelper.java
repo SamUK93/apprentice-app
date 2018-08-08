@@ -1239,7 +1239,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv1.put(MODULE_DESCRIPTION, module.getDescription());
         Log.i("DBHELPER", "Description " + module.getDescription());
 
-        moduleId = db.insert(EVENTS_TABLE, EVENT_ID, cv1);
+        moduleId = db.insert(MODULES_TABLE, MODULE_ID, cv1);
 
         module.setModuleId(moduleId);
         Log.i("DBHELPER", "Inserted new MODULE with id " + module.getModuleId());
@@ -1314,6 +1314,27 @@ public class DBHelper extends SQLiteOpenHelper {
             cursor.close();
             db.close();
             return module;
+        }
+    }
+
+    public List<Module> getAllModules() {
+        List<Module> modules = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql1 = "SELECT * FROM " + MODULES_TABLE;
+        Cursor cursor = db.rawQuery("SELECT * FROM " + MODULES_TABLE, null);
+        Log.i("DBHELPER", sql1);
+        if (cursor.getCount() < 1) {
+            return null;
+        } else {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                modules.add(getModule(cursor.getLong(0)));
+                cursor.moveToNext();
+            }
+            cursor.close();
+            db.close();
+            return modules;
         }
     }
 

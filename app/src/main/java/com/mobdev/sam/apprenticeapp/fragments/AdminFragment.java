@@ -3,23 +3,16 @@ package com.mobdev.sam.apprenticeapp.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
-import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
-import com.mobdev.sam.apprenticeapp.models.Contact;
 import com.mobdev.sam.apprenticeapp.models.Profile;
-import com.mobdev.sam.apprenticeapp.models.Skill;
 import com.mobdev.sam.apprenticeapp.tools.DBHelper;
-
-import java.util.List;
 
 /**
  * Created by Sam on 02/07/2018.
@@ -39,7 +32,7 @@ public class AdminFragment extends android.support.v4.app.Fragment {
 
     // UI Elements
     private Button createModuleButton;
-    private Button viewModulesButton;
+    private Button viewAllModulesButton;
     private Button viewProfilesButton;
 
     @Nullable
@@ -62,7 +55,8 @@ public class AdminFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("profile", profile);
+                bundle.putBoolean("isNew", true);
+                bundle.putSerializable("userProfile", profile);
                 // Create a new Module Detail fragment
                 ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
                 moduleDetailFragment.setArguments(bundle);
@@ -75,24 +69,30 @@ public class AdminFragment extends android.support.v4.app.Fragment {
                 transaction.commit();
             }
         });
-/*
-        // SAVE BUTTON
-        saveButton = myView.findViewById(R.id.profileSaveButton);
-        if (!owner)
-            saveButton.setVisibility(View.INVISIBLE);
-        saveButton.setOnClickListener(new View.OnClickListener() {
+
+        // VIEW ALL MODULES BUTTON
+        viewAllModulesButton = myView.findViewById(R.id.viewAllModulesButton);
+        viewAllModulesButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                // Save button clicked
-                profile.setName(titleText.getText().toString());
-                profile.setDescription(descriptionText.getText().toString());
+                // View all modules button clicked
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("userProfile", profile);
+                // Create a new Module Detail fragment
+                ViewAllModulesFragment viewAllModulesFragment = new ViewAllModulesFragment();
+                viewAllModulesFragment.setArguments(bundle);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                dbHelper.updateProfile(profile);
-
+                // Replace the current fragment with the new modules fragment
+                transaction.replace(R.id.content_frame,viewAllModulesFragment);
+                // Add transaction to the back stack and commit
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
+        /*
         // ADD CONTACT BUTTON
         addContactButton = myView.findViewById(R.id.addContactButton);
         if (owner) {
@@ -120,6 +120,7 @@ public class AdminFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            Log.i("PAPAPAPAP","ADMIN BUDNLE AINT NULLNDLE!");
             id = getArguments().getLong("userId");
         }
         dbHelper = new DBHelper(getContext());
