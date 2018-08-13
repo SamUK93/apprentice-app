@@ -1,12 +1,13 @@
 package com.mobdev.sam.apprenticeapp.models;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Model for a module
  */
 
-public class Module {
+public class Module implements Serializable {
 
     private Long moduleId;
     private String name;

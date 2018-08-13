@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mobdev.sam.apprenticeapp.R;
+import com.mobdev.sam.apprenticeapp.models.Profile;
+import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 
 /**
  * Created by Sam on 02/07/2018.
@@ -20,6 +22,10 @@ import com.mobdev.sam.apprenticeapp.R;
 public class StudyFragment extends android.support.v4.app.Fragment {
 
     View myView;
+
+    private DBHelper dbHelper;
+    private Long id;
+    private Profile myProfile;
 
     // UI Elements
     private TextView studyInfoBox; //TODO: Update this to card view?
@@ -31,6 +37,7 @@ public class StudyFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.study_layout, container, false);
+        myProfile = dbHelper.getProfile(id);
 
         // LAYOUTS
         final LinearLayout containerLayout = myView.findViewById(R.id.container);
@@ -45,8 +52,11 @@ public class StudyFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("userProfile", myProfile);
                 // Create a new Modules fragment
                 Fragment modulesFragment = new ModulesFragment();
+                modulesFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
                 // Replace the current fragment with the new modules fragment
@@ -64,7 +74,10 @@ public class StudyFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View view) {
                 // Create a new Modules fragment
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("userProfile", myProfile);
                 Fragment modulesFragment = new NotesSearchFragment();
+                modulesFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
                 // Replace the current fragment with the new modules fragment
@@ -83,8 +96,10 @@ public class StudyFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-
+            id = getArguments().getLong("userId");
+            myProfile = (Profile) getArguments().getSerializable("userProfile");
         }
+        dbHelper = new DBHelper(getContext());
 
         // Set main title
         getActivity().setTitle("STUDY");

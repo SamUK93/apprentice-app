@@ -2,7 +2,9 @@ package com.mobdev.sam.apprenticeapp.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +82,20 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         viewParticipantsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Implement view participants", Toast.LENGTH_LONG).show();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("userProfile", userProfile);
+                bundle.putBoolean("isAdmin",isAdmin);
+                bundle.putSerializable("module", module);
+                // Create a new Search fragment
+                ModuleParticipantsFragment moduleParticipantsFragment = new ModuleParticipantsFragment();
+                moduleParticipantsFragment.setArguments(bundle);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+                // Replace the current fragment with the new search fragment
+                transaction.replace(R.id.content_frame, moduleParticipantsFragment);
+                // Add transaction to the back stack and commit
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
@@ -165,9 +180,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
                     dbHelper.insertModule(module);
                     Toast.makeText(getActivity(), "New Module Created Successfully!", Toast.LENGTH_LONG).show();
                     getFragmentManager().popBackStackImmediate();
-                }
-
-                else {
+                } else {
                     module.setName(titleText.getText().toString());
                     module.setDescription(descriptionText.getText().toString());
 
@@ -190,7 +203,8 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            userProfile = (Profile)getArguments().getSerializable("userProfile");
+            userProfile = (Profile) getArguments().getSerializable("userProfile");
+            Log.i("YOUR PROFILE", "YO PROFILE ID IS " + userProfile.getId());
             id = getArguments().getLong("moduleId");
             isNew = getArguments().getBoolean("isNew");
         }

@@ -84,7 +84,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String MODULE_TASK_DEADLINE = "deadline";
 
 
-
     // Module Participants
     private static final String MODULE_PARTICIPANTS_TABLE = "ModuleParticipants";
 
@@ -99,7 +98,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String EVENT_GOOD_FOR = "goodFor";
     private static final String EVENT_PREREQUISITES = "prerequisites";
     private static final String EVENT_CREATOR = "creatorId";
-
 
 
     // Event Attendees
@@ -571,6 +569,24 @@ public class DBHelper extends SQLiteOpenHelper {
         return uniqueSkills;
     }
 
+    public List<Profile> getAllProfiles() {
+        List<Profile> profiles = new ArrayList<>();
+
+        // Get all Profile IDs that have that skill
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + PROFILE_TABLE, null);
+        cursor.moveToFirst();
+
+        // Add all profile ids to list
+        while (!cursor.isAfterLast()) {
+            profiles.add(cursorToProfile(cursor));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+        return profiles;
+    }
+
 
     public List<ProfileReason> getAllProfilesSameSkills(List<Skill> skills) {
 
@@ -957,7 +973,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.delete(CONTACTS_TABLE, PROFILE_ID + " = ? AND " + CONTACT_ID + " = ?",
-                new String[]{String.valueOf(profileId),String.valueOf(contactId)});
+                new String[]{String.valueOf(profileId), String.valueOf(contactId)});
         db.close();
     }
 
@@ -1055,7 +1071,7 @@ public class DBHelper extends SQLiteOpenHelper {
     /**
      * Inserts a new event attendee in the database
      *
-     * @param eventId the ID of the event
+     * @param eventId   the ID of the event
      * @param profileId the ID of the profile
      */
     public void insertEventAttendee(Long eventId, Long profileId) {
@@ -1149,7 +1165,7 @@ public class DBHelper extends SQLiteOpenHelper {
             List<Long> eventIds = new ArrayList<>();
 
             // Get all Event IDs that have that skill
-            Log.i("EVENTDEBUG:::","SELECT * FROM " + SKILLS_TABLE + " WHERE " + SKILL_NAME
+            Log.i("EVENTDEBUG:::", "SELECT * FROM " + SKILLS_TABLE + " WHERE " + SKILL_NAME
                     + " = '" + skill.getName() + "' AND " + EVENT_ID + " IS NOT NULL;");
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor cursor = db.rawQuery("SELECT * FROM " + SKILLS_TABLE + " WHERE " + SKILL_NAME
@@ -1212,14 +1228,14 @@ public class DBHelper extends SQLiteOpenHelper {
         String prerequisites = cursor.getString(6);
         Long creatorId = cursor.getLong(7);
 
-        Event event = new Event(name,description,location,date,goodFor,prerequisites,new ArrayList<Skill>(),creatorId);
+        Event event = new Event(name, description, location, date, goodFor, prerequisites, new ArrayList<Skill>(), creatorId);
         event.setEventId(eventId);
         return event;
     }
 
 
-
     // MODULE
+
     /**
      * Inserts a new module in the database
      *
@@ -1324,18 +1340,52 @@ public class DBHelper extends SQLiteOpenHelper {
         String sql1 = "SELECT * FROM " + MODULES_TABLE;
         Cursor cursor = db.rawQuery("SELECT * FROM " + MODULES_TABLE, null);
         Log.i("DBHELPER", sql1);
-        if (cursor.getCount() < 1) {
-            return null;
-        } else {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 modules.add(getModule(cursor.getLong(0)));
                 cursor.moveToNext();
             }
-            cursor.close();
+                cursor.close();
+                db.close();
+            return modules;
+
+    }
+
+    public List<Module> getAllModulesForProfile(Profile profile) {
+        List<Module> modules = new ArrayList<>();
+        List<Long> moduleIds = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String sql2 = "SELECT * FROM " + MODULE_PARTICIPANTS_TABLE + " WHERE " + PROFILE_ID + " = " + profile.getId();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + MODULE_PARTICIPANTS_TABLE + " WHERE " + PROFILE_ID + " = " + profile.getId(), null);
+        Log.i("DBHELPER", sql2);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            modules.add(getModule(cursor.getLong(0)));
+            cursor.moveToNext();
+        }
+        cursor.close();
             db.close();
             return modules;
+    }
+
+    public List<Profile> getAllProfilesForModule(Module module) {
+        List<Profile> profiles = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql1 = "SELECT * FROM " + MODULE_PARTICIPANTS_TABLE + " WHERE " + MODULE_ID + " = " + module.getModuleId();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + MODULE_PARTICIPANTS_TABLE + " WHERE " + MODULE_ID + " = " + module.getModuleId(), null);
+        Log.i("DBHELPER", sql1);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            profiles.add(getProfile(cursor.getLong(1)));
+            cursor.moveToNext();
         }
+        cursor.close();
+        db.close();
+        return profiles;
     }
 
 
@@ -1344,11 +1394,10 @@ public class DBHelper extends SQLiteOpenHelper {
         String name = cursor.getString(1);
         String description = cursor.getString(2);
 
-        Module module = new Module(name,description,new ArrayList<Deadline>(),new ArrayList<Long>());
+        Module module = new Module(name, description, new ArrayList<Deadline>(), new ArrayList<Long>());
         module.setModuleId(moduleId);
         return module;
     }
-
 
 
     public Deadline cursorToDeadline(Cursor cursor) {
@@ -1357,7 +1406,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String date = cursor.getString(2);
         Long moduleId = cursor.getLong(3);
 
-        Deadline deadline = new Deadline(name,date,moduleId);
+        Deadline deadline = new Deadline(name, date, moduleId);
         deadline.setDeadlineId(deadlineId);
         return deadline;
     }
@@ -1402,6 +1451,16 @@ public class DBHelper extends SQLiteOpenHelper {
         db.delete(MODULE_PARTICIPANTS_TABLE, MODULE_ID + " = ?",
                 new String[]{String.valueOf(moduleId)});
         db.close();
+    }
+
+    public void deleteSpecificParticipant(Long moduleId, Long profileId) {
+        Log.i("DBHELPER", "Deleting participant with id " + profileId + " and module with id - " + moduleId);
+
+        // Delete participant from module
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(MODULE_PARTICIPANTS_TABLE, MODULE_ID + " = ? AND " + PROFILE_ID + " = ?",
+                new String[]{String.valueOf(moduleId), String.valueOf(profileId)});
     }
 
 
