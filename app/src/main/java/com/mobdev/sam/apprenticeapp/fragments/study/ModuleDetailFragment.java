@@ -1,4 +1,4 @@
-package com.mobdev.sam.apprenticeapp.fragments;
+package com.mobdev.sam.apprenticeapp.fragments.study;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -108,7 +108,20 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         viewDeadlinesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Implement view deadlines", Toast.LENGTH_LONG).show();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("userProfile", userProfile);
+                bundle.putBoolean("isAdmin",isAdmin);
+                bundle.putSerializable("module", module);
+                // Create a new Search fragment
+                ModuleDeadlinesFragment moduleDeadlinesFragment = new ModuleDeadlinesFragment();
+                moduleDeadlinesFragment.setArguments(bundle);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+                // Replace the current fragment with the new search fragment
+                transaction.replace(R.id.content_frame, moduleDeadlinesFragment);
+                // Add transaction to the back stack and commit
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 

@@ -1,8 +1,9 @@
-package com.mobdev.sam.apprenticeapp.fragments;
+package com.mobdev.sam.apprenticeapp.fragments.study;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -17,7 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
-import com.mobdev.sam.apprenticeapp.models.Category;
+import com.mobdev.sam.apprenticeapp.fragments.ProfileSpinnerAdapter;
+import com.mobdev.sam.apprenticeapp.fragments.TimePickerFragment;
+import com.mobdev.sam.apprenticeapp.fragments.profile.ProfileFragment;
 import com.mobdev.sam.apprenticeapp.models.Module;
 import com.mobdev.sam.apprenticeapp.models.Profile;
 import com.mobdev.sam.apprenticeapp.tools.DBHelper;
@@ -30,7 +33,7 @@ import java.util.List;
  * Created by Sam on 13/07/2018.
  */
 
-public class ModuleParticipantsFragment extends android.support.v4.app.Fragment {
+public class ModuleDeadlinesFragment extends android.support.v4.app.Fragment {
 
     View myView;
     boolean isAdmin;
@@ -41,7 +44,7 @@ public class ModuleParticipantsFragment extends android.support.v4.app.Fragment 
     private Spinner participantsSpinner;
     private Button addParticipantButton;
 
-    final List<TextView> profiles = new ArrayList<>();
+    final List<TextView> deadlines = new ArrayList<>();
     final List<Button> removeButtons = new ArrayList<>();
 
     // UI Elements
@@ -51,101 +54,19 @@ public class ModuleParticipantsFragment extends android.support.v4.app.Fragment 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.module_participants_layout, container, false);
+        myView = inflater.inflate(R.layout.module_deadlines_layout, container, false);
 
-        // ALL CURRENT PARTICIPANTS
-        List<Profile> allProfilesModule = dbHelper.getAllProfilesForModule(module);
+        // ALL CURRENT DEADLINES
+        List<Profile> allDeadlinesModule = dbHelper.getAllProfilesForModule(module);
 
-        participantsSection = myView.findViewById(R.id.participantsSection);
 
         // Hide fab
         //((MainActivity)getActivity()).hideFloatingActionButton();
 
 
-        // PARTICIPANT SPINNER
-        participantsSpinner = myView.findViewById(R.id.participantsSpinner);
-        if (!isAdmin) {
-            participantsSpinner.setVisibility(View.INVISIBLE);
-        }
-
-        // Get all profiles
-        List<Profile> allProfiles = dbHelper.getAllProfiles();
-
-        // Remove the current participants from the list
-        // Current participant IDs
-        List<Long> participatingIds = new ArrayList<>();
-        for (Profile profile : allProfilesModule) {
-            participatingIds.add(profile.getId());
-        }
-
-        // List of IDs to remove
-        List<Long> profilesToRemove = new ArrayList<>();
-        for (Profile profile : allProfiles) {
-            if (participatingIds.contains(profile.getId())) {
-                profilesToRemove.add(profile.getId());
-            }
-        }
-
-        List<Profile> nonParticipatingProfiles = new ArrayList<>();
-
-        for (Profile profile : allProfiles) {
-            if (!profilesToRemove.contains(profile.getId())) {
-                nonParticipatingProfiles.add(profile);
-            }
-        }
-
-        final ProfileSpinnerAdapter spinnerAdapter = new ProfileSpinnerAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, nonParticipatingProfiles);
-        participantsSpinner.setAdapter(spinnerAdapter);
-        //TODO: REMOVE
-        /*if (visitedPlace.getAssociatedHolidayId() != null) {
-            for (Holiday holiday : holidays) {
-                if (holiday.getId().equals(visitedPlace.getAssociatedHolidayId())) {
-                    associatedHoliday.setSelection(holidays.indexOf(holiday));
-                }
-            }*/
-
-        participantsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i("EXISTING DEBUG INFO:: ", "CHANGED! 1");
-                Profile profile = spinnerAdapter.getItem(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-
-        // ADD PARTICIPANT BUTTON
-        addParticipantButton = myView.findViewById(R.id.addParticipantButton);
-        if (!isAdmin) {
-            addParticipantButton.setVisibility(View.INVISIBLE);
-        }
-        addParticipantButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Add participant button clicked
-                // Get the selected user
-                Profile profile = (Profile) participantsSpinner.getSelectedItem();
-                dbHelper.insertParticipants(module.getModuleId(),new ArrayList<Long>(Arrays.asList(profile.getId())));
-                addParticipant(profile);
-                Toast.makeText(getActivity(), "Added participant - " + profile.getName(), Toast.LENGTH_LONG).show();
-            }
-        });
 
 
 
-        if (allProfilesModule.size() > 0) {
-            Log.i("MODULEMATCH::", "TOTAL PROFILES FOUND = " + allProfilesModule.size());
-            // Add profiles to the view
-            for (final Profile profile : allProfilesModule) {
-                addParticipant(profile);
-            }
-
-
-        }
         return myView;
     }
 
@@ -162,6 +83,11 @@ public class ModuleParticipantsFragment extends android.support.v4.app.Fragment 
         // Set main title
         getActivity().setTitle("Contact Finder");
 
+    }
+
+    public void showTimePickerDialog(View v) {
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.show(getFragmentManager(), "timePicker");
     }
 
     @SuppressLint("NewApi")
@@ -210,12 +136,12 @@ public class ModuleParticipantsFragment extends android.support.v4.app.Fragment 
                     int i = removeButtons.indexOf(removeButton);
 
                     // Remove both the note and the remove button from the view
-                    linearLayout.removeView(profiles.get(i));
+                    linearLayout.removeView(deadlines.get(i));
                     linearLayout.removeView(removeButtons.get(i));
                     participantsSection.removeView(linearLayout);
 
                     // Remove both the note and remove button from their respective lists
-                    profiles.remove(i);
+                    deadlines.remove(i);
                     removeButtons.remove(removeButton);
                     dbHelper.deleteSpecificParticipant(module.getModuleId(),profile.getId());
                 }
@@ -231,7 +157,7 @@ public class ModuleParticipantsFragment extends android.support.v4.app.Fragment 
 
 
         linearLayout.addView(nameRow);
-        profiles.add(nameRow);
+        deadlines.add(nameRow);
 
         participantsSection.addView(linearLayout);
     }

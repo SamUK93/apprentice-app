@@ -111,5 +111,6 @@
     <string name="nav_admin_text">Admin</string>
     <string name="view_participants_button_text">VIEW PARTICIPANTS</string>
     <string name="view_deadlines_button_text">VIEW DEADLINES</string>
+    <string name="deadlines_label_text">Deadlines</string>
 
 </resources>

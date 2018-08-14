@@ -1,4 +1,4 @@
-package com.mobdev.sam.apprenticeapp.fragments;
+package com.mobdev.sam.apprenticeapp.fragments.admin;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.mobdev.sam.apprenticeapp.R;
+import com.mobdev.sam.apprenticeapp.fragments.study.ModuleDetailFragment;
 import com.mobdev.sam.apprenticeapp.models.Profile;
 import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 

@@ -1,4 +1,4 @@
-package com.mobdev.sam.apprenticeapp.fragments;
+package com.mobdev.sam.apprenticeapp.fragments.study;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -13,42 +13,35 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mobdev.sam.apprenticeapp.R;
-import com.mobdev.sam.apprenticeapp.models.Event;
-import com.mobdev.sam.apprenticeapp.models.EventReason;
 import com.mobdev.sam.apprenticeapp.models.Module;
 import com.mobdev.sam.apprenticeapp.models.Profile;
 import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Sam on 13/07/2018.
  */
 
-public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
+public class ModulesFragment extends android.support.v4.app.Fragment {
 
     View myView;
 
     private DBHelper dbHelper;
     private Profile myProfile;
 
-    // UI Elements
-    LinearLayout modulesSection;
+    private LinearLayout currentModulesLayout;
 
     @SuppressLint("NewApi")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.view_all_modules_layout, container, false);
+        myView = inflater.inflate(R.layout.modules_layout, container, false);
 
-        modulesSection = myView.findViewById(R.id.moduleListSection);
-
-        // Hide fab
-        //((MainActivity)getActivity()).hideFloatingActionButton();
+        currentModulesLayout = myView.findViewById(R.id.currentModulesSection);
 
         // Get all modules from the database
-        List<Module> allModules = dbHelper.getAllModules();
+        List<Module> allModules = dbHelper.getAllModulesForProfile(myProfile);
         Log.i("EVENTMATCH::", "TOTAL MODULES FOUND = " + allModules.size());
         if (allModules.size() > 0) {
             // Add modules to the view
@@ -91,7 +84,7 @@ public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
 
                 linearLayout.addView(nameRow);
                 linearLayout.addView(descriptionRow);
-                modulesSection.addView(linearLayout);
+                currentModulesLayout.addView(linearLayout);
             }
         }
         else {
@@ -109,9 +102,11 @@ public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
             nameRow.setTextSize(15);
             nameRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
             linearLayout.addView(nameRow);
-            modulesSection.addView(linearLayout);
+            currentModulesLayout.addView(linearLayout);
         }
 
+        // Hide fab
+        //((MainActivity)getActivity()).hideFloatingActionButton();
 
         return myView;
     }
@@ -125,7 +120,7 @@ public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
         dbHelper = new DBHelper(getContext());
 
         // Set main title
-        getActivity().setTitle("Contact Finder");
+        getActivity().setTitle("My Modules");
 
     }
 }

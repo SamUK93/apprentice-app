@@ -1,4 +1,4 @@
-package com.mobdev.sam.apprenticeapp.fragments;
+package com.mobdev.sam.apprenticeapp.fragments.profile;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

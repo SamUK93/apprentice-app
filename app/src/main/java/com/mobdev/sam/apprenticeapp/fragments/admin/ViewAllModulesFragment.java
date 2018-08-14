@@ -1,4 +1,4 @@
-package com.mobdev.sam.apprenticeapp.fragments;
+package com.mobdev.sam.apprenticeapp.fragments.admin;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -13,66 +13,44 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mobdev.sam.apprenticeapp.R;
-import com.mobdev.sam.apprenticeapp.models.Event;
-import com.mobdev.sam.apprenticeapp.models.EventReason;
+import com.mobdev.sam.apprenticeapp.fragments.study.ModuleDetailFragment;
+import com.mobdev.sam.apprenticeapp.models.Module;
 import com.mobdev.sam.apprenticeapp.models.Profile;
 import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Sam on 13/07/2018.
  */
 
-public class FindNewEventFragment extends android.support.v4.app.Fragment {
+public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
 
     View myView;
 
     private DBHelper dbHelper;
-    private Long id;
     private Profile myProfile;
 
     // UI Elements
-    LinearLayout eventsSection;
+    LinearLayout modulesSection;
 
     @SuppressLint("NewApi")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.find_new_event_layout, container, false);
+        myView = inflater.inflate(R.layout.view_all_modules_layout, container, false);
 
-        eventsSection = myView.findViewById(R.id.eventsSection);
+        modulesSection = myView.findViewById(R.id.moduleListSection);
 
         // Hide fab
         //((MainActivity)getActivity()).hideFloatingActionButton();
 
-        // Get events with similar interests and skills to populate the 'Suggested Events' section
-        List<EventReason> matchingEvents = dbHelper.getAllEventsAllCriteria(myProfile.getSkills(), myProfile.getInterests());
-        Log.i("EVENTMATCH::", "TOTAL EVENTS MATCHED = " + matchingEvents.size());
-        if (matchingEvents.size() > 0) {
-            // Get current events of user
-            List<Event> events = dbHelper.getAllEventsProfileAttending(myProfile.getId());
-            List<Long> eventIds = new ArrayList<>();
-            for (Event event : events) {
-                eventIds.add(event.getEventId());
-            }
-
-            // Remove current events from the matching events list
-            List<EventReason> eventsToRemove = new ArrayList<>();
-            for (EventReason event : matchingEvents) {
-                if (event.event.getCreatorId().equals(myProfile.getId())) {
-                    eventsToRemove.add(event);
-                }
-                else if (eventIds.contains(event.event.getEventId())) {
-                    eventsToRemove.add(event);
-                    Log.i("EVENTMATCH::", "REMOVING ALREADY ATTENDING EVENT with ID " + event.event.getEventId());
-                }
-            }
-            matchingEvents.removeAll(eventsToRemove);
-
-            // Add events to the view
-            for (final EventReason eventReason : matchingEvents) {
+        // Get all modules from the database
+        List<Module> allModules = dbHelper.getAllModules();
+        Log.i("EVENTMATCH::", "TOTAL MODULES FOUND = " + allModules.size());
+        if (allModules.size() > 0) {
+            // Add modules to the view
+            for (final Module module : allModules) {
                 LinearLayout linearLayout = new LinearLayout(getContext());
                 linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -86,17 +64,15 @@ public class FindNewEventFragment extends android.support.v4.app.Fragment {
                     public void onClick(View view) {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("userProfile", myProfile);
-                        bundle.putSerializable("eventId", eventReason.event.getEventId());
-                        bundle.putBoolean("owner", false);
-                        bundle.putBoolean("attending", false);
+                        bundle.putSerializable("moduleId", module.getModuleId());
                         bundle.putBoolean("isNew", false);
-                        // Create a new Event fragment
-                        EventDetailFragment eventFragment = new EventDetailFragment();
-                        eventFragment.setArguments(bundle);
+                        // Create a new Module Detail fragment
+                        ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
+                        moduleDetailFragment.setArguments(bundle);
                         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                        // Replace the current fragment with the new search fragment
-                        transaction.replace(R.id.content_frame, eventFragment);
+                        // Replace the current fragment with the new module detail fragment
+                        transaction.replace(R.id.content_frame, moduleDetailFragment);
                         // Add transaction to the back stack and commit
                         transaction.addToBackStack(null);
                         transaction.commit();
@@ -104,16 +80,16 @@ public class FindNewEventFragment extends android.support.v4.app.Fragment {
                 });
 
                 TextView nameRow = new TextView(getContext());
-                TextView reasonRow = new TextView(getContext());
+                TextView descriptionRow = new TextView(getContext());
 
-                nameRow.setText(eventReason.event.getName());
+                nameRow.setText(module.getName());
                 nameRow.setTextSize(15);
                 nameRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
-                reasonRow.setText(eventReason.reason);
+                descriptionRow.setText(module.getDescription());
 
                 linearLayout.addView(nameRow);
-                linearLayout.addView(reasonRow);
-                eventsSection.addView(linearLayout);
+                linearLayout.addView(descriptionRow);
+                modulesSection.addView(linearLayout);
             }
         }
         else {
@@ -127,11 +103,11 @@ public class FindNewEventFragment extends android.support.v4.app.Fragment {
             linearLayout.setLayoutParams(params);
             TextView nameRow = new TextView(getContext());
 
-            nameRow.setText("There are currently no upcoming events we think you'd be interested in! Please check back soon.");
+            nameRow.setText("There are currently no modules to display! Add some or contact your tutor/manager if you think this is an issue.");
             nameRow.setTextSize(15);
             nameRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
             linearLayout.addView(nameRow);
-            eventsSection.addView(linearLayout);
+            modulesSection.addView(linearLayout);
         }
 
 
@@ -142,7 +118,7 @@ public class FindNewEventFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            myProfile = (Profile) getArguments().getSerializable("profile");
+            myProfile = (Profile) getArguments().getSerializable("userProfile");
         }
         dbHelper = new DBHelper(getContext());
 

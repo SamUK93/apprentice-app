@@ -1388,6 +1388,23 @@ public class DBHelper extends SQLiteOpenHelper {
         return profiles;
     }
 
+    /*public List<Deadline> getAllDeadlinesForModule(Module module) {
+        List<Deadline> deadlines = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql1 = "SELECT * FROM " + MODULE_DEADLINES_TABLE + " WHERE " + MODULE_ID + " = " + module.getModuleId();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + MODULE_DEADLINES_TABLE + " WHERE " + MODULE_ID + " = " + module.getModuleId(), null);
+        Log.i("DBHELPER", sql1);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            profiles.add(getProfile(cursor.getLong(1)));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+        return profiles;
+    }*/
+
 
     public Module cursorToModule(Cursor cursor) {
         Long moduleId = cursor.getLong(0);

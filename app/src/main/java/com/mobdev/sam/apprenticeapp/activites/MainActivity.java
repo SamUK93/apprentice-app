@@ -1,7 +1,5 @@
 package com.mobdev.sam.apprenticeapp.activites;
 
-import android.content.Context;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,15 +15,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.mobdev.sam.apprenticeapp.R;
-import com.mobdev.sam.apprenticeapp.fragments.AdminFragment;
+import com.mobdev.sam.apprenticeapp.fragments.admin.AdminFragment;
 import com.mobdev.sam.apprenticeapp.fragments.CalendarFragment;
 import com.mobdev.sam.apprenticeapp.fragments.HomeFragment;
-import com.mobdev.sam.apprenticeapp.fragments.ProfileFragment;
+import com.mobdev.sam.apprenticeapp.fragments.profile.ProfileFragment;
 import com.mobdev.sam.apprenticeapp.fragments.SettingsFragment;
-import com.mobdev.sam.apprenticeapp.fragments.SocialFragment;
-import com.mobdev.sam.apprenticeapp.fragments.StudyFragment;
+import com.mobdev.sam.apprenticeapp.fragments.social.SocialFragment;
+import com.mobdev.sam.apprenticeapp.fragments.study.StudyFragment;
 import com.mobdev.sam.apprenticeapp.models.Profile;
-import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {

@@ -1,4 +1,4 @@
-package com.mobdev.sam.apprenticeapp.fragments;
+package com.mobdev.sam.apprenticeapp.fragments.profile;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
+import com.mobdev.sam.apprenticeapp.fragments.CategorySpinnerAdapter;
+import com.mobdev.sam.apprenticeapp.fragments.SkillSpinnerAdapter;
 import com.mobdev.sam.apprenticeapp.models.Category;
 import com.mobdev.sam.apprenticeapp.models.Event;
 import com.mobdev.sam.apprenticeapp.models.Profile;

@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.mobdev.sam.apprenticeapp.R;
-import com.mobdev.sam.apprenticeapp.fragments.LogInFragment;
+import com.mobdev.sam.apprenticeapp.fragments.profile.LogInFragment;
 
 public class LogInActivity extends AppCompatActivity {
 
