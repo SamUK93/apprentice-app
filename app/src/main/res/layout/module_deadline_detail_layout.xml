@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/container"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/editDeadlineTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="@string/edit_deadline_title_text"
+            android:textAlignment="center"
+            android:textSize="23dp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/deadlineNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Enter deadline name.." />
+
+        <Button
+            android:id="@+id/pickTimeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Time" />
+
+        <TextView
+            android:id="@+id/hoursLabelText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hours_label_text"/>
+
+        <EditText
+            android:id="@+id/hoursText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/minutesLabelText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/minutes_label_text"/>
+
+        <EditText
+            android:id="@+id/minutesText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <Button
+            android:id="@+id/pickDateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Date" />
+
+        <TextView
+            android:id="@+id/dayLabelText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/day_label_text"/>
+
+        <EditText
+            android:id="@+id/dayText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/monthLabelText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/month_label_text"/>
+
+        <EditText
+            android:id="@+id/monthText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/yearLabelText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/year_label_text"/>
+
+        <EditText
+            android:id="@+id/yearText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/saveDeadlineButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/save_text" />
+
+    </LinearLayout>
+
+</ScrollView>

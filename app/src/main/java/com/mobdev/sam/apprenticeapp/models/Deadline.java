@@ -1,10 +1,12 @@
 package com.mobdev.sam.apprenticeapp.models;
 
+import java.io.Serializable;
+
 /**
  * Created by Sam on 07/08/2018.
  */
 
-public class Deadline {
+public class Deadline implements Serializable {
 
     private Long deadlineId;
     private String name;

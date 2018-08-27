@@ -75,7 +75,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String MODULE_DEADLINES_TABLE = "ModuleDeadlines";
     private static final String MODULE_DEADLINE_ID = "deadlineId";
     private static final String MODULE_DEADLINE_NAME = "name";
-    private static final String MODULE_DEADLINE_DATE = "deadline";
+    private static final String MODULE_DEADLINE_DATE = "date";
 
 
     // Module tasks
@@ -179,7 +179,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // Create Module Deadlines table
         sql = "CREATE TABLE " + MODULE_DEADLINES_TABLE +
-                "(" + MODULE_DEADLINE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + MODULE_DEADLINE_NAME + " TEXT" +
+                "(" + MODULE_DEADLINE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + MODULE_DEADLINE_NAME + " TEXT, " +
                 MODULE_DEADLINE_DATE + " TEXT, " + MODULE_ID + " INTEGER, FOREIGN KEY (" + MODULE_ID + ") REFERENCES " +
                 MODULES_TABLE + " (" + MODULE_ID + "));";
         Log.i("DBHELPER", sql);
@@ -1496,6 +1496,31 @@ public class DBHelper extends SQLiteOpenHelper {
         insertDeadlines(moduleId, deadlines);
     }
 
+    /**
+     * Updates a profile in the database
+     *
+     * @param profile the profile to update
+     */
+    public void updateDeadline(Deadline deadline) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.i("DBHELPER", "Updating DEADLINE with ID " + deadline.getDeadlineId());
+        ContentValues cv1 = new ContentValues();
+
+        cv1.put(MODULE_DEADLINE_ID, deadline.getDeadlineId());
+
+        cv1.put(MODULE_DEADLINE_NAME, deadline.getName());
+
+        cv1.put(MODULE_DEADLINE_DATE, deadline.getDate());
+
+        cv1.put(MODULE_ID, deadline.getModuleId());
+
+        db.update(MODULE_DEADLINES_TABLE, cv1, MODULE_DEADLINE_ID + " = ?",
+                new String[]{String.valueOf(deadline.getDeadlineId())});
+        Log.i("DBHELPER", "Updated DEADLINE with id " + deadline.getDeadlineId());
+
+        db.close();
+    }
+
     public void insertDeadlines(Long moduleId, List<Deadline> deadlines) {
 
         Log.i("DBHELPER", "Inserting deadlines for module with id - " + moduleId);
@@ -1521,6 +1546,36 @@ public class DBHelper extends SQLiteOpenHelper {
         db.delete(MODULE_DEADLINES_TABLE, MODULE_ID + " = ?",
                 new String[]{String.valueOf(moduleId)});
         db.close();
+    }
+
+    public List<Deadline> getAllDeadlinesForModule(Module module) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<Deadline> deadlines = new ArrayList<>();
+
+        String sql = "SELECT * FROM " + MODULE_DEADLINES_TABLE + " WHERE " + MODULE_ID + " = " + module.getModuleId();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + MODULE_DEADLINES_TABLE + " WHERE " + MODULE_ID + " = " + module.getModuleId(), null);
+        Log.i("DBHELPER", sql);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            deadlines.add(cursorToDeadline(cursor));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        db.close();
+
+        return deadlines;
+    }
+
+    public void deleteSpecificDeadline(Long moduleId, Long deadlineId) {
+        Log.i("DBHELPER", "Deleting deadline with id " + deadlineId + " and module with id - " + moduleId);
+
+        // Delete participant from module
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(MODULE_DEADLINES_TABLE, MODULE_ID + " = ? AND " + MODULE_DEADLINE_ID + " = ?",
+                new String[]{String.valueOf(moduleId), String.valueOf(deadlineId)});
     }
 
 

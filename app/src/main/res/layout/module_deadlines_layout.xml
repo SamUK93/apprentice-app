@@ -28,25 +28,12 @@
                 android:textSize="23dp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/newDeadlineNameText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="Enter deadline name.."/>
-
-            <Button
-                android:id="@+id/pickTimeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Set Time"
-                android:onClick="showTimePickerDialog" />
-
             <Button
                 android:id="@+id/addDeadlineButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="@string/button_add_text" />
+                android:text="ADD NEW DEADLINE" />
 
 
 
