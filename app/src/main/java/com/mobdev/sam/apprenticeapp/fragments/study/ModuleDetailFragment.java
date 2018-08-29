@@ -77,7 +77,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         // VIEW PARTICIPANTS BUTTON
         viewParticipantsButton = myView.findViewById(R.id.viewParticipantsButton);
         if (isNew) {
-            viewParticipantsButton.setVisibility(View.INVISIBLE);
+            viewParticipantsButton.setVisibility(View.GONE);
         }
         viewParticipantsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +103,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         // VIEW DEADLINES BUTTON
         viewDeadlinesButton = myView.findViewById(R.id.viewDeadlinesButton);
         if (isNew) {
-            viewDeadlinesButton.setVisibility(View.INVISIBLE);
+            viewDeadlinesButton.setVisibility(View.GONE);
         }
         viewDeadlinesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +129,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         // VIEW NOTES BUTTON
         viewNotesButton = myView.findViewById(R.id.viewNotesButton);
         if (isNew) {
-            viewNotesButton.setVisibility(View.INVISIBLE);
+            viewNotesButton.setVisibility(View.GONE);
         }
         viewNotesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,7 +142,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         // VIEW CALENDAR BUTTON
         viewCalendarButton = myView.findViewById(R.id.viewCalendarButton);
         if (isNew) {
-            viewCalendarButton.setVisibility(View.INVISIBLE);
+            viewCalendarButton.setVisibility(View.GONE);
         }
         viewCalendarButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +155,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         // COMMUNITY BUTTON
         communityButton = myView.findViewById(R.id.communityButton);
         if (isNew) {
-            communityButton.setVisibility(View.INVISIBLE);
+            communityButton.setVisibility(View.GONE);
         }
         communityButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,7 +168,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         // EDIT TASKS BUTTON
         editTasksButton = myView.findViewById(R.id.editTasksButton);
         if (isNew) {
-            editTasksButton.setVisibility(View.INVISIBLE);
+            editTasksButton.setVisibility(View.GONE);
         }
         editTasksButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,8 +197,9 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
                     module.setName(titleText.getText().toString());
                     module.setDescription(descriptionText.getText().toString());
 
-
                     dbHelper.updateModule(module);
+                    Toast.makeText(getActivity(), "Module Saved Successfully!", Toast.LENGTH_LONG).show();
+                    getFragmentManager().popBackStackImmediate();
                 }
             }
         });

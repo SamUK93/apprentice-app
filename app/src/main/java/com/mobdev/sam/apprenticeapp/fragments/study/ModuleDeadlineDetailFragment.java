@@ -134,24 +134,24 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
                     String time = timeText.getText().toString();
                     String fullDate = date + " " + time;
                     Deadline newDeadline = new Deadline(name,fullDate,module.getModuleId());
-                    newDeadline.setDeadlineId(deadline.getDeadlineId());
 
                     if (isNew) {
-                        dbHelper.insertDeadlines(module.getModuleId(),new ArrayList<>(Arrays.asList(deadline)));
+                        dbHelper.insertDeadlines(module.getModuleId(),new ArrayList<>(Arrays.asList(newDeadline)));
 
                         Toast.makeText(getActivity(), "New Deadline Created Successfully!", Toast.LENGTH_LONG).show();
                         getFragmentManager().popBackStackImmediate();
                     }
                     else {
+                        newDeadline.setDeadlineId(deadline.getDeadlineId());
                         dbHelper.updateDeadline(newDeadline);
                     }
                 }
             });
         }
         else {
-            setTimeButton.setVisibility(View.INVISIBLE);
-            setDateButton.setVisibility(View.INVISIBLE);
-            saveDeadlineButton.setVisibility(View.INVISIBLE);
+            setTimeButton.setVisibility(View.GONE);
+            setDateButton.setVisibility(View.GONE);
+            saveDeadlineButton.setVisibility(View.GONE);
         }
 
 
@@ -159,17 +159,26 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
     }
 
     public void showTimePickerDialog() {
-        Date date = null;
-        try {
-            date = timeOnlyFormat.parse(timeText.getText().toString());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-
         TimePickerFragment newFragment = new TimePickerFragment();
         Bundle args = new Bundle();
+        Calendar calendar = Calendar.getInstance();
+        Date date = null;
+
+        if (isNew) {
+
+        }
+        else {
+            try {
+                date = timeOnlyFormat.parse(timeText.getText().toString());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            calendar.setTime(date);
+        }
+
+
+
         args.putInt("hours", calendar.get(Calendar.HOUR_OF_DAY));
         args.putInt("minutes", calendar.get(Calendar.MINUTE));
         newFragment.setArguments(args);
@@ -186,17 +195,26 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
 
 
     public void showDatePickerDialog() {
-        Date date = null;
-        try {
-            date = dateOnlyFormat.parse(dateText.getText().toString());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-
         DatePickerFragment newFragment = new DatePickerFragment();
         Bundle args = new Bundle();
+        Calendar calendar = Calendar.getInstance();
+        Date date = null;
+
+        if (isNew) {
+
+        }
+        else {
+            try {
+                date = dateOnlyFormat.parse(dateText.getText().toString());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            calendar.setTime(date);
+        }
+
+
+
         args.putInt("day", calendar.get(Calendar.DAY_OF_MONTH));
         args.putInt("month", calendar.get(Calendar.MONTH));
         args.putInt("year", calendar.get(Calendar.YEAR));
@@ -226,7 +244,13 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
         dbHelper = new DBHelper(getContext());
 
         // Set main title
-        getActivity().setTitle("Edit Deadline");
+        if (isNew) {
+            getActivity().setTitle("New Deadline");
+        }
+        else {
+            getActivity().setTitle("View Deadline");
+        }
+
 
     }
 }

@@ -60,6 +60,7 @@ public class ModuleDeadlinesFragment extends android.support.v4.app.Fragment {
                 bundle.putSerializable("userProfile", myProfile);
                 bundle.putSerializable("module", module);
                 bundle.putBoolean("isNew", true);
+                bundle.putBoolean("isAdmin", myProfile.getIsAdmin());
                 // Create a new Search fragment
                 ModuleDeadlineDetailFragment moduleDeadlineDetailFragment = new ModuleDeadlineDetailFragment();
                 moduleDeadlineDetailFragment.setArguments(bundle);

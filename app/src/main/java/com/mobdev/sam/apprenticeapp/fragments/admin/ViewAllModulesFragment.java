@@ -66,6 +66,7 @@ public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
                         bundle.putSerializable("userProfile", myProfile);
                         bundle.putSerializable("moduleId", module.getModuleId());
                         bundle.putBoolean("isNew", false);
+                        bundle.putBoolean("isAdmin", true);
                         // Create a new Module Detail fragment
                         ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
                         moduleDetailFragment.setArguments(bundle);

@@ -1,5 +1,8 @@
 package com.mobdev.sam.apprenticeapp.fragments.social;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -8,19 +11,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
+import com.mobdev.sam.apprenticeapp.fragments.DatePickerFragment;
+import com.mobdev.sam.apprenticeapp.fragments.TimePickerFragment;
 import com.mobdev.sam.apprenticeapp.fragments.profile.AddSkillsInterestsFragment;
 import com.mobdev.sam.apprenticeapp.models.Event;
 import com.mobdev.sam.apprenticeapp.models.Profile;
 import com.mobdev.sam.apprenticeapp.models.Skill;
 import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,7 +55,10 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
     private EditText titleText;
     private EditText descriptionText;
     private Button viewAttendeesButton;
-    private EditText dateText;
+    private TextView dateText;
+    private TextView timeText;
+    private Button setTimeButton;
+    private Button setDateButton;
     private EditText locationText;
     private EditText goodForText;
     private EditText prerequisitesText;
@@ -54,16 +68,48 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
     private Button saveButton;
     private Button cancelAttendanceButton;
 
+    SimpleDateFormat dateFormatFull = new SimpleDateFormat(
+            "dd/MM/yyyy HH:mm");
+    SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
+            "dd/MM/yyyy");
+    SimpleDateFormat timeOnlyFormat = new SimpleDateFormat(
+            "HH:mm");
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.event_detail_layout, container, false);
 
+
+        setTimeButton = myView.findViewById(R.id.pickTimeButton);
+        setDateButton = myView.findViewById(R.id.pickDateButton);
+        dateText = myView.findViewById(R.id.dateText);
+        timeText = myView.findViewById(R.id.timeText);
+
         if (!isNew) {
+            // If this is not a new event, get it from the db
             event = dbHelper.getEvent(id);
+
+            // Set the date
+            Date date = null;
+
+            try {
+                date = dateFormatFull.parse(event.getDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+
+            dateText.setText(String.valueOf(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH) + "/" + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR))));
+
+            timeText.setText(String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(calendar.get(Calendar.MINUTE)));
         }
 
 
+
+        // Check if the current user is attending the event
         if (!owner) {
             List<Event> events = dbHelper.getAllEventsProfileAttending(userProfile.getId());
             if (events.size() < 1) {
@@ -77,9 +123,32 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
                 else
                     isAttending = false;
             }
+
+            // Hide the datepicker buttons
+            setTimeButton.setVisibility(View.GONE);
+            setDateButton.setVisibility(View.GONE);
         }
         else {
-            isAttending = false;
+            // User is owner of event
+            //isAttending = false;
+
+            setTimeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showTimePickerDialog();
+                }
+            });
+
+
+
+            setDateButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showDatePickerDialog();
+                }
+            });
+
+
         }
 
 
@@ -102,19 +171,26 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
 
         viewAttendeesButton = myView.findViewById(R.id.viewAttendeesButton);
         if (isNew) {
-            viewAttendeesButton.setVisibility(View.INVISIBLE);
+            viewAttendeesButton.setVisibility(View.GONE);
         }
         viewAttendeesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Implement view attendees", Toast.LENGTH_LONG).show();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("event", event);
+                bundle.putSerializable("profile", userProfile);
+                // Create a new Search fragment
+                EventAttendeesFragment eventAttendeesFragment = new EventAttendeesFragment();
+                eventAttendeesFragment.setArguments(bundle);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+                // Replace the current fragment with the new search fragment
+                transaction.replace(R.id.content_frame, eventAttendeesFragment);
+                // Add transaction to the back stack and commit
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
-
-        // DATE
-        dateText = myView.findViewById(R.id.dateText);
-        if (!owner)
-            dateText.setInputType(InputType.TYPE_NULL);
 
         // LOCATION
         locationText = myView.findViewById(R.id.locationText);
@@ -134,8 +210,8 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         // ADD SKILL BUTTON
         //TODO THIS DOESN'T WORK FOR NEW SKILLS (BEFORE SAVED) because the event doesn't exist yet
         addSkillButton = myView.findViewById(R.id.addSkillButton);
-        if (!owner)
-            addSkillButton.setVisibility(View.INVISIBLE);
+        if (!owner || isNew)
+            addSkillButton.setVisibility(View.GONE);
         addSkillButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -171,20 +247,22 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         // ATTEND BUTTON
         attendButton = myView.findViewById(R.id.attendButton);
         if (isAttending || isNew || owner)
-            attendButton.setVisibility(View.INVISIBLE);
+            attendButton.setVisibility(View.GONE);
 
         attendButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 dbHelper.insertEventAttendee(event.getEventId(),userProfile.getId());
+                attendButton.setVisibility(View.GONE);
+                Toast.makeText(getContext(),"You are now attending!",Toast.LENGTH_LONG).show();
             }
         });
 
         // SAVE BUTTON
         saveButton = myView.findViewById(R.id.eventSaveButton);
         if (!owner)
-            saveButton.setVisibility(View.INVISIBLE);
+            saveButton.setVisibility(View.GONE);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
 
@@ -194,25 +272,31 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
                 if (isNew) {
                     event = new Event(titleText.getText().toString(),
                             descriptionText.getText().toString(),
-                            dateText.getText().toString(),
                             locationText.getText().toString(),
+                            dateText.getText().toString() + " " + timeText.getText().toString(),
                             goodForText.getText().toString(),
                             prerequisitesText.getText().toString(),
                             new ArrayList<Skill>(),
                             userProfile.getId());
 
                     dbHelper.insertEvent(event);
+
+                    Toast.makeText(getActivity(), "New Event Created Successfully!", Toast.LENGTH_LONG).show();
+                    getFragmentManager().popBackStackImmediate();
                 }
 
                 else {
                     event.setName(titleText.getText().toString());
                     event.setDescription(descriptionText.getText().toString());
-                    event.setDate(dateText.getText().toString());
+                    event.setDate(dateText.getText().toString() + " " + timeText.getText().toString());
                     event.setLocation(locationText.getText().toString());
                     event.setGoodFor(goodForText.getText().toString());
                     event.setPrerequisites(prerequisitesText.getText().toString());
 
                     dbHelper.updateEvent(event);
+
+                    Toast.makeText(getActivity(), "Event Saved Successfully!", Toast.LENGTH_LONG).show();
+                    getFragmentManager().popBackStackImmediate();
                 }
             }
         });
@@ -220,12 +304,20 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         // SHARE BUTTON
         shareButton = myView.findViewById(R.id.shareButton);
         if (isNew)
-            shareButton.setVisibility(View.INVISIBLE);
+            shareButton.setVisibility(View.GONE);
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Toast.makeText(getActivity(), "Implement share", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                String shareContent = "Hello!\n " + userProfile.getName() + " has shared an event with you using the Capgemini Apprentice App!\n\n" +
+                        "Event Name: " + event.getName() + "\n\n" +
+                        "Description: " + event.getDescription() + "\n\n" +
+                        "Location: " + event.getLocation() + "\n\n" +
+                        "Date/Time: " + event.getDate();
+                intent.putExtra(Intent.EXTRA_SUBJECT,"New Event Invite!");
+                intent.putExtra(Intent.EXTRA_TEXT, shareContent);
+                startActivity(Intent.createChooser(intent,"Select the method to share"));
             }
         });
 
@@ -234,10 +326,10 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         // CANCEL ATTENDANCE BUTTON
         cancelAttendanceButton = myView.findViewById(R.id.cancelAttendanceButton);
         if (owner || isNew) {
-            cancelAttendanceButton.setVisibility(View.INVISIBLE);
+            cancelAttendanceButton.setVisibility(View.GONE);
         }
         else if (!owner && !isAttending) {
-            cancelAttendanceButton.setVisibility(View.INVISIBLE);
+            cancelAttendanceButton.setVisibility(View.GONE);
         }
         cancelAttendanceButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -252,7 +344,6 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
             titleText.setText(event.getName());
             descriptionText.setText(event.getDescription());
             locationText.setText(event.getLocation());
-            dateText.setText(event.getDate());
             goodForText.setText(event.getGoodFor());
             prerequisitesText.setText(event.getPrerequisites());
         }
@@ -261,6 +352,80 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
 
         return myView;
     }
+
+
+    // Date picker methods
+    public void showTimePickerDialog() {
+        TimePickerFragment newFragment = new TimePickerFragment();
+        Bundle args = new Bundle();
+        Calendar calendar = Calendar.getInstance();
+
+        Date date = null;
+        if (isNew) {
+
+        }
+        else {
+            try {
+                date = timeOnlyFormat.parse(timeText.getText().toString());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            calendar.setTime(date);
+        }
+
+
+
+
+
+        args.putInt("hours", calendar.get(Calendar.HOUR_OF_DAY));
+        args.putInt("minutes", calendar.get(Calendar.MINUTE));
+        newFragment.setArguments(args);
+        newFragment.setCallBack(onTime);
+        newFragment.show(getFragmentManager(), "timePicker");
+    }
+
+    TimePickerDialog.OnTimeSetListener onTime = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+            timeText.setText(hour + ":" + minute);
+        }
+    };
+
+
+    public void showDatePickerDialog() {
+        DatePickerFragment newFragment = new DatePickerFragment();
+        Bundle args = new Bundle();
+        Calendar calendar = Calendar.getInstance();
+
+        if (isNew) {
+
+        }
+        else {
+            Date date = null;
+            try {
+                date = dateOnlyFormat.parse(dateText.getText().toString());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            calendar.setTime(date);
+        }
+
+
+
+        args.putInt("day", calendar.get(Calendar.DAY_OF_MONTH));
+        args.putInt("month", calendar.get(Calendar.MONTH));
+        args.putInt("year", calendar.get(Calendar.YEAR));
+        newFragment.setArguments(args);
+        newFragment.setCallBack(onDate);
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
+    DatePickerDialog.OnDateSetListener onDate = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+            dateText.setText(day + "/" + (month+1) + "/" + year);
+        }
+    };
 
 
     @Override

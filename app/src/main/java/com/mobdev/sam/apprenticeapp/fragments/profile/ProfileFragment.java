@@ -96,7 +96,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         // ADD SKILL BUTTON
         addSkillButton = myView.findViewById(R.id.addSkillButton);
         if (!owner)
-            addSkillButton.setVisibility(View.INVISIBLE);
+            addSkillButton.setVisibility(View.GONE);
         addSkillButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -127,7 +127,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         // ADD INTEREST BUTTON
         addInterestButton = myView.findViewById(R.id.addInterestButton);
         if (!owner)
-            addInterestButton.setVisibility(View.INVISIBLE);
+            addInterestButton.setVisibility(View.GONE);
         addInterestButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -180,7 +180,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         // SAVE BUTTON
         saveButton = myView.findViewById(R.id.profileSaveButton);
         if (!owner)
-            saveButton.setVisibility(View.INVISIBLE);
+            saveButton.setVisibility(View.GONE);
         saveButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -191,22 +191,24 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
                 dbHelper.updateProfile(profile);
 
+                Toast.makeText(getActivity(), "Profile Saved Successfully!", Toast.LENGTH_LONG).show();
+                getFragmentManager().popBackStackImmediate();
             }
         });
 
         // ADD CONTACT BUTTON
         addContactButton = myView.findViewById(R.id.addContactButton);
         if (owner) {
-            addContactButton.setVisibility(View.INVISIBLE);
+            addContactButton.setVisibility(View.GONE);
         }
         else if (!owner && isContact) {
-            addContactButton.setVisibility(View.INVISIBLE);
+            addContactButton.setVisibility(View.GONE);
         }
         addContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dbHelper.insertContact(userProfile.getId(),profile.getId());
-                addContactButton.setVisibility(View.INVISIBLE);
+                addContactButton.setVisibility(View.GONE);
                 removeContactButton.setVisibility(View.VISIBLE);
                 Toast.makeText(getActivity(), "Contact added!", Toast.LENGTH_LONG).show();
             }
@@ -217,16 +219,16 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         // REMOVE CONTACT BUTTON
         removeContactButton = myView.findViewById(R.id.removeContactButton);
         if (owner) {
-            removeContactButton.setVisibility(View.INVISIBLE);
+            removeContactButton.setVisibility(View.GONE);
         }
         else if (!owner && !isContact) {
-            removeContactButton.setVisibility(View.INVISIBLE);
+            removeContactButton.setVisibility(View.GONE);
         }
         removeContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dbHelper.deleteContact(userProfile.getId(),profile.getId());
-                removeContactButton.setVisibility(View.INVISIBLE);
+                removeContactButton.setVisibility(View.GONE);
                 addContactButton.setVisibility(View.VISIBLE);
                 Toast.makeText(getActivity(), "Contact removed!", Toast.LENGTH_LONG).show();
             }

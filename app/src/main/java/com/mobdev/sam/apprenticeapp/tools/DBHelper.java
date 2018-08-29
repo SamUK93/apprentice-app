@@ -1245,6 +1245,24 @@ public class DBHelper extends SQLiteOpenHelper {
         return events;
     }
 
+    public List<Profile> getEventAttendees(Long eventId) {
+        List<Profile> profilesAttending = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + EVENT_ATTENDEES_TABLE + " WHERE "
+                + EVENT_ID + " = " + eventId, null);
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            profilesAttending.add(getProfile(cursor.getLong(1)));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        db.close();
+        return profilesAttending;
+    }
+
     public Event cursorToEvent(Cursor cursor) {
         Long eventId = cursor.getLong(0);
         String name = cursor.getString(1);

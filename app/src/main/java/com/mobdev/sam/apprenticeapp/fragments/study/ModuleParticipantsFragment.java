@@ -66,7 +66,7 @@ public class ModuleParticipantsFragment extends android.support.v4.app.Fragment 
         // PARTICIPANT SPINNER
         participantsSpinner = myView.findViewById(R.id.participantsSpinner);
         if (!isAdmin) {
-            participantsSpinner.setVisibility(View.INVISIBLE);
+            participantsSpinner.setVisibility(View.GONE);
         }
 
         // Get all deadlines
@@ -122,7 +122,7 @@ public class ModuleParticipantsFragment extends android.support.v4.app.Fragment 
         // ADD PARTICIPANT BUTTON
         addParticipantButton = myView.findViewById(R.id.addParticipantButton);
         if (!isAdmin) {
-            addParticipantButton.setVisibility(View.INVISIBLE);
+            addParticipantButton.setVisibility(View.GONE);
         }
         addParticipantButton.setOnClickListener(new View.OnClickListener() {
             @Override

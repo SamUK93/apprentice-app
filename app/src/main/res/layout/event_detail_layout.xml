@@ -45,25 +45,40 @@
 
 
         <!-- Date -->
-        <TextView
-            android:id="@+id/dateLabel"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/pickTimeButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:text="@string/date_label_text"
-            android:textSize="15dp"
-            android:textStyle="bold" />
+            android:text="Set Time" />
 
-        <EditText
-            android:id="@+id/dateText"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/hoursLabelText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:hint="Enter date..."
-            android:textSize="11dp" />
+            android:text="@string/time_label_text"/>
+
+        <TextView
+            android:id="@+id/timeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <Button
+            android:id="@+id/pickDateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Date" />
+
+        <TextView
+            android:id="@+id/dateLabelText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/date_label_text"/>
+
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <!-- Location -->
         <TextView

@@ -13,6 +13,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
 import com.mobdev.sam.apprenticeapp.fragments.DatePickerFragment;
@@ -86,7 +87,7 @@ public class CapgeminiInfoFragment extends Fragment {
         // SET JOIN DATE BUTTON
         setJoinDateButton = myView.findViewById(R.id.joinDateButton);
         if (!owner)
-            setJoinDateButton.setVisibility(View.INVISIBLE);
+            setJoinDateButton.setVisibility(View.GONE);
         setJoinDateButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -99,7 +100,7 @@ public class CapgeminiInfoFragment extends Fragment {
         // SAVE BUTTON
         saveButton = myView.findViewById(R.id.saveCapgeminiInfoButton);
         if (!owner)
-            saveButton.setVisibility(View.INVISIBLE);
+            saveButton.setVisibility(View.GONE);
         saveButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -112,6 +113,9 @@ public class CapgeminiInfoFragment extends Fragment {
                 profile.setJoinDate(joinDateText.getText().toString());
 
                 dbHelper.updateProfile(profile);
+
+                Toast.makeText(getActivity(), "Capgemini Info Saved Successfully!", Toast.LENGTH_LONG).show();
+                getFragmentManager().popBackStackImmediate();
 
             }
         });
