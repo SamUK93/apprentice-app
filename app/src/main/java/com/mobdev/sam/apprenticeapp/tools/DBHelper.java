@@ -30,6 +30,9 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "apprenticeAppDB";
     private static final int DB_VERSION = 1;
 
+    // Last Logged In
+    private static final String LAST_LOGGED_IN_TABLE = "LastLoggedIn";
+
     // Profiles
     private static final String PROFILE_TABLE = "Profiles";
     private static final String PROFILE_ID = "profileId";
@@ -125,6 +128,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 PROFILE_DESC + " TEXT, " + PROFILE_EMAIL + " TEXT, " +
                 PROFILE_BASE + " TEXT, " + PROFILE_GRADE + " INTEGER, " +
                 PROFILE_JOB_TITLE + " TEXT, " + PROFILE_JOIN_DATE + " TEXT, " + PROFILE_IS_ADMIN + " INTEGER);";
+        Log.i("DBHELPER", sql);
+        System.out.println(sql);
+        sqLiteDatabase.execSQL(sql);
+
+        sql = "CREATE TABLE " + LAST_LOGGED_IN_TABLE +
+                "(" + PROFILE_ID + " INTEGER);";
         Log.i("DBHELPER", sql);
         System.out.println(sql);
         sqLiteDatabase.execSQL(sql);
@@ -248,6 +257,24 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
+    }
+
+    public void updateLastLoggedIn(Long profileId) {
+        // Delete current entry
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(LAST_LOGGED_IN_TABLE, null,
+                null);
+        db.close();
+
+
+        // Add new entry
+        SQLiteDatabase db2 = this.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(PROFILE_ID,profileId);
+        db2.insert(LAST_LOGGED_IN_TABLE,null,cv);
+        db2.close();
     }
 
     public Profile cursorToProfile(Cursor cursor) {
@@ -1497,9 +1524,9 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Updates a profile in the database
+     * Updates a deadline in the database
      *
-     * @param profile the profile to update
+     * @param deadline the deadline to update
      */
     public void updateDeadline(Deadline deadline) {
         SQLiteDatabase db = this.getWritableDatabase();

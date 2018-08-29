@@ -123,6 +123,7 @@ public class ModuleDeadlinesFragment extends android.support.v4.app.Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("userProfile", myProfile);
                 bundle.putBoolean("isNew", false);
+                bundle.putBoolean("isAdmin", isAdmin);
                 bundle.putSerializable("module", module);
                 bundle.putSerializable("deadline", deadline);
                 // Create a new Profile fragment

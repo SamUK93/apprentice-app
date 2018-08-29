@@ -1,24 +1,24 @@
 package com.mobdev.sam.apprenticeapp.fragments.study;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
 import com.mobdev.sam.apprenticeapp.fragments.DatePickerFragment;
 import com.mobdev.sam.apprenticeapp.fragments.TimePickerFragment;
-import com.mobdev.sam.apprenticeapp.fragments.profile.ProfileFragment;
 import com.mobdev.sam.apprenticeapp.models.Deadline;
 import com.mobdev.sam.apprenticeapp.models.Module;
 import com.mobdev.sam.apprenticeapp.models.Profile;
@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Sam on 13/07/2018.
@@ -40,23 +39,28 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
 
     View myView;
     boolean isNew;
+    boolean isAdmin;
     private DBHelper dbHelper;
     private Profile myProfile;
     private Deadline deadline;
     private Module module;
 
     // UI Elements
-    private TextView deadlineNameText;
+    private EditText deadlineNameText;
     private Button setTimeButton;
     private Button setDateButton;
     private Button saveDeadlineButton;
 
-    private EditText yearText;
-    private EditText monthText;
-    private EditText dayText;
+    private TextView dateText;
 
-    private EditText hourText;
-    private EditText minuteText;
+    private TextView timeText;
+
+    SimpleDateFormat dateFormatFull = new SimpleDateFormat(
+            "dd/MM/yyyy HH:mm");
+    SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
+            "dd/MM/yyyy");
+    SimpleDateFormat timeOnlyFormat = new SimpleDateFormat(
+            "HH:mm");
 
     @SuppressLint("NewApi")
     @Nullable
@@ -65,44 +69,27 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
         myView = inflater.inflate(R.layout.module_deadline_detail_layout, container, false);
 
         deadlineNameText = myView.findViewById(R.id.deadlineNameText);
+        if (!isAdmin)
+            deadlineNameText.setInputType(InputType.TYPE_NULL);
 
         // Hide fab
         //((MainActivity)getActivity()).hideFloatingActionButton();
 
-        setTimeButton = myView.findViewById(R.id.pickTimeButton);
-        setTimeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showTimePickerDialog(myView);
-            }
-        });
 
 
-        setDateButton = myView.findViewById(R.id.pickDateButton);
-        setDateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDatePickerDialog(myView);
-            }
-        });
+        dateText = myView.findViewById(R.id.dateText);
 
-        yearText = myView.findViewById(R.id.yearText);
-        monthText = myView.findViewById(R.id.monthText);
-        dayText = myView.findViewById(R.id.dayText);
-
-        hourText = myView.findViewById(R.id.hoursText);
-        minuteText = myView.findViewById(R.id.minutesText);
+        timeText = myView.findViewById(R.id.timeText);
 
         if (!isNew) {
             deadlineNameText.setText(deadline.getName());
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat(
-                    "dd/MM/yyyy HH:mm");
+
 
             Date date = null;
 
             try {
-                date = dateFormat.parse(deadline.getDate());
+                date = dateFormatFull.parse(deadline.getDate());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -110,43 +97,121 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
 
-            yearText.setText(String.valueOf(calendar.get(Calendar.YEAR)));
-            //MONTHS START FROM 0 so add one!
-            monthText.setText(String.valueOf(calendar.get(Calendar.MONTH) + 1));
-            dayText.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+            dateText.setText(String.valueOf(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH) + "/" + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR))));
 
-            hourText.setText(String.valueOf(date.getHours()));
-            minuteText.setText(String.valueOf(date.getMinutes()));
+            timeText.setText(String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(calendar.get(Calendar.MINUTE)));
         }
 
 
+        setTimeButton = myView.findViewById(R.id.pickTimeButton);
+        setDateButton = myView.findViewById(R.id.pickDateButton);
         saveDeadlineButton = myView.findViewById(R.id.saveDeadlineButton);
-        saveDeadlineButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String name = deadlineNameText.getText().toString();
-                String year = yearText.getText().toString();
-                String month = monthText.getText().toString();
-                String day = dayText.getText().toString();
-                String hour = hourText.getText().toString();
-                String minute = minuteText.getText().toString();
-                String fullDate = day + "/" + month + "/" + year + " " + hour + ":" + minute;
-                deadline = new Deadline(name,fullDate,module.getModuleId());
 
-                if (isNew) {
-                    dbHelper.insertDeadlines(module.getModuleId(),new ArrayList<>(Arrays.asList(deadline)));
+        if (isAdmin) {
 
-                    Toast.makeText(getActivity(), "New Deadline Created Successfully!", Toast.LENGTH_LONG).show();
-                    getFragmentManager().popBackStackImmediate();
+            setTimeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showTimePickerDialog();
                 }
-                else {
-                    dbHelper.updateDeadline(deadline);
+            });
+
+
+
+            setDateButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showDatePickerDialog();
                 }
-            }
-        });
+            });
+
+
+            saveDeadlineButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String name = deadlineNameText.getText().toString();
+                    String date = dateText.getText().toString();
+                    String time = timeText.getText().toString();
+                    String fullDate = date + " " + time;
+                    Deadline newDeadline = new Deadline(name,fullDate,module.getModuleId());
+                    newDeadline.setDeadlineId(deadline.getDeadlineId());
+
+                    if (isNew) {
+                        dbHelper.insertDeadlines(module.getModuleId(),new ArrayList<>(Arrays.asList(deadline)));
+
+                        Toast.makeText(getActivity(), "New Deadline Created Successfully!", Toast.LENGTH_LONG).show();
+                        getFragmentManager().popBackStackImmediate();
+                    }
+                    else {
+                        dbHelper.updateDeadline(newDeadline);
+                    }
+                }
+            });
+        }
+        else {
+            setTimeButton.setVisibility(View.INVISIBLE);
+            setDateButton.setVisibility(View.INVISIBLE);
+            saveDeadlineButton.setVisibility(View.INVISIBLE);
+        }
+
 
         return myView;
     }
+
+    public void showTimePickerDialog() {
+        Date date = null;
+        try {
+            date = timeOnlyFormat.parse(timeText.getText().toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        TimePickerFragment newFragment = new TimePickerFragment();
+        Bundle args = new Bundle();
+        args.putInt("hours", calendar.get(Calendar.HOUR_OF_DAY));
+        args.putInt("minutes", calendar.get(Calendar.MINUTE));
+        newFragment.setArguments(args);
+        newFragment.setCallBack(onTime);
+        newFragment.show(getFragmentManager(), "timePicker");
+    }
+
+    TimePickerDialog.OnTimeSetListener onTime = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+            timeText.setText(hour + ":" + minute);
+        }
+    };
+
+
+    public void showDatePickerDialog() {
+        Date date = null;
+        try {
+            date = dateOnlyFormat.parse(dateText.getText().toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        DatePickerFragment newFragment = new DatePickerFragment();
+        Bundle args = new Bundle();
+        args.putInt("day", calendar.get(Calendar.DAY_OF_MONTH));
+        args.putInt("month", calendar.get(Calendar.MONTH));
+        args.putInt("year", calendar.get(Calendar.YEAR));
+        newFragment.setArguments(args);
+        newFragment.setCallBack(onDate);
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
+    DatePickerDialog.OnDateSetListener onDate = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+            dateText.setText(day + "/" + (month+1) + "/" + year);
+        }
+    };
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -154,6 +219,7 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
         if (getArguments() != null) {
             myProfile = (Profile) getArguments().getSerializable("userProfile");
             isNew = getArguments().getBoolean("isNew");
+            isAdmin = getArguments().getBoolean("isAdmin");
             module = (Module) getArguments().getSerializable("module");
             deadline = (Deadline) getArguments().getSerializable("deadline");
         }
@@ -162,15 +228,5 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
         // Set main title
         getActivity().setTitle("Edit Deadline");
 
-    }
-
-    public void showTimePickerDialog(View v) {
-        DialogFragment newFragment = new TimePickerFragment();
-        newFragment.show(getFragmentManager(), "timePicker");
-    }
-
-    public void showDatePickerDialog(View v) {
-        DialogFragment newFragment = new DatePickerFragment();
-        newFragment.show(getFragmentManager(), "datePicker");
     }
 }
