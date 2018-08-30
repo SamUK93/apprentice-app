@@ -22,9 +22,6 @@ public class HomeFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.home_layout, container, false);
 
-        // Hide fab
-        //((MainActivity)getActivity()).hideFloatingActionButton();
-
         return myView;
     }
 

@@ -44,7 +44,9 @@ public class Note {
         return this.tags;
     }
 
-    public List<Long> getModuleIds() { return this.moduleIds; }
+    public List<Long> getModuleIds() {
+        return this.moduleIds;
+    }
 
     public boolean getOpenToPublic() {
         return this.openToPublic;

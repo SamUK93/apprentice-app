@@ -13,7 +13,7 @@ import com.mobdev.sam.apprenticeapp.models.Skill;
 import java.util.List;
 
 /**
- * Created by Sam on 25/07/2018.
+ * Skill Spinner Adapter, a custom spinner adapter for displaying skills in spinners
  */
 
 public class SkillSpinnerAdapter extends ArrayAdapter<Skill> {
@@ -28,33 +28,30 @@ public class SkillSpinnerAdapter extends ArrayAdapter<Skill> {
     }
 
     @Override
-    public int getCount(){
+    public int getCount() {
         return skills.size();
     }
 
     @Override
-    public Skill getItem(int position){
+    public Skill getItem(int position) {
         return skills.get(position);
     }
 
     @Override
-    public long getItemId(int position){
+    public long getItemId(int position) {
         return position;
     }
 
-    // And the "magic" goes here
-    // This is for the "passive" state of the spinner
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // I created a dynamic TextView here, but you can reference your own  custom layout for each spinner item
-        TextView label = new TextView(context);
-        label.setTextColor(Color.BLACK);
-        // Then you can get the current item using the values array (Users array) and the current position
-        // You can NOW reference each method you has created in your bean object (User class)
-        label.setText(skills.get(position).getName());
+        // Skill text view
+        TextView skill = new TextView(context);
+        skill.setTextColor(Color.BLACK);
 
-        // And finally return your dynamic (or custom) view for each spinner item
-        return label;
+        // Set the text view to the skill name
+        skill.setText(skills.get(position).getName());
+
+        return skill;
     }
 
     // And here is when the "chooser" is popped up
@@ -62,10 +59,13 @@ public class SkillSpinnerAdapter extends ArrayAdapter<Skill> {
     @Override
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
-        TextView label = new TextView(context);
-        label.setTextColor(Color.BLACK);
-        label.setText(skills.get(position).getName());
+        // Skill text view
+        TextView skill = new TextView(context);
+        skill.setTextColor(Color.BLACK);
 
-        return label;
+        // Set the text view to the skill name
+        skill.setText(skills.get(position).getName());
+
+        return skill;
     }
 }

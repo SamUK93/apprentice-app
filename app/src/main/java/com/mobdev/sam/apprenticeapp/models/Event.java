@@ -35,23 +35,41 @@ public class Event implements Serializable {
 
 
     // Get
-    public Long getEventId() { return this.eventId; }
+    public Long getEventId() {
+        return this.eventId;
+    }
 
-    public String getName() { return this.name; }
+    public String getName() {
+        return this.name;
+    }
 
-    public String getDescription() { return this.description; }
+    public String getDescription() {
+        return this.description;
+    }
 
-    public String getLocation() { return this.location; }
+    public String getLocation() {
+        return this.location;
+    }
 
-    public String getDate() { return this.date; }
+    public String getDate() {
+        return this.date;
+    }
 
-    public String getGoodFor() { return this.goodFor; }
+    public String getGoodFor() {
+        return this.goodFor;
+    }
 
-    public String getPrerequisites() { return this.prerequisites; }
+    public String getPrerequisites() {
+        return this.prerequisites;
+    }
 
-    public List<Skill> getRelatedSkills() { return this.relatedSkills; }
+    public List<Skill> getRelatedSkills() {
+        return this.relatedSkills;
+    }
 
-    public Long getCreatorId() { return this.creatorId; }
+    public Long getCreatorId() {
+        return this.creatorId;
+    }
 
 
     // Set
@@ -97,6 +115,7 @@ public class Event implements Serializable {
 
     /**
      * Overwrites the current skills with a new set of skills
+     *
      * @param skills the skills to be set
      */
     public Event setAllRelatedSkills(List<Skill> skills) {
@@ -106,6 +125,7 @@ public class Event implements Serializable {
 
     /**
      * Adds a list of skills, ignoring those that are already in the skills list for this profile
+     *
      * @param skills the list of skills to be added
      */
     public Event addRelatedSkills(List<Skill> skills) {
@@ -117,6 +137,7 @@ public class Event implements Serializable {
 
     /**
      * Adds a skill if it is not already in the skills list for this profile
+     *
      * @param skill the skill to be added
      */
     public Event addRelatedSkill(Skill skill) {
@@ -128,6 +149,7 @@ public class Event implements Serializable {
 
     /**
      * Removes a skill specified by the skill name
+     *
      * @param skillName a string value representing the skill to be removed
      */
     public Event removeRelatedSkillByName(String skillName) {

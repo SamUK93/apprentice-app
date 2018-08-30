@@ -1,5 +1,7 @@
 package com.mobdev.sam.apprenticeapp.fragments.profile;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -22,7 +24,12 @@ import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 import java.util.List;
 
 /**
- * Created by Sam on 02/07/2018.
+ * The 'Profile' fragment. This displays a profile with their information, and links to view
+ * their skills, interests and capgemini info.
+ * <p>
+ * If the profile is the logged in user's then they may edit the fields and save changes to the database.
+ * <p>
+ * If the profile is another users, then they can be added as a contact, or sent a message.
  */
 
 public class ProfileFragment extends android.support.v4.app.Fragment {
@@ -46,6 +53,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     private Button saveButton;
     private Button addContactButton;
     private Button removeContactButton;
+    private Button sendMessageButton;
 
     @Nullable
     @Override
@@ -54,6 +62,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
         profile = dbHelper.getProfile(id);
 
+        // Check if this profile is a contact of the logged in user.
         if (!owner) {
             List<Contact> contacts = dbHelper.getAllContactsForProfile(userProfile.getId());
             if (contacts.size() < 1) {
@@ -63,15 +72,12 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
                 if (contact.getContactId().equals(profile.getId())) {
                     isContact = true;
                     break;
-                }
-                else
+                } else
                     isContact = false;
             }
-        }
-        else {
+        } else {
             isContact = false;
         }
-
 
 
         // LAYOUTS
@@ -101,10 +107,13 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onClick(View view) {
+
+                // Add skill button clicked, so launch a new 'AddSkillsInterests' fragment
+                // with the 'skills' searchType.
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("profile", profile);
                 bundle.putString("searchType", "skills");
-                // Create a new Search fragment
+                // Create a new AddSkillsInterests fragment
                 AddSkillsInterestsFragment addSkillsInterestsFragment = new AddSkillsInterestsFragment();
                 addSkillsInterestsFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -119,6 +128,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
         // SKILLS
         for (Skill skill : profile.getSkills()) {
+            // For each skill, display it in the view.
             TextView skillRow = new TextView(getContext());
             skillRow.setText(skill.getName());
             skillsLayout.addView(skillRow);
@@ -132,10 +142,13 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onClick(View view) {
+
+                // Add interest button clicked, so launch a new 'AddSkillsInterests' fragment
+                // with the 'interests' searchType.
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("profile", profile);
                 bundle.putString("searchType", "interests");
-                // Create a new Search fragment
+                // Create a new AddSkillsInterests fragment
                 AddSkillsInterestsFragment addSkillsInterestsFragment = new AddSkillsInterestsFragment();
                 addSkillsInterestsFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -150,6 +163,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
         // INTERESTS
         for (Skill interest : profile.getInterests()) {
+            // For each interest on the profile, add it to the view
             TextView interestRow = new TextView(getContext());
             interestRow.setText(interest.getName());
             interestsLayout.addView(interestRow);
@@ -161,6 +175,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onClick(View view) {
+                // Capgemini Info button clicked
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("profile", profile);
                 bundle.putBoolean("owner", owner);
@@ -169,8 +184,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
                 capgeminiInfoFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                // Replace the current fragment with the new modules fragment
-                transaction.replace(R.id.content_frame,capgeminiInfoFragment);
+                // Replace the current fragment with the new CapgeminiInfo fragment
+                transaction.replace(R.id.content_frame, capgeminiInfoFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
                 transaction.commit();
@@ -189,6 +204,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
                 profile.setName(titleText.getText().toString());
                 profile.setDescription(descriptionText.getText().toString());
 
+                // Update profile in the database
                 dbHelper.updateProfile(profile);
 
                 Toast.makeText(getActivity(), "Profile Saved Successfully!", Toast.LENGTH_LONG).show();
@@ -198,36 +214,40 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
         // ADD CONTACT BUTTON
         addContactButton = myView.findViewById(R.id.addContactButton);
+
+        // Hide button if the user is the profile owner, or already a contact
         if (owner) {
             addContactButton.setVisibility(View.GONE);
-        }
-        else if (!owner && isContact) {
+        } else if (!owner && isContact) {
             addContactButton.setVisibility(View.GONE);
         }
         addContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dbHelper.insertContact(userProfile.getId(),profile.getId());
+                // Add contact button clicked, update database and hide button
+                dbHelper.insertContact(userProfile.getId(), profile.getId());
                 addContactButton.setVisibility(View.GONE);
+
+                // Display remove contact button
                 removeContactButton.setVisibility(View.VISIBLE);
                 Toast.makeText(getActivity(), "Contact added!", Toast.LENGTH_LONG).show();
             }
         });
 
 
-
         // REMOVE CONTACT BUTTON
         removeContactButton = myView.findViewById(R.id.removeContactButton);
+
+        // Hide button if user is the profile owner, or is not an existing contact
         if (owner) {
             removeContactButton.setVisibility(View.GONE);
-        }
-        else if (!owner && !isContact) {
+        } else if (!owner && !isContact) {
             removeContactButton.setVisibility(View.GONE);
         }
         removeContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dbHelper.deleteContact(userProfile.getId(),profile.getId());
+                dbHelper.deleteContact(userProfile.getId(), profile.getId());
                 removeContactButton.setVisibility(View.GONE);
                 addContactButton.setVisibility(View.VISIBLE);
                 Toast.makeText(getActivity(), "Contact removed!", Toast.LENGTH_LONG).show();
@@ -235,7 +255,24 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         });
 
 
-        // Set all values to user's profile
+        // SEND MESSAGE BUTTON
+        sendMessageButton = myView.findViewById(R.id.sendMessageButton);
+        if (owner) {
+            sendMessageButton.setVisibility(View.GONE);
+        }
+        sendMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Send message button clicked, so start new SENDTO action for emails
+                // And populate with the profile's email address
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.fromParts("mailto", profile.getEmail(), null));
+                startActivity(Intent.createChooser(intent, "Select the method to share"));
+            }
+        });
+
+
+        // Set all fields to user's profile
         titleText.setText(profile.getName());
         descriptionText.setText(profile.getDescription());
 
@@ -248,10 +285,13 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            userProfile = (Profile)getArguments().getSerializable("userProfile");
+            userProfile = (Profile) getArguments().getSerializable("userProfile");
             id = getArguments().getLong("userId");
             owner = getArguments().getBoolean("owner");
         }
         dbHelper = new DBHelper(getContext());
+
+        // Set main title
+        getActivity().setTitle("Profile - " + profile.getName());
     }
 }

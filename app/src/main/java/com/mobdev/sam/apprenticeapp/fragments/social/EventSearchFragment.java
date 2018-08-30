@@ -12,11 +12,12 @@ import android.widget.LinearLayout;
 import com.mobdev.sam.apprenticeapp.R;
 
 /**
- * Created by Sam on 02/07/2018.
+ * The 'Event Search' fragment, which displays events that the user may be interested in attending
+ * based off of matching skills and interests
  */
 
 public class EventSearchFragment extends Fragment {
-
+    //TODO: remove this if not used (currently is not)
     View myView;
 
     // UI Elements

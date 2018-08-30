@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Sam on 13/07/2018.
+ * The 'Event Attendees' fragment, which displays a clickable list of profiles that are currently
+ * attending an event
  */
 
 public class EventAttendeesFragment extends android.support.v4.app.Fragment {
@@ -44,9 +45,6 @@ public class EventAttendeesFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.event_attendees_layout, container, false);
 
-        // Hide fab
-        //((MainActivity)getActivity()).hideFloatingActionButton();
-
         attendeesSection = myView.findViewById(R.id.attendeesSection);
 
         // Get all of profiles attending the event
@@ -54,10 +52,11 @@ public class EventAttendeesFragment extends android.support.v4.app.Fragment {
 
         // Add contacts to the view
         for (final Profile profile : profiles) {
-            LinearLayout linearLayout = new LinearLayout(getContext());
-            linearLayout.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.border));
-            linearLayout.setOrientation(LinearLayout.VERTICAL);
 
+            // For each profile, create a layout
+            LinearLayout linearLayout = new LinearLayout(getContext());
+            linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(3, 3, 3, 15);
             linearLayout.setLayoutParams(params);
@@ -65,6 +64,7 @@ public class EventAttendeesFragment extends android.support.v4.app.Fragment {
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // Profile layout clicked, start a new 'Profile Fragment' for that profile
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("userProfile", myProfile);
                     bundle.putSerializable("userId", profile.getId());
@@ -85,6 +85,7 @@ public class EventAttendeesFragment extends android.support.v4.app.Fragment {
                 }
             });
 
+            // Add profile name and description (email) to the layout and view
             TextView nameRow = new TextView(getContext());
             TextView descriptionRow = new TextView(getContext());
 
@@ -105,13 +106,13 @@ public class EventAttendeesFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            myProfile = (Profile)getArguments().getSerializable("profile");
-            event = (Event)getArguments().getSerializable("event");
+            myProfile = (Profile) getArguments().getSerializable("profile");
+            event = (Event) getArguments().getSerializable("event");
         }
         dbHelper = new DBHelper(getContext());
 
         // Set main title
-        getActivity().setTitle("People");
+        getActivity().setTitle(event.getName() + " - Event Attendees");
 
     }
 }

@@ -28,7 +28,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Sam on 02/07/2018.
+ * The 'Study' fragment which displays a list of upcoming deadlines for the user, and has links to the
+ * modules and notes section of the app
  */
 
 public class StudyFragment extends android.support.v4.app.Fragment {
@@ -60,18 +61,21 @@ public class StudyFragment extends android.support.v4.app.Fragment {
 
         upcomingDeadlinesSection = myView.findViewById(R.id.upcomingDeadlinesSection);
 
-        List<Deadline> nearingDeadlines = new ArrayList<>();
-
         // Display upcoming deadlines for profile
         List<Deadline> deadlines = new ArrayList<>();
+
+        // Get all of the modules that the user is participating in
         List<Module> modules = dbHelper.getAllModulesForProfile(myProfile);
         for (Module module : modules) {
+            // For each of the modules, add all of the deadlines to a list
             deadlines.addAll(dbHelper.getAllDeadlinesForModule(module));
         }
 
         for (Deadline deadline : deadlines) {
-            Date date = null;
+            // For each of the deadlines found for the user
 
+            // Convert the date string into a calendar object
+            Date date = null;
             try {
                 date = dateFormat.parse(deadline.getDate());
             } catch (ParseException e) {
@@ -82,6 +86,7 @@ public class StudyFragment extends android.support.v4.app.Fragment {
             calendar.setTime(date);
 
             if (calendar.get(Calendar.DAY_OF_YEAR) - Calendar.getInstance().get(Calendar.DAY_OF_YEAR) < 10) {
+                // If the deadline is within 10 days of the current date, add it to the view
                 addDeadline(deadline);
             }
         }
@@ -100,6 +105,7 @@ public class StudyFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onClick(View view) {
+                // My Modules button clicked
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("userProfile", myProfile);
                 // Create a new Modules fragment
@@ -108,7 +114,7 @@ public class StudyFragment extends android.support.v4.app.Fragment {
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
                 // Replace the current fragment with the new modules fragment
-                transaction.replace(R.id.content_frame,modulesFragment);
+                transaction.replace(R.id.content_frame, modulesFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
                 transaction.commit();
@@ -117,19 +123,20 @@ public class StudyFragment extends android.support.v4.app.Fragment {
 
         // NOTES BUTTON
         notesButton = myView.findViewById(R.id.notesButton);
+        //TODO: Remove if not implemented?
         notesButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                // Create a new Modules fragment
+                // Create a new Notes fragment
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("userProfile", myProfile);
                 Fragment modulesFragment = new NotesSearchFragment();
                 modulesFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                // Replace the current fragment with the new modules fragment
-                transaction.replace(R.id.content_frame,modulesFragment);
+                // Replace the current fragment with the new Notes fragment
+                transaction.replace(R.id.content_frame, modulesFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
                 transaction.commit();
@@ -143,10 +150,10 @@ public class StudyFragment extends android.support.v4.app.Fragment {
 
     @SuppressLint("NewApi")
     public void addDeadline(final Deadline deadline) {
+        // Add a new layout for the deadline
         final LinearLayout linearLayout = new LinearLayout(getContext());
         linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(3, 3, 3, 15);
         linearLayout.setLayoutParams(params);
@@ -154,19 +161,20 @@ public class StudyFragment extends android.support.v4.app.Fragment {
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Deadline tapped, start new 'Deadline Detail' fragment for the deadline
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("userProfile", myProfile);
                 bundle.putBoolean("isNew", false);
                 bundle.putBoolean("isAdmin", myProfile.getIsAdmin());
                 bundle.putSerializable("module", dbHelper.getModule(deadline.getModuleId()));
-                //bundle.putSerializable("module", module);
                 bundle.putSerializable("deadline", deadline);
-                // Create a new Profile fragment
+
+                // Create a new Deadline Detail fragment
                 ModuleDeadlineDetailFragment deadlineDetailFragment = new ModuleDeadlineDetailFragment();
                 deadlineDetailFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                // Replace the current fragment with the new search fragment
+                // Replace the current fragment with the new Deadline Detail fragment
                 transaction.replace(R.id.content_frame, deadlineDetailFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
@@ -174,10 +182,11 @@ public class StudyFragment extends android.support.v4.app.Fragment {
             }
         });
 
+        // Add TextViews for name and date
         TextView nameRow = new TextView(getContext());
         TextView dateRow = new TextView(getContext());
 
-
+        // Set TextViews to values of deadline
         nameRow.setText(deadline.getName());
         nameRow.setTextSize(15);
         nameRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
@@ -186,14 +195,13 @@ public class StudyFragment extends android.support.v4.app.Fragment {
         dateRow.setTextSize(12);
         dateRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
 
-
-
+        // Add both to view and their respective lists
         linearLayout.addView(nameRow);
         linearLayout.addView(dateRow);
         deadlines.add(nameRow);
         dates.add(dateRow);
 
-
+        // Add it all to the upcoming deadlines section
         upcomingDeadlinesSection.addView(linearLayout);
     }
 

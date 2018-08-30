@@ -35,7 +35,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Sam on 02/07/2018.
+ * The 'Event Detail' fragment, which displays information on an event, and allows the user
+ * to view attendees, share, mark as attending.
+ * <p>
+ * If the user is the creator of the event, they can also edit it and save the changes to the
+ * database.
  */
 
 public class EventDetailFragment extends android.support.v4.app.Fragment {
@@ -68,6 +72,7 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
     private Button saveButton;
     private Button cancelAttendanceButton;
 
+    // Date formats
     SimpleDateFormat dateFormatFull = new SimpleDateFormat(
             "dd/MM/yyyy HH:mm");
     SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
@@ -80,7 +85,7 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.event_detail_layout, container, false);
 
-
+        // Date/Time buttons and fields
         setTimeButton = myView.findViewById(R.id.pickTimeButton);
         setDateButton = myView.findViewById(R.id.pickDateButton);
         dateText = myView.findViewById(R.id.dateText);
@@ -108,7 +113,6 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         }
 
 
-
         // Check if the current user is attending the event
         if (!owner) {
             List<Event> events = dbHelper.getAllEventsProfileAttending(userProfile.getId());
@@ -119,38 +123,34 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
                 if (eventCheck.getEventId().equals(this.event.getEventId())) {
                     isAttending = true;
                     break;
-                }
-                else
+                } else
                     isAttending = false;
             }
 
             // Hide the datepicker buttons
             setTimeButton.setVisibility(View.GONE);
             setDateButton.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             // User is owner of event
             //isAttending = false;
 
             setTimeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // Set time button clicked, open timepicker
                     showTimePickerDialog();
                 }
             });
 
 
-
             setDateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // Set date button clicked, open datepicker
                     showDatePickerDialog();
                 }
             });
-
-
         }
-
 
 
         // LAYOUTS
@@ -177,14 +177,15 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
+                // Pass it the event
                 bundle.putSerializable("event", event);
                 bundle.putSerializable("profile", userProfile);
-                // Create a new Search fragment
+                // Create a new Event Attendees fragment
                 EventAttendeesFragment eventAttendeesFragment = new EventAttendeesFragment();
                 eventAttendeesFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                // Replace the current fragment with the new search fragment
+                // Replace the current fragment with the new Event Attendees fragment
                 transaction.replace(R.id.content_frame, eventAttendeesFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
@@ -216,15 +217,18 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onClick(View view) {
+                // Add skill button clicked, start a new 'AddSkillsInterests' fragment
+                // with the searchType 'event'
                 Bundle bundle = new Bundle();
+                // Pass it the event
                 bundle.putSerializable("event", event);
                 bundle.putString("searchType", "event");
-                // Create a new Search fragment
+                // Create a new AddSkillsInterests fragment
                 AddSkillsInterestsFragment addSkillsInterestsFragment = new AddSkillsInterestsFragment();
                 addSkillsInterestsFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                // Replace the current fragment with the new search fragment
+                // Replace the current fragment with the new AddSkillsInterests fragment
                 transaction.replace(R.id.content_frame, addSkillsInterestsFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
@@ -235,13 +239,12 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         // SKILLS
         if (!isNew && event.getRelatedSkills().size() > 0) {
             for (Skill skill : event.getRelatedSkills()) {
+                // For each skill on the event, create a textview add it to the view
                 TextView skillRow = new TextView(getContext());
                 skillRow.setText(skill.getName());
                 skillsLayout.addView(skillRow);
             }
         }
-
-
 
 
         // ATTEND BUTTON
@@ -253,9 +256,12 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onClick(View view) {
-                dbHelper.insertEventAttendee(event.getEventId(),userProfile.getId());
+                // Attend button clicked, add current user to the event attendees in the database
+                dbHelper.insertEventAttendee(event.getEventId(), userProfile.getId());
+                // Hide the attend button and display the cancel attendance button
                 attendButton.setVisibility(View.GONE);
-                Toast.makeText(getContext(),"You are now attending!",Toast.LENGTH_LONG).show();
+                cancelAttendanceButton.setVisibility(View.VISIBLE);
+                Toast.makeText(getContext(), "You are now attending!", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -270,6 +276,8 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
             public void onClick(View view) {
                 // Save button clicked
                 if (isNew) {
+                    // If this is a new event, create a new Event object, add the values from the fields
+                    // and add it to the database
                     event = new Event(titleText.getText().toString(),
                             descriptionText.getText().toString(),
                             locationText.getText().toString(),
@@ -283,9 +291,9 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
 
                     Toast.makeText(getActivity(), "New Event Created Successfully!", Toast.LENGTH_LONG).show();
                     getFragmentManager().popBackStackImmediate();
-                }
+                } else {
 
-                else {
+                    // This is not a new event, so update the existing event in the database
                     event.setName(titleText.getText().toString());
                     event.setDescription(descriptionText.getText().toString());
                     event.setDate(dateText.getText().toString() + " " + timeText.getText().toString());
@@ -305,9 +313,11 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         shareButton = myView.findViewById(R.id.shareButton);
         if (isNew)
             shareButton.setVisibility(View.GONE);
+
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Share button clicked, so start a new ACTION SEND with the event info
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 String shareContent = "Hello!\n " + userProfile.getName() + " has shared an event with you using the Capgemini Apprentice App!\n\n" +
@@ -315,26 +325,33 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
                         "Description: " + event.getDescription() + "\n\n" +
                         "Location: " + event.getLocation() + "\n\n" +
                         "Date/Time: " + event.getDate();
-                intent.putExtra(Intent.EXTRA_SUBJECT,"New Event Invite!");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "New Event Invite!");
                 intent.putExtra(Intent.EXTRA_TEXT, shareContent);
-                startActivity(Intent.createChooser(intent,"Select the method to share"));
+                startActivity(Intent.createChooser(intent, "Select the method to share"));
             }
         });
 
 
-
         // CANCEL ATTENDANCE BUTTON
         cancelAttendanceButton = myView.findViewById(R.id.cancelAttendanceButton);
+
+        // Hide the button if the user is already attending, or is the creator of the event
         if (owner || isNew) {
             cancelAttendanceButton.setVisibility(View.GONE);
-        }
-        else if (!owner && !isAttending) {
+        } else if (!owner && !isAttending) {
             cancelAttendanceButton.setVisibility(View.GONE);
         }
+
         cancelAttendanceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dbHelper.deleteEventAttendee(event.getEventId(),userProfile.getId());
+                // Cancel attendance button clicked, remove user from event attendees table in database
+                dbHelper.deleteEventAttendee(event.getEventId(), userProfile.getId());
+                Toast.makeText(getActivity(), "You are no longer attending the event", Toast.LENGTH_LONG).show();
+
+                // Hide this button and display the attend button
+                cancelAttendanceButton.setVisibility(View.GONE);
+                attendButton.setVisibility(View.VISIBLE);
             }
         });
 
@@ -347,7 +364,6 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
             goodForText.setText(event.getGoodFor());
             prerequisitesText.setText(event.getPrerequisites());
         }
-
 
 
         return myView;
@@ -363,8 +379,9 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         Date date = null;
         if (isNew) {
 
-        }
-        else {
+        } else {
+            // This is not a new event, so use the event's current time as the default values
+            // for the timepicker
             try {
                 date = timeOnlyFormat.parse(timeText.getText().toString());
             } catch (ParseException e) {
@@ -373,10 +390,7 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
             calendar.setTime(date);
         }
 
-
-
-
-
+        // Start the timepicker
         args.putInt("hours", calendar.get(Calendar.HOUR_OF_DAY));
         args.putInt("minutes", calendar.get(Calendar.MINUTE));
         newFragment.setArguments(args);
@@ -387,6 +401,7 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
     TimePickerDialog.OnTimeSetListener onTime = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+            // Set the time field to the values selected in the timepicker
             timeText.setText(hour + ":" + minute);
         }
     };
@@ -399,8 +414,9 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
 
         if (isNew) {
 
-        }
-        else {
+        } else {
+            // This is not a new event, so use the event's current date as the default values
+            // for the datepicker
             Date date = null;
             try {
                 date = dateOnlyFormat.parse(dateText.getText().toString());
@@ -409,7 +425,6 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
             }
             calendar.setTime(date);
         }
-
 
 
         args.putInt("day", calendar.get(Calendar.DAY_OF_MONTH));
@@ -423,7 +438,9 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
     DatePickerDialog.OnDateSetListener onDate = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-            dateText.setText(day + "/" + (month+1) + "/" + year);
+            // Set the date field to the values selected in the datepicker
+            // (month is +1 because it starts at 0)
+            dateText.setText(day + "/" + (month + 1) + "/" + year);
         }
     };
 
@@ -432,11 +449,14 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            userProfile = (Profile)getArguments().getSerializable("userProfile");
+            userProfile = (Profile) getArguments().getSerializable("userProfile");
             owner = getArguments().getBoolean("owner");
             id = getArguments().getLong("eventId");
             isNew = getArguments().getBoolean("isNew");
         }
         dbHelper = new DBHelper(getContext());
+
+        // Set main title
+        getActivity().setTitle("Event - " + event.getName());
     }
 }

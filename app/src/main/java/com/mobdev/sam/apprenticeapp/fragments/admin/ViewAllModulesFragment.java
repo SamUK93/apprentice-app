@@ -21,7 +21,8 @@ import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 import java.util.List;
 
 /**
- * Created by Sam on 13/07/2018.
+ * View All Modules fragment. Displays a list of all of the existing modules. Allows the user to
+ * tap on them to view and edit them.
  */
 
 public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
@@ -42,23 +43,25 @@ public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
 
         modulesSection = myView.findViewById(R.id.moduleListSection);
 
-        // Hide fab
-        //((MainActivity)getActivity()).hideFloatingActionButton();
-
         // Get all modules from the database
         List<Module> allModules = dbHelper.getAllModules();
-        Log.i("EVENTMATCH::", "TOTAL MODULES FOUND = " + allModules.size());
+        Log.i("VIEW MODULES::", "TOTAL MODULES FOUND = " + allModules.size());
+
+        // If some modules are found
         if (allModules.size() > 0) {
             // Add modules to the view
             for (final Module module : allModules) {
+                // For each module
+
+                // Create a layout to contain the data
                 LinearLayout linearLayout = new LinearLayout(getContext());
                 linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
-
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 params.setMargins(3, 3, 3, 15);
                 linearLayout.setLayoutParams(params);
 
+                // Set an on click listener to open the detail view for the module
                 linearLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -67,6 +70,7 @@ public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
                         bundle.putSerializable("moduleId", module.getModuleId());
                         bundle.putBoolean("isNew", false);
                         bundle.putBoolean("isAdmin", true);
+
                         // Create a new Module Detail fragment
                         ModuleDetailFragment moduleDetailFragment = new ModuleDetailFragment();
                         moduleDetailFragment.setArguments(bundle);
@@ -80,21 +84,23 @@ public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
                     }
                 });
 
+                // Add the name and description of the module to the layout
                 TextView nameRow = new TextView(getContext());
                 TextView descriptionRow = new TextView(getContext());
-
                 nameRow.setText(module.getName());
                 nameRow.setTextSize(15);
                 nameRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
                 descriptionRow.setText(module.getDescription());
 
+                // Add them to the view
                 linearLayout.addView(nameRow);
                 linearLayout.addView(descriptionRow);
                 modulesSection.addView(linearLayout);
             }
-        }
-        else {
+        } else {
+            // No modules found, display a message informing the user
 
+            // Create the layout
             LinearLayout linearLayout = new LinearLayout(getContext());
             linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
             linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -104,13 +110,15 @@ public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
             linearLayout.setLayoutParams(params);
             TextView nameRow = new TextView(getContext());
 
+            // Add the message
             nameRow.setText("There are currently no modules to display! Add some or contact your tutor/manager if you think this is an issue.");
             nameRow.setTextSize(15);
             nameRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
+
+            // Add to the view
             linearLayout.addView(nameRow);
             modulesSection.addView(linearLayout);
         }
-
 
         return myView;
     }
@@ -124,7 +132,7 @@ public class ViewAllModulesFragment extends android.support.v4.app.Fragment {
         dbHelper = new DBHelper(getContext());
 
         // Set main title
-        getActivity().setTitle("Contact Finder");
+        getActivity().setTitle("Admin - View All Modules");
 
     }
 }

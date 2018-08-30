@@ -32,7 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Created by Sam on 13/07/2018.
+ * The 'Module Deadline Detail' fragment, which displays the details of a specific deadline for a module.
  */
 
 public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragment {
@@ -52,9 +52,9 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
     private Button saveDeadlineButton;
 
     private TextView dateText;
-
     private TextView timeText;
-
+    //TODO: Improve the look of this page
+    // Date formats
     SimpleDateFormat dateFormatFull = new SimpleDateFormat(
             "dd/MM/yyyy HH:mm");
     SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
@@ -72,20 +72,13 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
         if (!isAdmin)
             deadlineNameText.setInputType(InputType.TYPE_NULL);
 
-        // Hide fab
-        //((MainActivity)getActivity()).hideFloatingActionButton();
-
-
-
+        // Date/Time fields
         dateText = myView.findViewById(R.id.dateText);
-
         timeText = myView.findViewById(R.id.timeText);
 
         if (!isNew) {
+            // This isn't a new deadline, so get the current date / time and set the fields accordingly
             deadlineNameText.setText(deadline.getName());
-
-
-
             Date date = null;
 
             try {
@@ -98,29 +91,30 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
             calendar.setTime(date);
 
             dateText.setText(String.valueOf(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH) + "/" + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR))));
-
             timeText.setText(String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(calendar.get(Calendar.MINUTE)));
         }
 
-
+        // Set Time / Date buttons
         setTimeButton = myView.findViewById(R.id.pickTimeButton);
         setDateButton = myView.findViewById(R.id.pickDateButton);
+
+        // Save button
         saveDeadlineButton = myView.findViewById(R.id.saveDeadlineButton);
 
         if (isAdmin) {
 
+            // If the user is an admin, set onclick listeners for date/time buttons
             setTimeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // Set time button clicked, show the time picker
                     showTimePickerDialog();
                 }
             });
-
-
-
             setDateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // Set date button clicked, show the date picker
                     showDatePickerDialog();
                 }
             });
@@ -129,26 +123,28 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
             saveDeadlineButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // Save button clicked
                     String name = deadlineNameText.getText().toString();
                     String date = dateText.getText().toString();
                     String time = timeText.getText().toString();
                     String fullDate = date + " " + time;
-                    Deadline newDeadline = new Deadline(name,fullDate,module.getModuleId());
+                    Deadline newDeadline = new Deadline(name, fullDate, module.getModuleId());
 
                     if (isNew) {
-                        dbHelper.insertDeadlines(module.getModuleId(),new ArrayList<>(Arrays.asList(newDeadline)));
+                        // If this is a new deadline, add it as a new entry in the database.
+                        dbHelper.insertDeadlines(module.getModuleId(), new ArrayList<>(Arrays.asList(newDeadline)));
 
                         Toast.makeText(getActivity(), "New Deadline Created Successfully!", Toast.LENGTH_LONG).show();
                         getFragmentManager().popBackStackImmediate();
-                    }
-                    else {
+                    } else {
+                        // If this is not a new deadline, update the existing entry in the database
                         newDeadline.setDeadlineId(deadline.getDeadlineId());
                         dbHelper.updateDeadline(newDeadline);
                     }
                 }
             });
-        }
-        else {
+        } else {
+            // User is not an admin, hide set time/date buttons, and save button
             setTimeButton.setVisibility(View.GONE);
             setDateButton.setVisibility(View.GONE);
             saveDeadlineButton.setVisibility(View.GONE);
@@ -166,8 +162,8 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
 
         if (isNew) {
 
-        }
-        else {
+        } else {
+            // This is not a new deadline, so use existing time as the default for the timepicker
             try {
                 date = timeOnlyFormat.parse(timeText.getText().toString());
             } catch (ParseException e) {
@@ -176,7 +172,6 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
 
             calendar.setTime(date);
         }
-
 
 
         args.putInt("hours", calendar.get(Calendar.HOUR_OF_DAY));
@@ -189,6 +184,7 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
     TimePickerDialog.OnTimeSetListener onTime = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+            // Set the time field as the selected time from the timepicker
             timeText.setText(hour + ":" + minute);
         }
     };
@@ -202,8 +198,8 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
 
         if (isNew) {
 
-        }
-        else {
+        } else {
+            // This is not a new deadline, so set the existing date as the default for the datepicker
             try {
                 date = dateOnlyFormat.parse(dateText.getText().toString());
             } catch (ParseException e) {
@@ -212,7 +208,6 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
 
             calendar.setTime(date);
         }
-
 
 
         args.putInt("day", calendar.get(Calendar.DAY_OF_MONTH));
@@ -226,7 +221,8 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
     DatePickerDialog.OnDateSetListener onDate = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-            dateText.setText(day + "/" + (month+1) + "/" + year);
+            // Set the date field as the selected date from the datepicker
+            dateText.setText(day + "/" + (month + 1) + "/" + year);
         }
     };
 
@@ -246,8 +242,7 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
         // Set main title
         if (isNew) {
             getActivity().setTitle("New Deadline");
-        }
-        else {
+        } else {
             getActivity().setTitle("View Deadline");
         }
 

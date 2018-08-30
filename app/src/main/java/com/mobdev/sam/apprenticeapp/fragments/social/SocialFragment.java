@@ -15,7 +15,8 @@ import com.mobdev.sam.apprenticeapp.models.Profile;
 import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 
 /**
- * Created by Sam on 02/07/2018.
+ * The Social fragment, which allows the user to switch between 'People' and 'Events' sections,
+ * which will display those respective fragments in the sub content frame.
  */
 
 public class SocialFragment extends android.support.v4.app.Fragment {
@@ -46,12 +47,11 @@ public class SocialFragment extends android.support.v4.app.Fragment {
         initialFragment.setArguments(bundle);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-        // Replace the current fragment with the new search fragment
+        // Replace the current sub-content fragment with the People fragment
         transaction.replace(R.id.sub_content_frame, initialFragment);
         // Add transaction to the back stack and commit
         transaction.addToBackStack(null);
         transaction.commit();
-
 
 
         // TAB LAYOUT
@@ -63,6 +63,8 @@ public class SocialFragment extends android.support.v4.app.Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("profile", myProfile);
 
+                // Change the displayed sub-content fragment based on which position the tab switcher
+                // is in. First position for People Fragment, second for Events Fragment.
                 switch (tab.getPosition()) {
                     case 0:
                         displayedFragment = new PeopleFragment();

@@ -7,6 +7,10 @@ import android.os.Bundle;
 import com.mobdev.sam.apprenticeapp.R;
 import com.mobdev.sam.apprenticeapp.fragments.profile.LogInFragment;
 
+/**
+ * The Log In Activity. This is the activity which first loads when the app is started, and it displays
+ * the log in fragment, allowing the user to log in or create an account.
+ */
 public class LogInActivity extends AppCompatActivity {
 
     @Override

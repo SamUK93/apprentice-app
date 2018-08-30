@@ -24,13 +24,18 @@ import com.mobdev.sam.apprenticeapp.fragments.social.SocialFragment;
 import com.mobdev.sam.apprenticeapp.fragments.study.StudyFragment;
 import com.mobdev.sam.apprenticeapp.models.Profile;
 
+/**
+ * The Main Activity. Used as the base activity for every part of the app apart from the log in
+ * screens. New fragments are placed/replaced into the content frame to change between pages.
+ * <p>
+ * Also contains the navigation drawer logic, that allows the user to navigate between the different
+ * areas of the app from wherever they currently are.
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    //**** USER ID! ****//
+    //**** USER PROFILE! ****//
     public Profile profile;
-
-    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,25 +47,15 @@ public class MainActivity extends AppCompatActivity
 
         // INTENT BUNDLE PARAMS ETC
         Bundle params = getIntent().getExtras();
-        profile = (Profile)params.get("profile");
+        profile = (Profile) params.get("profile");
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
+        // NAVIGATION DRAWER
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu navMenu = navigationView.getMenu();
         if (!profile.getIsAdmin()) {
@@ -121,32 +116,28 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, homeFragment)
                     .commit();
-        }
-        else if (id == R.id.nav_study) {
+        } else if (id == R.id.nav_study) {
             // Switch the current fragment to the 'Study' Fragment
             StudyFragment studyFragment = new StudyFragment();
             studyFragment.setArguments(bundle);
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, studyFragment)
                     .commit();
-        }
-        else if (id == R.id.nav_social) {
+        } else if (id == R.id.nav_social) {
             // Switch the current fragment to the 'Social' Fragment
             SocialFragment socialFragment = new SocialFragment();
             socialFragment.setArguments(bundle);
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, socialFragment)
                     .commit();
-        }
-        else if (id == R.id.nav_calendar) {
+        } else if (id == R.id.nav_calendar) {
             // Switch the current fragment to the 'Calendar' Fragment
             CalendarFragment calendarFragment = new CalendarFragment();
             calendarFragment.setArguments(bundle);
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, calendarFragment)
                     .commit();
-        }
-        else if (id == R.id.nav_profile) {
+        } else if (id == R.id.nav_profile) {
             bundle.putBoolean("owner", true);
             ProfileFragment profileFragment = new ProfileFragment();
             profileFragment.setArguments(bundle);
@@ -154,16 +145,14 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, profileFragment)
                     .commit();
-        }
-        else if (id == R.id.nav_settings) {
+        } else if (id == R.id.nav_settings) {
             // Switch the current fragment to the 'Settings' Fragment
             SettingsFragment settingsFragment = new SettingsFragment();
             settingsFragment.setArguments(bundle);
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, new SettingsFragment())
                     .commit();
-        }
-        else if (id == R.id.nav_admin) {
+        } else if (id == R.id.nav_admin) {
             // Switch the current fragment to the 'Admin' Fragment
             AdminFragment adminFragment = new AdminFragment();
             adminFragment.setArguments(bundle);
@@ -181,14 +170,5 @@ public class MainActivity extends AppCompatActivity
     // Set Title
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
-    }
-
-    // HIDE / SHOW FAB
-    public void showFloatingActionButton() {
-        fab.show();
-    }
-
-    public void hideFloatingActionButton() {
-        fab.hide();
     }
 }

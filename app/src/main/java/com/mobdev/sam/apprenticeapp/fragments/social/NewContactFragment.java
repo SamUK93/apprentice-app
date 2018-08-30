@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Sam on 13/07/2018.
+ * The 'New Contact' fragment, which finds other users with similar skills and interests, and displays
+ * them. These can be tapped to take the user to the profile page of that user, where they can find out
+ * more about them and add them as a contact/message them.
  */
 
 public class NewContactFragment extends android.support.v4.app.Fragment {
@@ -45,12 +47,11 @@ public class NewContactFragment extends android.support.v4.app.Fragment {
 
         contactsSection = myView.findViewById(R.id.contactsSection);
 
-        // Hide fab
-        //((MainActivity)getActivity()).hideFloatingActionButton();
-
         // Get profiles with similar interests and skills to populate the 'Suggested Contacts' section
-        List<ProfileReason> matchingProfiles = dbHelper.getAllProfilesAllCriteria(myProfile.getSkills(),myProfile.getInterests());
-        Log.i("EVENTMATCH::", "TOTAL PROFILES MATCHED = " + matchingProfiles.size());
+        // This is a list of 'Profile Reason' which attaches as reason string explaining why that profile
+        // is being suggested as a potential contact.
+        List<ProfileReason> matchingProfiles = dbHelper.getAllProfilesAllCriteria(myProfile.getSkills(), myProfile.getInterests());
+        Log.i("PROFILEMATCH::", "TOTAL PROFILES MATCHED = " + matchingProfiles.size());
 
         // Get current contacts of user
         List<Contact> contacts = dbHelper.getAllContactsForProfile(myProfile.getId());
@@ -64,21 +65,23 @@ public class NewContactFragment extends android.support.v4.app.Fragment {
         for (ProfileReason profile : matchingProfiles) {
             if (contactIds.contains(profile.profile.getId())) {
                 profilesToRemove.add(profile);
-                Log.i("EVENTMATCH::", "REMOVING EXISTING CONTACT with ID " + profile.profile.getId());
+                Log.i("PROFILEMATCH::", "REMOVING EXISTING CONTACT with ID " + profile.profile.getId());
             }
             // Remove users own profile from the list
             else if (myProfile.getId().equals(profile.profile.getId())) {
                 profilesToRemove.add(profile);
             }
         }
+        // Remove all 'contacts to be removed' from the matching profiles list.
         matchingProfiles.removeAll(profilesToRemove);
 
         // Add profiles to the view
         for (final ProfileReason profileReason : matchingProfiles) {
-            LinearLayout linearLayout = new LinearLayout(getContext());
-            linearLayout.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.border));
-            linearLayout.setOrientation(LinearLayout.VERTICAL);
 
+            // For each profile, create a layout
+            LinearLayout linearLayout = new LinearLayout(getContext());
+            linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(3, 3, 3, 15);
             linearLayout.setLayoutParams(params);
@@ -86,16 +89,17 @@ public class NewContactFragment extends android.support.v4.app.Fragment {
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // Profile clicked, start a new Profile Fragment for that profile.
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("userProfile", myProfile);
                     bundle.putSerializable("userId", profileReason.profile.getId());
                     bundle.putBoolean("owner", false);
-                    // Create a new Search fragment
+                    // Create a new Profile Fragment
                     ProfileFragment profileFragment = new ProfileFragment();
                     profileFragment.setArguments(bundle);
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                    // Replace the current fragment with the new search fragment
+                    // Replace the current fragment with the new Profile Fragment
                     transaction.replace(R.id.content_frame, profileFragment);
                     // Add transaction to the back stack and commit
                     transaction.addToBackStack(null);
@@ -103,6 +107,7 @@ public class NewContactFragment extends android.support.v4.app.Fragment {
                 }
             });
 
+            // Add a name and reason TextViews
             TextView nameRow = new TextView(getContext());
             TextView reasonRow = new TextView(getContext());
 
@@ -113,11 +118,10 @@ public class NewContactFragment extends android.support.v4.app.Fragment {
 
             linearLayout.addView(nameRow);
             linearLayout.addView(reasonRow);
+
+            // Add it all to the contacts section
             contactsSection.addView(linearLayout);
         }
-
-
-
 
         return myView;
     }
@@ -126,12 +130,12 @@ public class NewContactFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            myProfile = (Profile)getArguments().getSerializable("profile");
+            myProfile = (Profile) getArguments().getSerializable("profile");
         }
         dbHelper = new DBHelper(getContext());
 
         // Set main title
-        getActivity().setTitle("Contact Finder");
+        getActivity().setTitle("Find New Contacts");
 
     }
 }

@@ -3,7 +3,7 @@ package com.mobdev.sam.apprenticeapp.models;
 import java.io.Serializable;
 
 /**
- * Created by Sam on 24/07/2018.
+ * Model for a skill / interest
  */
 
 public class Skill implements Serializable {

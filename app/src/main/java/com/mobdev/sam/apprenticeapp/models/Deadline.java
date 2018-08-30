@@ -3,7 +3,7 @@ package com.mobdev.sam.apprenticeapp.models;
 import java.io.Serializable;
 
 /**
- * Created by Sam on 07/08/2018.
+ * Model for a deadline
  */
 
 public class Deadline implements Serializable {
@@ -24,13 +24,21 @@ public class Deadline implements Serializable {
 
 
     // Get
-    public Long getDeadlineId() { return this.deadlineId; }
+    public Long getDeadlineId() {
+        return this.deadlineId;
+    }
 
-    public String getName() { return this.name; }
+    public String getName() {
+        return this.name;
+    }
 
-    public String getDate() { return this.date; }
+    public String getDate() {
+        return this.date;
+    }
 
-    public Long getModuleId() { return this.moduleId; }
+    public Long getModuleId() {
+        return this.moduleId;
+    }
 
 
     // Set

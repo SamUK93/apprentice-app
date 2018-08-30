@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Sam on 13/07/2018.
+ * 'Module Deadlines' fragment which displays the list of deadlines for a module
  */
 
 public class ModuleDeadlinesFragment extends android.support.v4.app.Fragment {
@@ -53,20 +53,25 @@ public class ModuleDeadlinesFragment extends android.support.v4.app.Fragment {
         deadlinesSection = myView.findViewById(R.id.deadlinesSection);
 
         addDeadlineButton = myView.findViewById(R.id.addDeadlineButton);
+        if (!isAdmin)
+            addDeadlineButton.setVisibility(View.GONE);
+
         addDeadlineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Add deadline button clicked, start new 'Module Deadline Detail' fragment
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("userProfile", myProfile);
                 bundle.putSerializable("module", module);
+                // Set isNew to true in the bundle
                 bundle.putBoolean("isNew", true);
                 bundle.putBoolean("isAdmin", myProfile.getIsAdmin());
-                // Create a new Search fragment
+                // Create a new Module Deadline Detail fragment
                 ModuleDeadlineDetailFragment moduleDeadlineDetailFragment = new ModuleDeadlineDetailFragment();
                 moduleDeadlineDetailFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                // Replace the current fragment with the new search fragment
+                // Replace the current fragment with the new Module Deadline Detail fragment
                 transaction.replace(R.id.content_frame, moduleDeadlineDetailFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
@@ -75,15 +80,13 @@ public class ModuleDeadlinesFragment extends android.support.v4.app.Fragment {
         });
 
         // ALL CURRENT DEADLINES
+        // Get all deadlines for module
         List<Deadline> allDeadlinesModule = dbHelper.getAllDeadlinesForModule(module);
 
         for (Deadline deadline : allDeadlinesModule) {
+            // Add all deadlines to the view
             addDeadline(deadline);
         }
-
-
-        // Hide fab
-        //((MainActivity)getActivity()).hideFloatingActionButton();
 
         return myView;
     }
@@ -99,21 +102,16 @@ public class ModuleDeadlinesFragment extends android.support.v4.app.Fragment {
         dbHelper = new DBHelper(getContext());
 
         // Set main title
-        getActivity().setTitle("Contact Finder");
+        getActivity().setTitle(module.getName() + " - Deadlines");
 
-    }
-
-    public void showTimePickerDialog(View v) {
-        DialogFragment newFragment = new TimePickerFragment();
-        newFragment.show(getFragmentManager(), "timePicker");
     }
 
     @SuppressLint("NewApi")
     public void addDeadline(final Deadline deadline) {
+        // Create a new layout for the deadline
         final LinearLayout linearLayout = new LinearLayout(getContext());
         linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(3, 3, 3, 15);
         linearLayout.setLayoutParams(params);
@@ -121,18 +119,19 @@ public class ModuleDeadlinesFragment extends android.support.v4.app.Fragment {
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Deadline tapped, start a new Deadline Detail fragment for that deadline
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("userProfile", myProfile);
                 bundle.putBoolean("isNew", false);
                 bundle.putBoolean("isAdmin", isAdmin);
                 bundle.putSerializable("module", module);
                 bundle.putSerializable("deadline", deadline);
-                // Create a new Profile fragment
+                // Create a new Deadline Detail fragment
                 ModuleDeadlineDetailFragment deadlineDetailFragment = new ModuleDeadlineDetailFragment();
                 deadlineDetailFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                // Replace the current fragment with the new search fragment
+                // Replace the current fragment with the new Deadline Detail fragment
                 transaction.replace(R.id.content_frame, deadlineDetailFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
@@ -140,9 +139,11 @@ public class ModuleDeadlinesFragment extends android.support.v4.app.Fragment {
             }
         });
 
+        // Add new name and date TextViews
         TextView nameRow = new TextView(getContext());
         TextView dateRow = new TextView(getContext());
         if (isAdmin) {
+            // If user is admin, add a remove button
             final Button removeButton = new Button(getContext());
             removeButton.setText(R.string.remove_button_text);
             removeButtons.add(removeButton);
@@ -162,13 +163,13 @@ public class ModuleDeadlinesFragment extends android.support.v4.app.Fragment {
                     deadlines.remove(i);
                     dates.remove(i);
                     removeButtons.remove(removeButton);
-                    dbHelper.deleteSpecificDeadline(module.getModuleId(),deadline.getDeadlineId());
+                    dbHelper.deleteSpecificDeadline(module.getModuleId(), deadline.getDeadlineId());
                 }
             });
             linearLayout.addView(removeButton);
         }
 
-
+        // Set the name and dates to the values for the current deadline
         nameRow.setText(deadline.getName());
         nameRow.setTextSize(15);
         nameRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
@@ -177,14 +178,14 @@ public class ModuleDeadlinesFragment extends android.support.v4.app.Fragment {
         dateRow.setTextSize(12);
         dateRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
 
-
-
         linearLayout.addView(nameRow);
         linearLayout.addView(dateRow);
+
+        // Add the name and date rows to their respective lists
         deadlines.add(nameRow);
         dates.add(dateRow);
 
-
+        // Add it all to the view
         deadlinesSection.addView(linearLayout);
     }
 }

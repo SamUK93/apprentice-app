@@ -13,6 +13,9 @@ import com.mobdev.sam.apprenticeapp.R;
 
 import java.util.Calendar;
 
+/**
+ * The Time Picker Fragment, which displays a time picker dialog for the user to select a time
+ */
 public class TimePickerFragment extends DialogFragment {
 
     TimePickerDialog.OnTimeSetListener onTimeSet;

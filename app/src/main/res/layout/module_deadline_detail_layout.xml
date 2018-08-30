@@ -9,12 +9,15 @@
         android:layout_height="fill_parent"
         android:orientation="vertical">
 
+        <!-- Name -->
         <EditText
             android:id="@+id/deadlineNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Enter deadline name.." />
 
+
+        <!-- Time and Date -->
         <Button
             android:id="@+id/pickTimeButton"
             android:layout_width="wrap_content"
@@ -50,6 +53,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+
+        <!-- Save -->
         <Button
             android:id="@+id/saveDeadlineButton"
             android:layout_width="wrap_content"

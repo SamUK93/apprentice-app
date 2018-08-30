@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Sam on 13/07/2018.
+ * The 'Find New Events' fragment that uses the user's skills and interests to match events that
+ * may be of interest to them, and then displays them to the user.
  */
 
 public class FindNewEventFragment extends android.support.v4.app.Fragment {
@@ -44,12 +45,10 @@ public class FindNewEventFragment extends android.support.v4.app.Fragment {
 
         eventsSection = myView.findViewById(R.id.eventsSection);
 
-        // Hide fab
-        //((MainActivity)getActivity()).hideFloatingActionButton();
-
         // Get events with similar interests and skills to populate the 'Suggested Events' section
         List<EventReason> matchingEvents = dbHelper.getAllEventsAllCriteria(myProfile.getSkills(), myProfile.getInterests());
         Log.i("EVENTMATCH::", "TOTAL EVENTS MATCHED = " + matchingEvents.size());
+
         if (matchingEvents.size() > 0) {
             // Get current events of user
             List<Event> events = dbHelper.getAllEventsProfileAttending(myProfile.getId());
@@ -58,25 +57,28 @@ public class FindNewEventFragment extends android.support.v4.app.Fragment {
                 eventIds.add(event.getEventId());
             }
 
-            // Remove current events from the matching events list
+            // Remove the user's current events from the matching events list
             List<EventReason> eventsToRemove = new ArrayList<>();
             for (EventReason event : matchingEvents) {
+                // For each of the matching events
                 if (event.event.getCreatorId().equals(myProfile.getId())) {
+                    // If it was created by the user, add it to the remove list
                     eventsToRemove.add(event);
-                }
-                else if (eventIds.contains(event.event.getEventId())) {
+                } else if (eventIds.contains(event.event.getEventId())) {
+                    // If the user is already attending the event, add it to the remove list
                     eventsToRemove.add(event);
                     Log.i("EVENTMATCH::", "REMOVING ALREADY ATTENDING EVENT with ID " + event.event.getEventId());
                 }
             }
+            // Remove all 'events to remove' from the matching events list
             matchingEvents.removeAll(eventsToRemove);
 
-            // Add events to the view
+            // Add the, now pruned, events to the view
             for (final EventReason eventReason : matchingEvents) {
+                // For each event, create a layout
                 LinearLayout linearLayout = new LinearLayout(getContext());
                 linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
-
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 params.setMargins(3, 3, 3, 15);
                 linearLayout.setLayoutParams(params);
@@ -84,18 +86,19 @@ public class FindNewEventFragment extends android.support.v4.app.Fragment {
                 linearLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        // Event clicked, start a new 'Event Detail' fragment and pass the event
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("userProfile", myProfile);
                         bundle.putSerializable("eventId", eventReason.event.getEventId());
                         bundle.putBoolean("owner", false);
                         bundle.putBoolean("attending", false);
                         bundle.putBoolean("isNew", false);
-                        // Create a new Event fragment
+                        // Create a new Event Detail fragment
                         EventDetailFragment eventFragment = new EventDetailFragment();
                         eventFragment.setArguments(bundle);
                         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                        // Replace the current fragment with the new search fragment
+                        // Replace the current fragment with the new Event Detail fragment
                         transaction.replace(R.id.content_frame, eventFragment);
                         // Add transaction to the back stack and commit
                         transaction.addToBackStack(null);
@@ -103,6 +106,7 @@ public class FindNewEventFragment extends android.support.v4.app.Fragment {
                     }
                 });
 
+                // Add name and reason TextViews for the event
                 TextView nameRow = new TextView(getContext());
                 TextView reasonRow = new TextView(getContext());
 
@@ -113,10 +117,12 @@ public class FindNewEventFragment extends android.support.v4.app.Fragment {
 
                 linearLayout.addView(nameRow);
                 linearLayout.addView(reasonRow);
+
+                // Add the layout to the Events section
                 eventsSection.addView(linearLayout);
             }
-        }
-        else {
+        } else {
+            // No matching events found, inform the user
 
             LinearLayout linearLayout = new LinearLayout(getContext());
             linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
@@ -127,7 +133,7 @@ public class FindNewEventFragment extends android.support.v4.app.Fragment {
             linearLayout.setLayoutParams(params);
             TextView nameRow = new TextView(getContext());
 
-            nameRow.setText("There are currently no upcoming events we think you'd be interested in! Please check back soon.");
+            nameRow.setText("There are currently no upcoming events we think you'd be interested in! Add some more skills or interests to your profile and please check back soon.");
             nameRow.setTextSize(15);
             nameRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
             linearLayout.addView(nameRow);
@@ -147,7 +153,7 @@ public class FindNewEventFragment extends android.support.v4.app.Fragment {
         dbHelper = new DBHelper(getContext());
 
         // Set main title
-        getActivity().setTitle("Contact Finder");
+        getActivity().setTitle("Find New Events");
 
     }
 }

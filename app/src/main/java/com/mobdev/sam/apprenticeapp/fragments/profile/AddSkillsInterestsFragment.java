@@ -27,7 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Sam on 02/07/2018.
+ * The 'Add Skills / Interests' fragment. Allows the user to add or remove a skill or interest
+ * to their profile, or to an event
  */
 
 public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment {
@@ -74,16 +75,19 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
 
         // ADD CURRENT SKILLS AND BUTTONS
         if (type == "skills") {
+            // If this is skills for a profile, add all existing skills
             for (Skill skill : profile.getSkills()) {
                 addSkill(skill, type);
             }
         } else if (type == "interests") {
+            // If this is interests for a profile, add all existing interests
             for (Skill interest : profile.getInterests()) {
                 addSkill(interest, type);
             }
         } else if (type == "event") {
+            // If this is skills for an event, add all existing skills
             for (Skill skill : event.getRelatedSkills()) {
-                addSkill(skill,type);
+                addSkill(skill, type);
             }
         }
 
@@ -102,15 +106,9 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         // Get all categories
         List<Category> categories = dbHelper.getAllCategories();
 
+        // SPINNER ADAPTER
         final CategorySpinnerAdapter spinnerAdapter = new CategorySpinnerAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, categories);
         categorySpinner.setAdapter(spinnerAdapter);
-        //TODO: REMOVE
-        /*if (visitedPlace.getAssociatedHolidayId() != null) {
-            for (Holiday holiday : holidays) {
-                if (holiday.getId().equals(visitedPlace.getAssociatedHolidayId())) {
-                    associatedHoliday.setSelection(holidays.indexOf(holiday));
-                }
-            }*/
 
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -126,29 +124,30 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
             }
         });
 
+
+        // ADD SKILL BUTTON
         addSkillButton = myView.findViewById(R.id.addSkillButton);
         addSkillButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 boolean alreadyHasSkill = false;
                 boolean skillAlreadyExists = false;
                 Skill existingSkill = null;
 
                 // Add skill button clicked
-
-                //TODO: MAKE THIS WORK FOR EVENTS!
-                // Get a list of all the exiting unique skills
+                // Get a list of all the exiting unique skills (of all users)
                 List<Skill> allExistingSkills = dbHelper.getAllSkillsInterestsUnique();
+
                 // Get the current skills and interests of the user or event
                 List<Skill> existingSkills = new ArrayList<>();
                 if (type == "skills" || type == "interests") {
                     existingSkills = dbHelper.getAllSkillsAndInterestsForProfile(profile.getId());
-                }
-                else if (type == "event") {
+                } else if (type == "event") {
                     existingSkills = dbHelper.getAllSkillsForEvent(event.getEventId());
                 }
 
-                // Get the skill name
+                // Get the skill name that the user is trying to add
                 String skillName = newSkillText.getText().toString();
 
                 // Check if the user or event has the skill already
@@ -159,7 +158,8 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                     }
                 }
 
-                // Check if the skill already exists in the database
+                // Check if the skill already exists in the database, and if it does, use
+                // that one rather than creating a duplicate
                 for (Skill skill : allExistingSkills) {
                     if (skillName.toUpperCase().equals(skill.getName().toUpperCase())) {
                         skillAlreadyExists = true;
@@ -197,21 +197,18 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                         // Add the skill to the profile and update database
                         profile.addSkill(skill);
                         dbHelper.updateSkillsProfile(profile.getId(), profile.getSkills());
-                    }
-                    else if (type == "interests") {
+                    } else if (type == "interests") {
                         // Add the interest to the profile and update database
                         profile.addInterest(skill);
                         dbHelper.updateInterests(profile.getId(), profile.getInterests());
-                    }
-                    else if (type == "event") {
+                    } else if (type == "event") {
                         // Add the skill to the event and update the database
                         event.addRelatedSkill(skill);
                         dbHelper.updateSkillsEvent(event.getEventId(), event.getRelatedSkills());
                     }
                     // Add the skill to the UI
                     addSkill(skill, type);
-                }
-                else {
+                } else {
                     if (type == "event") {
                         Toast.makeText(getActivity(), "The event already has that related skill!", Toast.LENGTH_LONG).show();
                     } else if (type == "skills" || type == "interests") {
@@ -222,19 +219,9 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         });
 
 
-
         // NEW SKILL CATEGORY FILTER SPINNER
         categoryFilterSpinner = myView.findViewById(R.id.categoryFilterSpinner);
-
-        //final CategorySpinnerAdapter categoryFilterSpinnerAdapter = new CategorySpinnerAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, categories);
         categoryFilterSpinner.setAdapter(spinnerAdapter);
-        //TODO: REMOVE
-        /*if (visitedPlace.getAssociatedHolidayId() != null) {
-            for (Holiday holiday : holidays) {
-                if (holiday.getId().equals(visitedPlace.getAssociatedHolidayId())) {
-                    associatedHoliday.setSelection(holidays.indexOf(holiday));
-                }
-            }*/
 
         categoryFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -254,28 +241,18 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         });
 
 
-
         // EXISTING SKILL SPINNER
-        // Get all skills
+        // Get all existing skills
         List<Skill> existingSkills = dbHelper.getAllSkillsInterestsUnique();
 
         skillSpinner = myView.findViewById(R.id.skillSpinner);
-
         final SkillSpinnerAdapter skillSpinnerAdapter = new SkillSpinnerAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, existingSkills);
         skillSpinner.setAdapter(skillSpinnerAdapter);
-        //TODO: REMOVE
-        /*if (visitedPlace.getAssociatedHolidayId() != null) {
-            for (Holiday holiday : holidays) {
-                if (holiday.getId().equals(visitedPlace.getAssociatedHolidayId())) {
-                    associatedHoliday.setSelection(holidays.indexOf(holiday));
-                }
-            }*/
 
         skillSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Skill skill = skillSpinnerAdapter.getItem(i);
-                Log.i("EXISTING DEBUG INFO:: ", "CHANGED! 3");
                 newExistingSkill = skill;
             }
 
@@ -291,9 +268,9 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
             public void onClick(View view) {
                 // Add skill button clicked
                 boolean alreadyHasSkill = false;
-                Skill skill = (Skill)skillSpinner.getSelectedItem();
+                Skill skill = (Skill) skillSpinner.getSelectedItem();
 
-                // Get the current skills and interests of the user
+                // Get the current skills and interests of the user or event
                 List<Skill> existingSkills = new ArrayList<>();
                 if (type == "event") {
                     existingSkills = dbHelper.getAllSkillsForEvent(event.getEventId());
@@ -302,9 +279,8 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                 }
 
 
-                // Check if the user has the skill already
+                // Check if the user or event has the skill already
                 for (Skill existingSkill : existingSkills) {
-                    Log.i("EXISTING DEBUG INFO:: ", "User skill - " + existingSkill.getName());
                     if (skill.getName().toUpperCase().equals(existingSkill.getName().toUpperCase())) {
                         alreadyHasSkill = true;
                         break;
@@ -312,9 +288,10 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                 }
 
                 // If the user doesn't already have the skill
-                if(!alreadyHasSkill) {
+                if (!alreadyHasSkill) {
                     newSkillsNum++;
 
+                    // If this is an event, set the event id, otherwise set the profile id
                     if (type == "event") {
                         skill.setEventId(event.getEventId());
                         skill.setProfileId(null);
@@ -327,21 +304,18 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                         // Add the skill to the profile and update database
                         profile.addSkill(skill);
                         dbHelper.updateSkillsProfile(profile.getId(), profile.getSkills());
-                    }
-                    else if (type == "interests") {
+                    } else if (type == "interests") {
                         // Add the interest to the profile and update database
                         profile.addInterest(skill);
                         dbHelper.updateInterests(profile.getId(), profile.getInterests());
-                    }
-                    else if (type == "event") {
+                    } else if (type == "event") {
                         // Add the skill to the event and update database
                         event.addRelatedSkill(skill);
                         dbHelper.updateSkillsEvent(event.getEventId(), event.getRelatedSkills());
                     }
 
                     addSkill(skill, type);
-                }
-                else {
+                } else {
                     Toast.makeText(getActivity(), "You already have that skill or interest! - ", Toast.LENGTH_LONG).show();
                 }
             }
@@ -351,13 +325,11 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         ///////////////////////////
         // SAVE / CANCEL BUTTONS //
         ///////////////////////////
-
-        //TODO: FIX THIS AS NOT CURRENTLY WORKING (originalSkills seem to change as new skills)
         saveButton = myView.findViewById(R.id.saveNewSkillsButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Save button clicked
+                // Save button clicked, return to previous screen
                 getFragmentManager().popBackStackImmediate();
             }
         });
@@ -367,14 +339,8 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Cancel button clicked
+                // Cancel button clicked, revert all skills back to the original values
                 if (type == "skills") {
-                    for (Skill s : originalSkills) {
-                        Log.i("ORIGINAL SKILLS:: ", s.getName());
-                    }
-                    for (Skill s : profile.getSkills()) {
-                        Log.i("NEW SKILLS:: ", s.getName());
-                    }
                     profile.setAllSkills(originalSkills);
                     dbHelper.updateSkillsProfile(profile.getId(), originalSkills);
                 } else if (type == "interests") {
@@ -399,18 +365,26 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
             event = (Event) params.getSerializable("event");
             type = params.getString("searchType");
 
+            // Store the 'original skills' before any changes have been made, so they can be reverted
+            // back to if the user decides to cancel their changes
             if (type == "skills") {
                 originalSkills = profile.getSkills();
             } else if (type == "interests") {
                 originalSkills = profile.getInterests();
-            }
-            else if (type == "event") {
+            } else if (type == "event") {
                 originalSkills = event.getRelatedSkills();
             }
         }
 
         // Set main title
-        getActivity().setTitle("Notes Search");
+        if (type == "skills") {
+            getActivity().setTitle("Edit Skills");
+        } else if (type == "interests") {
+            getActivity().setTitle("Edit Interests");
+        } else if (type == "event") {
+            getActivity().setTitle("Edit Related Skills");
+        }
+
 
         dbHelper = new DBHelper(getContext());
     }
@@ -424,12 +398,13 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
      */
     private void addSkill(Skill skill, String type) {
         if (type == "skills") {
-
+            // Add the skill name to the view and skill list
             TextView skillNameRow = new TextView(getContext());
             skillNameRow.setText(skill.getName());
             skillNameSection.addView(skillNameRow);
             skills.add(skillNameRow);
 
+            // Add the remove button to the view and remove button list
             final Button removeButton = new Button(getContext());
             removeButton.setText(R.string.remove_button_text);
             skillButtonSection.addView(removeButton);
@@ -438,7 +413,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
             removeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // Remove note button clicked
+                    // Remove skill button clicked
 
                     // Get the index of the remove button in the list of buttons
                     int i = removeButtons.indexOf(removeButton);
@@ -446,11 +421,11 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                     // Remove the skill from the profile
                     profile.removeSkillByName(skills.get(i).getText().toString());
 
-                    // Remove both the note and the remove button from the view
+                    // Remove both the skill and the remove button from the view
                     skillNameSection.removeView(skills.get(i));
                     skillButtonSection.removeView(removeButtons.get(i));
 
-                    // Remove both the note and remove button from their respective lists
+                    // Remove both the skill and remove button from their respective lists
                     skills.remove(i);
                     removeButtons.remove(removeButton);
 
@@ -459,11 +434,13 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                 }
             });
         } else if (type == "interests") {
+            // Add the interest name to the view and skill list
             TextView interestNameRow = new TextView(getContext());
             interestNameRow.setText(skill.getName());
             skillNameSection.addView(interestNameRow);
             skills.add(interestNameRow);
 
+            // Add the remove button to the view and the remove button list
             final Button removeButton = new Button(getContext());
             removeButton.setText(R.string.remove_button_text);
             skillButtonSection.addView(removeButton);
@@ -480,11 +457,11 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                     // Remove the interest from the profile
                     profile.removeInterestByName(skills.get(i).getText().toString());
 
-                    // Remove both the note and the remove button from the view
+                    // Remove both the interest and the remove button from the view
                     skillNameSection.removeView(skills.get(i));
                     skillButtonSection.removeView(removeButtons.get(i));
 
-                    // Remove both the note and remove button from their respective lists
+                    // Remove both the interest and remove button from their respective lists
                     skills.remove(i);
                     removeButtons.remove(removeButton);
 
@@ -493,11 +470,13 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                 }
             });
         } else if (type == "event") {
+            // Add the skill name to the view and skill list
             TextView skillNameRow = new TextView(getContext());
             skillNameRow.setText(skill.getName());
             skillNameSection.addView(skillNameRow);
             skills.add(skillNameRow);
 
+            // Add the remove button to the view and remove button list
             final Button removeButton = new Button(getContext());
             removeButton.setText(R.string.remove_button_text);
             skillButtonSection.addView(removeButton);
@@ -514,11 +493,11 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                     // Remove the interest from the profile
                     event.removeRelatedSkillByName(skills.get(i).getText().toString());
 
-                    // Remove both the note and the remove button from the view
+                    // Remove both the skill and the remove button from the view
                     skillNameSection.removeView(skills.get(i));
                     skillButtonSection.removeView(removeButtons.get(i));
 
-                    // Remove both the note and remove button from their respective lists
+                    // Remove both the skill and remove button from their respective lists
                     skills.remove(i);
                     removeButtons.remove(removeButton);
 

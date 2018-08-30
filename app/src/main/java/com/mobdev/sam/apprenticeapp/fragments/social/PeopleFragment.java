@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Sam on 13/07/2018.
+ * The 'People' fragment, which displays the user's current contacts, and has a button for finding
+ * new contacts.
  */
 
 public class PeopleFragment extends android.support.v4.app.Fragment {
@@ -43,22 +44,20 @@ public class PeopleFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.people_layout, container, false);
 
-        // Hide fab
-        //((MainActivity)getActivity()).hideFloatingActionButton();
-
         findNewContactsButton = myView.findViewById(R.id.findNewContactsButton);
         findNewContactsButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
+                // Find New Contacts button clicked, so start a 'New Contact' fragment
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("profile", myProfile);
-                // Create a new Search fragment
+                // Create a New Contact fragment
                 NewContactFragment newContactFragment = new NewContactFragment();
                 newContactFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                // Replace the current fragment with the new search fragment
+                // Replace the current fragment with the New Contact fragment
                 transaction.replace(R.id.content_frame, newContactFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
@@ -67,9 +66,6 @@ public class PeopleFragment extends android.support.v4.app.Fragment {
         });
 
         contactsSection = myView.findViewById(R.id.contactsSection);
-
-        // Hide fab
-        //((MainActivity)getActivity()).hideFloatingActionButton();
 
         // Get all of the users current contacts
         List<Contact> contacts = dbHelper.getAllContactsForProfile(myProfile.getId());
@@ -80,10 +76,10 @@ public class PeopleFragment extends android.support.v4.app.Fragment {
 
         // Add contacts to the view
         for (final Profile contactProfile : contactProfiles) {
+            // For each of the profiles, create a layout
             LinearLayout linearLayout = new LinearLayout(getContext());
-            linearLayout.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.border));
+            linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
             linearLayout.setOrientation(LinearLayout.VERTICAL);
-
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(3, 3, 3, 15);
             linearLayout.setLayoutParams(params);
@@ -91,16 +87,17 @@ public class PeopleFragment extends android.support.v4.app.Fragment {
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // Profile clicked, so start a new Profile fragment for that profile
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("userProfile", myProfile);
                     bundle.putSerializable("userId", contactProfile.getId());
                     bundle.putBoolean("owner", false);
-                    // Create a new Search fragment
+                    // Create a new Profile fragment
                     ProfileFragment profileFragment = new ProfileFragment();
                     profileFragment.setArguments(bundle);
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                    // Replace the current fragment with the new search fragment
+                    // Replace the current fragment with the new Profile fragment
                     transaction.replace(R.id.content_frame, profileFragment);
                     // Add transaction to the back stack and commit
                     transaction.addToBackStack(null);
@@ -108,6 +105,7 @@ public class PeopleFragment extends android.support.v4.app.Fragment {
                 }
             });
 
+            // Add name and description TextViews
             TextView nameRow = new TextView(getContext());
             TextView descriptionRow = new TextView(getContext());
 
@@ -118,6 +116,8 @@ public class PeopleFragment extends android.support.v4.app.Fragment {
 
             linearLayout.addView(nameRow);
             linearLayout.addView(descriptionRow);
+
+            // Add it all to the contacts section
             contactsSection.addView(linearLayout);
         }
 
@@ -128,7 +128,7 @@ public class PeopleFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            myProfile = (Profile)getArguments().getSerializable("profile");
+            myProfile = (Profile) getArguments().getSerializable("profile");
         }
         dbHelper = new DBHelper(getContext());
 

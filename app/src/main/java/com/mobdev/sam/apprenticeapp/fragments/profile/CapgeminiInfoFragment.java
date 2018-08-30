@@ -26,7 +26,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Created by Sam on 02/07/2018.
+ * The 'Capgemini Info' fragment. Displays the capgemini info for a profile, and allows the user to
+ * edit this information if they are viewing their own profile.
  */
 
 public class CapgeminiInfoFragment extends Fragment {
@@ -42,11 +43,11 @@ public class CapgeminiInfoFragment extends Fragment {
     private EditText baseLocationText;
     private EditText gradeText;
     private EditText jobTitleText;
-    //TODO: Change to datepicker?
     private TextView joinDateText;
     private Button setJoinDateButton;
     private Button saveButton;
 
+    // Date format
     SimpleDateFormat dateFormat = new SimpleDateFormat(
             "dd/MM/yyyy");
 
@@ -55,6 +56,8 @@ public class CapgeminiInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.capgemini_info_layout, container, false);
+
+        // Set up the screen, and disable edit mode if the user is not viewing their own profile
 
         // LAYOUTS
         final LinearLayout containerLayout = myView.findViewById(R.id.container);
@@ -67,22 +70,22 @@ public class CapgeminiInfoFragment extends Fragment {
         // BASE LOCATION
         baseLocationText = myView.findViewById(R.id.baseLocationText);
         if (!owner)
-        baseLocationText.setInputType(InputType.TYPE_NULL);
+            baseLocationText.setInputType(InputType.TYPE_NULL);
 
         // GRADE
         gradeText = myView.findViewById(R.id.gradeText);
         if (!owner)
-        gradeText.setInputType(InputType.TYPE_NULL);
+            gradeText.setInputType(InputType.TYPE_NULL);
 
         // JOB TITLE
         jobTitleText = myView.findViewById(R.id.jobTitleText);
         if (!owner)
-        jobTitleText.setInputType(InputType.TYPE_NULL);
+            jobTitleText.setInputType(InputType.TYPE_NULL);
 
         // JOIN DATE
         joinDateText = myView.findViewById(R.id.joinDateText);
         if (!owner)
-        joinDateText.setInputType(InputType.TYPE_NULL);
+            joinDateText.setInputType(InputType.TYPE_NULL);
 
         // SET JOIN DATE BUTTON
         setJoinDateButton = myView.findViewById(R.id.joinDateButton);
@@ -105,7 +108,7 @@ public class CapgeminiInfoFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
-                // Save button clicked
+                // Save button clicked, save all details to the database
                 profile.setEmail(emailText.getText().toString());
                 profile.setBaseLocation(baseLocationText.getText().toString());
                 profile.setGrade(Integer.parseInt(gradeText.getText().toString()));
@@ -115,6 +118,8 @@ public class CapgeminiInfoFragment extends Fragment {
                 dbHelper.updateProfile(profile);
 
                 Toast.makeText(getActivity(), "Capgemini Info Saved Successfully!", Toast.LENGTH_LONG).show();
+
+                // Return to previous screen
                 getFragmentManager().popBackStackImmediate();
 
             }
@@ -135,6 +140,8 @@ public class CapgeminiInfoFragment extends Fragment {
 
     public void showDatePickerDialog() {
         Date date = null;
+
+        // Convert the join date into a calendar object
         try {
             date = dateFormat.parse(joinDateText.getText().toString());
         } catch (ParseException e) {
@@ -143,6 +150,7 @@ public class CapgeminiInfoFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
+        // Open a datepicker and pass the current join date values in as the defaults
         DatePickerFragment newFragment = new DatePickerFragment();
         Bundle args = new Bundle();
         args.putInt("day", calendar.get(Calendar.DAY_OF_MONTH));
@@ -156,7 +164,8 @@ public class CapgeminiInfoFragment extends Fragment {
     DatePickerDialog.OnDateSetListener onDate = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-            joinDateText.setText(day + "/" + (month+1) + "/" + year);
+            // When date is set, set the 'Join Date' field to the new value
+            joinDateText.setText(day + "/" + (month + 1) + "/" + year);
         }
     };
 
@@ -164,8 +173,8 @@ public class CapgeminiInfoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            userProfile = (Profile)getArguments().getSerializable("userProfile");
-            profile = (Profile)getArguments().getSerializable("profile");
+            userProfile = (Profile) getArguments().getSerializable("userProfile");
+            profile = (Profile) getArguments().getSerializable("profile");
             owner = getArguments().getBoolean("owner");
         }
 

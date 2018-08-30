@@ -1,7 +1,7 @@
 package com.mobdev.sam.apprenticeapp.models;
 
 /**
- * Created by Sam on 29/07/2018.
+ * Model for a contact
  */
 
 public class Contact {

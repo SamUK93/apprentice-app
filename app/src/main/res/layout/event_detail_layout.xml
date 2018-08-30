@@ -44,7 +44,7 @@
             android:text="@string/view_attendees_button_text" />
 
 
-        <!-- Date -->
+        <!-- Date and time -->
         <Button
             android:id="@+id/pickTimeButton"
             android:layout_width="wrap_content"
@@ -55,7 +55,7 @@
             android:id="@+id/hoursLabelText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/time_label_text"/>
+            android:text="@string/time_label_text" />
 
         <TextView
             android:id="@+id/timeText"
@@ -73,7 +73,7 @@
             android:id="@+id/dateLabelText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/date_label_text"/>
+            android:text="@string/date_label_text" />
 
         <TextView
             android:id="@+id/dateText"

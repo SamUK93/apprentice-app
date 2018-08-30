@@ -73,7 +73,7 @@ public class GridDiaryFragment extends Fragment {
         }
 
         // Set main title
-        getActivity().setTitle("STUDY");
+        getActivity().setTitle("GRID DIARY");
 
     }
 }

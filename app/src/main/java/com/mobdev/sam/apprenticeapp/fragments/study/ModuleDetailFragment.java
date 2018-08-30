@@ -22,7 +22,11 @@ import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 import java.util.ArrayList;
 
 /**
- * Created by Sam on 02/07/2018.
+ * The 'Module Detail' fragment, which displays the details of a particular module, with buttons to
+ * view participants, deadlines.
+ * <p>
+ * If the user is an admin, then they are able to edit these fields and make changes, including adding
+ * participants to the module.
  */
 
 public class ModuleDetailFragment extends android.support.v4.app.Fragment {
@@ -54,9 +58,11 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         myView = inflater.inflate(R.layout.module_detail_layout, container, false);
 
         if (!isNew) {
+            // If this is not a new module, get the existing module from the database using the provided ID
             module = dbHelper.getModule(id);
         }
 
+        // Set if the user is an admin
         isAdmin = userProfile.getIsAdmin();
 
         // LAYOUTS
@@ -82,16 +88,18 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         viewParticipantsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // View participants button clicked, start a new 'Module Participants' fragment for
+                // this module
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("userProfile", userProfile);
-                bundle.putBoolean("isAdmin",isAdmin);
+                bundle.putBoolean("isAdmin", isAdmin);
                 bundle.putSerializable("module", module);
-                // Create a new Search fragment
+                // Create a new Module Participants fragment
                 ModuleParticipantsFragment moduleParticipantsFragment = new ModuleParticipantsFragment();
                 moduleParticipantsFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                // Replace the current fragment with the new search fragment
+                // Replace the current fragment with the new Module Participants fragment
                 transaction.replace(R.id.content_frame, moduleParticipantsFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
@@ -108,16 +116,17 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         viewDeadlinesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // View deadlines button clicked, start a new 'Module Deadlines' fragment for this module
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("userProfile", userProfile);
-                bundle.putBoolean("isAdmin",isAdmin);
+                bundle.putBoolean("isAdmin", isAdmin);
                 bundle.putSerializable("module", module);
-                // Create a new Search fragment
+                // Create a new Module Deadlines fragment
                 ModuleDeadlinesFragment moduleDeadlinesFragment = new ModuleDeadlinesFragment();
                 moduleDeadlinesFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                // Replace the current fragment with the new search fragment
+                // Replace the current fragment with the new Module Deadlines fragment
                 transaction.replace(R.id.content_frame, moduleDeadlinesFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
@@ -134,7 +143,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         viewNotesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Implement view notes", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Feature not yet implemented", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -147,7 +156,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         viewCalendarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Implement view calendar", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Feature not yet implemented", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -160,7 +169,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         communityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Implement community feature", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Feature not yet implemented", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -173,7 +182,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         editTasksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Implement edit tasks", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Feature not yet implemented", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -185,6 +194,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
             public void onClick(View view) {
                 // Save button clicked
                 if (isNew) {
+                    // If this is a new module, add a new entry into the database
                     module = new Module(titleText.getText().toString(),
                             descriptionText.getText().toString(),
                             new ArrayList<Deadline>(),
@@ -194,6 +204,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
                     Toast.makeText(getActivity(), "New Module Created Successfully!", Toast.LENGTH_LONG).show();
                     getFragmentManager().popBackStackImmediate();
                 } else {
+                    // This not a new module, so update the existing entry in the database
                     module.setName(titleText.getText().toString());
                     module.setDescription(descriptionText.getText().toString());
 
@@ -225,7 +236,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         dbHelper = new DBHelper(getContext());
 
         // Set main title
-        getActivity().setTitle("Module Name (PLACEHOLDER)");
+        getActivity().setTitle("Module - " + module.getName());
 
     }
 }

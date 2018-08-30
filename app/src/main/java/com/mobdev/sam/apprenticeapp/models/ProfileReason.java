@@ -1,7 +1,9 @@
 package com.mobdev.sam.apprenticeapp.models;
 
 /**
- * Created by Sam on 30/07/2018.
+ * Model for a ProfileReason. A profile reason is a Profile with an additional 'reason' string.
+ * Used for suggested contacts, where the 'reason' string is used to describe why the profile is being
+ * suggested to the user.
  */
 
 public class ProfileReason {

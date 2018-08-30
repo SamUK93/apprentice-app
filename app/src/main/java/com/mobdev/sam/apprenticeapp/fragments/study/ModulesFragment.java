@@ -20,7 +20,7 @@ import com.mobdev.sam.apprenticeapp.tools.DBHelper;
 import java.util.List;
 
 /**
- * Created by Sam on 13/07/2018.
+ * The 'Modules' fragment that displays the current, previous and future modules for the user
  */
 
 public class ModulesFragment extends android.support.v4.app.Fragment {
@@ -40,16 +40,16 @@ public class ModulesFragment extends android.support.v4.app.Fragment {
 
         currentModulesLayout = myView.findViewById(R.id.currentModulesSection);
 
-        // Get all modules from the database
+        // Get all modules that the user is participating in from the database
         List<Module> allModules = dbHelper.getAllModulesForProfile(myProfile);
-        Log.i("EVENTMATCH::", "TOTAL MODULES FOUND = " + allModules.size());
+        Log.i("MODULES::", "TOTAL MODULES FOUND = " + allModules.size());
         if (allModules.size() > 0) {
             // Add modules to the view
             for (final Module module : allModules) {
+                // For each module, create a layout
                 LinearLayout linearLayout = new LinearLayout(getContext());
                 linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
-
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 params.setMargins(3, 3, 3, 15);
                 linearLayout.setLayoutParams(params);
@@ -57,6 +57,7 @@ public class ModulesFragment extends android.support.v4.app.Fragment {
                 linearLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        // Module tapped, start a new 'Module Detail' fragment for that module
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("userProfile", myProfile);
                         bundle.putSerializable("moduleId", module.getModuleId());
@@ -74,9 +75,11 @@ public class ModulesFragment extends android.support.v4.app.Fragment {
                     }
                 });
 
+                // Add TextViews for module name and description
                 TextView nameRow = new TextView(getContext());
                 TextView descriptionRow = new TextView(getContext());
 
+                // Set the name and description to that of the module
                 nameRow.setText(module.getName());
                 nameRow.setTextSize(15);
                 nameRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
@@ -84,11 +87,12 @@ public class ModulesFragment extends android.support.v4.app.Fragment {
 
                 linearLayout.addView(nameRow);
                 linearLayout.addView(descriptionRow);
+
+                // Add it all to the current modules section
                 currentModulesLayout.addView(linearLayout);
             }
-        }
-        else {
-
+        } else {
+            // User is not participating in any modules, inform them of this with a message
             LinearLayout linearLayout = new LinearLayout(getContext());
             linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
             linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -98,15 +102,12 @@ public class ModulesFragment extends android.support.v4.app.Fragment {
             linearLayout.setLayoutParams(params);
             TextView nameRow = new TextView(getContext());
 
-            nameRow.setText("There are currently no modules to display! Add some or contact your tutor/manager if you think this is an issue.");
+            nameRow.setText("There are currently no modules to display! Contact your tutor/manager if you think this is an issue.");
             nameRow.setTextSize(15);
             nameRow.setTextAlignment(LinearLayout.TEXT_ALIGNMENT_CENTER);
             linearLayout.addView(nameRow);
             currentModulesLayout.addView(linearLayout);
         }
-
-        // Hide fab
-        //((MainActivity)getActivity()).hideFloatingActionButton();
 
         return myView;
     }

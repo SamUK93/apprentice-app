@@ -22,13 +22,21 @@ public class Task {
 
 
     // Get
-    public Long getTaskId() { return this.taskId; }
+    public Long getTaskId() {
+        return this.taskId;
+    }
 
-    public String getName() { return this.name; }
+    public String getName() {
+        return this.name;
+    }
 
-    public String getDate() { return this.date; }
+    public String getDate() {
+        return this.date;
+    }
 
-    public Long getModuleId() { return this.moduleId; }
+    public Long getModuleId() {
+        return this.moduleId;
+    }
 
 
     // Set

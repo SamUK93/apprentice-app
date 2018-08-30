@@ -119,5 +119,6 @@
     <string name="month_label_text">MONTH</string>
     <string name="year_label_text">YEAR</string>
     <string name="time_label_text">TIME</string>
+    <string name="send_message_button_text">SEND MESSAGE</string>
 
 </resources>
