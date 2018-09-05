@@ -48,6 +48,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
     final List<Button> removeButtons = new ArrayList<>();
 
     // UI Elements
+    private TextView titleText;
     private EditText newSkillText;
     private Spinner categorySpinner;
     private Button addSkillButton;
@@ -62,6 +63,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
     LinearLayout skillButtonSection;
 
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -71,6 +73,13 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         containerLayout = myView.findViewById(R.id.container);
         skillNameSection = myView.findViewById(R.id.skillNamesSection);
         skillButtonSection = myView.findViewById(R.id.skillButtonsSection);
+
+        titleText = myView.findViewById(R.id.currentSkillsLabel);
+        if (type == "skills" || type == "event")
+            titleText.setText("Current Skills");
+        else {
+            titleText.setText("Current Interests");
+        }
 
 
         // ADD CURRENT SKILLS AND BUTTONS

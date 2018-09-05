@@ -72,7 +72,7 @@
 
     <!-- Event Search Page -->
     <string name="filter_by_interests_location_label_text">Filter by Interests/Location</string>
-    <string name="suggested_events_label_text">Suggested Events</string>
+    <string name="skill_suggested_events_label_text">Suggested Events Based on your Skills / Interests</string>
     <string name="log_in_title_text">Welcome. Log in or create an account!</string>
     <string name="log_in_button_text">Log in</string>
     <string name="create_account_button_text">Create account</string>
@@ -120,5 +120,7 @@
     <string name="year_label_text">YEAR</string>
     <string name="time_label_text">TIME</string>
     <string name="send_message_button_text">SEND MESSAGE</string>
+    <string name="delete_event_button_text">DELETE EVENT</string>
+    <string name="upcoming_deadlines_label_text">Upcoming Deadlines</string>
 
 </resources>

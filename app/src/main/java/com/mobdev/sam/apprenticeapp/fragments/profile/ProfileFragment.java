@@ -60,8 +60,6 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.profile_layout, container, false);
 
-        profile = dbHelper.getProfile(id);
-
         // Check if this profile is a contact of the logged in user.
         if (!owner) {
             List<Contact> contacts = dbHelper.getAllContactsForProfile(userProfile.getId());
@@ -92,12 +90,13 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         // TITLE
         titleText = myView.findViewById(R.id.nameText);
         if (!owner)
-            titleText.setInputType(InputType.TYPE_NULL);
+            disableEditText(titleText);
 
         // DESCRIPTION
         descriptionText = myView.findViewById(R.id.descriptionText);
         if (!owner)
-            descriptionText.setInputType(InputType.TYPE_NULL);
+            disableEditText(descriptionText);
+
 
         // ADD SKILL BUTTON
         addSkillButton = myView.findViewById(R.id.addSkillButton);
@@ -281,6 +280,12 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     }
 
 
+    private void disableEditText(EditText editText) {
+        editText.setInputType(InputType.TYPE_NULL);
+        editText.setSingleLine(false);
+    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -290,6 +295,9 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
             owner = getArguments().getBoolean("owner");
         }
         dbHelper = new DBHelper(getContext());
+
+        // Get the profile using the ID
+        profile = dbHelper.getProfile(id);
 
         // Set main title
         getActivity().setTitle("Profile - " + profile.getName());

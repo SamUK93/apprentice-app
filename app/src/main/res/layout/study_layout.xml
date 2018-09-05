@@ -5,7 +5,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <!-- Info Box -->
+    <!-- Info Box
     <TextView
         android:id="@+id/studyInfoBoxText"
         android:layout_width="match_parent"
@@ -16,9 +16,20 @@
         android:text="PLACEHOLDER STUDY INFO CARD TEXT PLACEHOLDER STUDY INFO CARD TEXT PLACEHOLDER STUDY INFO CARD TEXT PLACEHOLDER STUDY INFO CARD TEXT"
         android:textAlignment="center"
         android:textSize="20dp"
-        android:textStyle="bold" />
+        android:textStyle="bold" />-->
 
     <!-- Deadlines List -->
+    <TextView
+        android:id="@+id/upcomingDeadlinesTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/upcoming_deadlines_label_text"
+        android:textAlignment="center"
+        android:textSize="23dp"
+        android:textStyle="bold" />
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/upcomingDeadlinesSection"
         android:layout_width="wrap_content"

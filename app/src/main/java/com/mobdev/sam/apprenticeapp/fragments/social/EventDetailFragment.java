@@ -66,11 +66,13 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
     private EditText locationText;
     private EditText goodForText;
     private EditText prerequisitesText;
+    private TextView skillInfoText;
     private Button addSkillButton;
     private Button attendButton;
     private Button shareButton;
     private Button saveButton;
     private Button cancelAttendanceButton;
+    private Button deleteEventButton;
 
     // Date formats
     SimpleDateFormat dateFormatFull = new SimpleDateFormat(
@@ -92,9 +94,6 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         timeText = myView.findViewById(R.id.timeText);
 
         if (!isNew) {
-            // If this is not a new event, get it from the db
-            event = dbHelper.getEvent(id);
-
             // Set the date
             Date date = null;
 
@@ -208,8 +207,13 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         if (!owner)
             prerequisitesText.setInputType(InputType.TYPE_NULL);
 
+        // SKILL INFO TEXT
+        skillInfoText = myView.findViewById(R.id.skillInfoText);
+        if (!isNew) {
+            skillInfoText.setVisibility(View.GONE);
+        }
+
         // ADD SKILL BUTTON
-        //TODO THIS DOESN'T WORK FOR NEW SKILLS (BEFORE SAVED) because the event doesn't exist yet
         addSkillButton = myView.findViewById(R.id.addSkillButton);
         if (!owner || isNew)
             addSkillButton.setVisibility(View.GONE);
@@ -269,6 +273,8 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         saveButton = myView.findViewById(R.id.eventSaveButton);
         if (!owner)
             saveButton.setVisibility(View.GONE);
+        if (isNew)
+            saveButton.setText("CREATE EVENT");
 
         saveButton.setOnClickListener(new View.OnClickListener() {
 
@@ -287,10 +293,16 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
                             new ArrayList<Skill>(),
                             userProfile.getId());
 
-                    dbHelper.insertEvent(event);
+                    event.setEventId(dbHelper.insertEvent(event));
+
+                    // Enable the add skill button, because the event now exists
+                    addSkillButton.setVisibility(View.VISIBLE);
+                    isNew = false;
+                    skillInfoText.setVisibility(View.GONE);
+                    saveButton.setText("SAVE EVENT");
+
 
                     Toast.makeText(getActivity(), "New Event Created Successfully!", Toast.LENGTH_LONG).show();
-                    getFragmentManager().popBackStackImmediate();
                 } else {
 
                     // This is not a new event, so update the existing event in the database
@@ -352,6 +364,25 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
                 // Hide this button and display the attend button
                 cancelAttendanceButton.setVisibility(View.GONE);
                 attendButton.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+        // DELETE EVENT BUTTON
+        deleteEventButton = myView.findViewById(R.id.deleteEventButton);
+
+        // Hide the button if the user is not the event creator, or if this is a new event
+        if (!owner || isNew) {
+            deleteEventButton.setVisibility(View.GONE);
+        }
+
+        deleteEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Delete event button clicked, delete the event from the database, along with all attendees and related skills
+                dbHelper.deleteEvent(event.getEventId());
+                Toast.makeText(getActivity(), "Event deleted!", Toast.LENGTH_LONG).show();
+                getFragmentManager().popBackStackImmediate();
             }
         });
 
@@ -457,6 +488,13 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         dbHelper = new DBHelper(getContext());
 
         // Set main title
-        getActivity().setTitle("Event - " + event.getName());
+        if (isNew) {
+            getActivity().setTitle("New Event");
+        }
+        else {
+            // If this is not a new event, get it from the db
+            event = dbHelper.getEvent(id);
+            getActivity().setTitle("Event - " + event.getName());
+        }
     }
 }

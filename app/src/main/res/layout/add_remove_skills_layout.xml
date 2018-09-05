@@ -53,25 +53,27 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/newSkillLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="@string/add_new_skill_text"
+                android:textAlignment="center"
+                android:textSize="23dp"
+                android:textStyle="bold" />
 
             <!-- Add New Skill -->
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/newSkillSection"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="@drawable/border"
+                android:layout_margin="2dp">
 
-                <TextView
-                    android:id="@+id/newSkillLabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/add_new_skill_text"
-                    android:textAlignment="center"
-                    android:textSize="23dp"
-                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/newSkillNameLabel"
@@ -120,23 +122,27 @@
 
             </LinearLayout>
 
+
+            <TextView
+                android:id="@+id/existingSkillLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="@string/existing_skill_label_text"
+                android:textAlignment="center"
+                android:textSize="23dp"
+                android:textStyle="bold" />
+
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/existingSkillSection"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="@drawable/border"
+                android:layout_margin="2dp">>
 
-                <TextView
-                    android:id="@+id/existingSkillLabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/existing_skill_label_text"
-                    android:textAlignment="center"
-                    android:textSize="23dp"
-                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/filterByCategoryLabel"

@@ -59,9 +59,6 @@ public class LogInFragment extends android.support.v4.app.Fragment {
                 if (profile == null) {
                     Toast.makeText(getActivity(), "ID not recognised!", Toast.LENGTH_LONG).show();
                 } else {
-                    // Update 'last logged in' to the current user
-                    dbHelper.updateLastLoggedIn(profile.getId());
-
                     // Set the profile skills and interests from the database
                     profile.setAllSkills(dbHelper.getAllSkillsForProfile(profile.getId()));
                     profile.setAllInterests(dbHelper.getAllInterestsForProfile(profile.getId()));

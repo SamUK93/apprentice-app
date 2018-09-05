@@ -35,9 +35,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "apprenticeAppDB";
     private static final int DB_VERSION = 1;
 
-    // Last Logged In
-    private static final String LAST_LOGGED_IN_TABLE = "LastLoggedIn";
-
     // Profiles
     private static final String PROFILE_TABLE = "Profiles";
     private static final String PROFILE_ID = "profileId";
@@ -63,14 +60,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CATEGORY_ID = "categoryId";
     private static final String CATEGORY_NAME = "categoryName";
 
-    // Notes
-    private static final String NOTES_TABLE = "Notes";
-
-
-    //TODO: Figure out name/functionality of note 'add'
-    // Note 'add'
-    private static final String NOTE_ADD_TABLE = "NoteAdd";
-
 
     // Modules
     private static final String MODULES_TABLE = "Modules";
@@ -84,12 +73,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String MODULE_DEADLINE_ID = "deadlineId";
     private static final String MODULE_DEADLINE_NAME = "name";
     private static final String MODULE_DEADLINE_DATE = "date";
-
-
-    // Module tasks
-    private static final String MODULE_TASKS_TABLE = "ModuleTasks";
-    private static final String MODULE_TASK_NAME = "name";
-    private static final String MODULE_TASK_DEADLINE = "deadline";
 
 
     // Module Participants
@@ -110,10 +93,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Event Attendees
     private static final String EVENT_ATTENDEES_TABLE = "EventAttendees";
-
-
-    // Grid Diary
-    private static final String GRID_DIARY_TABLE = "GridDiary";
 
 
     // Contacts
@@ -140,13 +119,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 PROFILE_DESC + " TEXT, " + PROFILE_EMAIL + " TEXT, " +
                 PROFILE_BASE + " TEXT, " + PROFILE_GRADE + " INTEGER, " +
                 PROFILE_JOB_TITLE + " TEXT, " + PROFILE_JOIN_DATE + " TEXT, " + PROFILE_IS_ADMIN + " INTEGER);";
-        Log.i("DBHELPER", sql);
-        System.out.println(sql);
-        sqLiteDatabase.execSQL(sql);
-
-        // Create Last Logged In table
-        sql = "CREATE TABLE " + LAST_LOGGED_IN_TABLE +
-                "(" + PROFILE_ID + " INTEGER);";
         Log.i("DBHELPER", sql);
         System.out.println(sql);
         sqLiteDatabase.execSQL(sql);
@@ -184,12 +156,6 @@ public class DBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(sql);
 
 
-        // Create Notes table
-
-
-        // Create Note Add table
-
-
         // Create Modules table
         sql = "CREATE TABLE " + MODULES_TABLE +
                 "(" + MODULE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + MODULE_NAME + " TEXT, " +
@@ -204,17 +170,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 "(" + MODULE_DEADLINE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + MODULE_DEADLINE_NAME + " TEXT, " +
                 MODULE_DEADLINE_DATE + " TEXT, " + MODULE_ID + " INTEGER, FOREIGN KEY (" + MODULE_ID + ") REFERENCES " +
                 MODULES_TABLE + " (" + MODULE_ID + "));";
-        Log.i("DBHELPER", sql);
-        System.out.println(sql);
-        sqLiteDatabase.execSQL(sql);
-
-
-        // Create Module Tasks table
-        sql = "CREATE TABLE " + MODULE_TASKS_TABLE +
-                "(" + MODULE_ID + " INTEGER, " + MODULE_TASK_NAME + " TEXT, " + MODULE_TASK_DEADLINE +
-                " TEXT, " + PROFILE_ID + " INTEGER, FOREIGN KEY (" + MODULE_ID + ") REFERENCES " +
-                MODULES_TABLE + " (" + MODULE_ID + "), FOREIGN KEY (" + PROFILE_ID + ") REFERENCES " +
-                PROFILE_TABLE + " (" + PROFILE_ID + "));";
         Log.i("DBHELPER", sql);
         System.out.println(sql);
         sqLiteDatabase.execSQL(sql);
@@ -272,30 +227,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
     }
-
-    /**
-     * Updates the value stored in the Last Logged In table to the specified profile ID
-     *
-     * @param profileId the profile ID to store
-     */
-    public void updateLastLoggedIn(Long profileId) {
-        // Delete current entry
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        db.delete(LAST_LOGGED_IN_TABLE, null,
-                null);
-        db.close();
-
-
-        // Add new entry
-        SQLiteDatabase db2 = this.getWritableDatabase();
-
-        ContentValues cv = new ContentValues();
-        cv.put(PROFILE_ID, profileId);
-        db2.insert(LAST_LOGGED_IN_TABLE, null, cv);
-        db2.close();
-    }
-
 
     ///////////////////
     //    PROFILES   //
@@ -1305,11 +1236,15 @@ public class DBHelper extends SQLiteOpenHelper {
     public void deleteEvent(Long eventId) {
         Log.i("DBHELPER", "Deleting event with id - " + eventId);
 
-        SQLiteDatabase db = this.getWritableDatabase();
+
 
         // Delete all skills for event
         deleteSkillsEvent(eventId);
 
+        // Delete all attendees for event
+        deleteAllEventAttendees(eventId);
+
+        SQLiteDatabase db = this.getWritableDatabase();
         // Delete event
         db.delete(EVENTS_TABLE, EVENT_ID + " = ?",
                 new String[]{String.valueOf(eventId)});
@@ -1465,12 +1400,27 @@ public class DBHelper extends SQLiteOpenHelper {
      * @param profileId the ID of the profile
      */
     public void deleteEventAttendee(Long eventId, Long profileId) {
-        Log.i("DBHELPER", "Deleting event with id - " + eventId);
+        Log.i("DBHELPER", "Deleting event attendee with id - " + profileId);
 
         SQLiteDatabase db = this.getWritableDatabase();
-        // Delete event
+        // Delete event attendee
         db.delete(EVENT_ATTENDEES_TABLE, EVENT_ID + " = ? AND " + PROFILE_ID + " = ?",
                 new String[]{String.valueOf(eventId), String.valueOf(profileId)});
+        db.close();
+    }
+
+    /**
+     * Deletes all event attendees for a specified event
+     *
+     * @param eventId   the ID of the event
+     */
+    public void deleteAllEventAttendees(Long eventId) {
+        Log.i("DBHELPER", "Deleting attendees for event with id - " + eventId);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Delete event attendees
+        db.delete(EVENT_ATTENDEES_TABLE, EVENT_ID + " = ?",
+                new String[]{String.valueOf(eventId)});
         db.close();
     }
 
@@ -1977,9 +1927,9 @@ public class DBHelper extends SQLiteOpenHelper {
         db.insert(PROFILE_TABLE, PROFILE_ID, cv);
 
         ContentValues cv2 = new ContentValues();
-        cv2.put(PROFILE_NAME, "Steve Skeleton");
+        cv2.put(PROFILE_NAME, "Steve Andrews");
         cv2.put(PROFILE_DESC, "Joined as a graduate, now working in the Brighton area on several projects");
-        cv2.put(PROFILE_EMAIL, "steve.skeleton@capgemini.com");
+        cv2.put(PROFILE_EMAIL, "steve.andrews@capgemini.com");
         cv2.put(PROFILE_BASE, "Telford");
         cv2.put(PROFILE_GRADE, 7);
         cv2.put(PROFILE_JOB_TITLE, "Manager");
@@ -1997,6 +1947,83 @@ public class DBHelper extends SQLiteOpenHelper {
         cv3.put(PROFILE_JOIN_DATE, "18/01/2005");
         cv3.put(PROFILE_IS_ADMIN, 0);
         db.insert(PROFILE_TABLE, PROFILE_ID, cv3);
+
+        ContentValues cv21 = new ContentValues();
+        cv21.put(PROFILE_NAME, "Harry Karl");
+        cv21.put(PROFILE_DESC, "Had a wide range of roles throughout my career, both technical and non-technical.");
+        cv21.put(PROFILE_EMAIL, "harry.karl@capgemini.com");
+        cv21.put(PROFILE_BASE, "Holborn");
+        cv21.put(PROFILE_GRADE, 7);
+        cv21.put(PROFILE_JOB_TITLE, "Test Analyst");
+        cv21.put(PROFILE_JOIN_DATE, "16/02/2011");
+        cv21.put(PROFILE_IS_ADMIN, 0);
+        db.insert(PROFILE_TABLE, PROFILE_ID, cv21);
+
+        ContentValues cv22 = new ContentValues();
+        cv22.put(PROFILE_NAME, "Jim Portland");
+        cv22.put(PROFILE_DESC, "Previously worked at BAE Systems before joining Capgemini as an apprentice");
+        cv22.put(PROFILE_EMAIL, "jim.portland@capgemini.com");
+        cv22.put(PROFILE_BASE, "Aston");
+        cv22.put(PROFILE_GRADE, 2);
+        cv22.put(PROFILE_JOB_TITLE, "Business Analyst");
+        cv22.put(PROFILE_JOIN_DATE, "11/04/2008");
+        cv22.put(PROFILE_IS_ADMIN, 0);
+        db.insert(PROFILE_TABLE, PROFILE_ID, cv22);
+
+        ContentValues cv23 = new ContentValues();
+        cv23.put(PROFILE_NAME, "Tim Asler");
+        cv23.put(PROFILE_DESC, "Studied maths at college, now looking to use my skills to enhance my technology career!");
+        cv23.put(PROFILE_EMAIL, "tim.asler@capgemini.com");
+        cv23.put(PROFILE_BASE, "Holborn");
+        cv23.put(PROFILE_GRADE, 2);
+        cv23.put(PROFILE_JOB_TITLE, "Software Engineer");
+        cv23.put(PROFILE_JOIN_DATE, "15/09/2014");
+        cv23.put(PROFILE_IS_ADMIN, 0);
+        db.insert(PROFILE_TABLE, PROFILE_ID, cv23);
+
+        ContentValues cv24 = new ContentValues();
+        cv24.put(PROFILE_NAME, "Charles Gregory");
+        cv24.put(PROFILE_DESC, "Studied physics in college, now working as a Business Analyst");
+        cv24.put(PROFILE_EMAIL, "charles.gregory@capgemini.com");
+        cv24.put(PROFILE_BASE, "Telford");
+        cv24.put(PROFILE_GRADE, 8);
+        cv24.put(PROFILE_JOB_TITLE, "Business Analyst");
+        cv24.put(PROFILE_JOIN_DATE, "16/01/2011");
+        cv24.put(PROFILE_IS_ADMIN, 0);
+        db.insert(PROFILE_TABLE, PROFILE_ID, cv24);
+
+        ContentValues cv25 = new ContentValues();
+        cv25.put(PROFILE_NAME, "Sarah Paul");
+        cv25.put(PROFILE_DESC, "Currently working as a Java developer on an account in Wales, previously worked in the South East.");
+        cv25.put(PROFILE_EMAIL, "sarah.paul@capgemini.com");
+        cv25.put(PROFILE_BASE, "Holborn");
+        cv25.put(PROFILE_GRADE, 5);
+        cv25.put(PROFILE_JOB_TITLE, "Software Engineer");
+        cv25.put(PROFILE_JOIN_DATE, "18/09/2010");
+        cv25.put(PROFILE_IS_ADMIN, 0);
+        db.insert(PROFILE_TABLE, PROFILE_ID, cv25);
+
+        ContentValues cv26 = new ContentValues();
+        cv26.put(PROFILE_NAME, "Jane McGil");
+        cv26.put(PROFILE_DESC, "Working as a manager on several accounts based in Scotland, previously worked as a C# Dev");
+        cv26.put(PROFILE_EMAIL, "jane.mcgil@capgemini.com");
+        cv26.put(PROFILE_BASE, "Scotland");
+        cv26.put(PROFILE_GRADE, 8);
+        cv26.put(PROFILE_JOB_TITLE, "Manager");
+        cv26.put(PROFILE_JOIN_DATE, "03/02/2016");
+        cv26.put(PROFILE_IS_ADMIN, 0);
+        db.insert(PROFILE_TABLE, PROFILE_ID, cv26);
+
+        ContentValues cv27 = new ContentValues();
+        cv27.put(PROFILE_NAME, "Barry Carlos");
+        cv27.put(PROFILE_DESC, "Working as a front end web developer on an account in Ireland.");
+        cv27.put(PROFILE_EMAIL, "harry.carlos@capgemini.com");
+        cv27.put(PROFILE_BASE, "Aston");
+        cv27.put(PROFILE_GRADE, 2);
+        cv27.put(PROFILE_JOB_TITLE, "Software Engineer");
+        cv27.put(PROFILE_JOIN_DATE, "21/08/2007");
+        cv27.put(PROFILE_IS_ADMIN, 0);
+        db.insert(PROFILE_TABLE, PROFILE_ID, cv27);
 
 
         ////////////////
@@ -2026,7 +2053,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //////////////
         //  SKILLS  //
         //////////////
-        /*ContentValues cv4 = new ContentValues();
+        ContentValues cv4 = new ContentValues();
         cv4.put(SKILL_NAME, "SQL");
         cv4.put(CATEGORY_ID, 1);
         cv4.put(PROFILE_ID, 3);
@@ -2062,11 +2089,59 @@ public class DBHelper extends SQLiteOpenHelper {
         cv9.put(PROFILE_ID, 3);
         db.insert(SKILLS_TABLE, EVENT_ID, cv9);
 
-        ContentValues cv21 = new ContentValues();
-        cv21.put(SKILL_NAME, "Time Management");
-        cv21.put(CATEGORY_ID, 4);
-        cv21.put(EVENT_ID, 1);
-        db.insert(SKILLS_TABLE, PROFILE_ID, cv21);
+        ContentValues cv28 = new ContentValues();
+        cv28.put(SKILL_NAME, "Time Management");
+        cv28.put(CATEGORY_ID, 4);
+        cv28.put(EVENT_ID, 1);
+        db.insert(SKILLS_TABLE, PROFILE_ID, cv28);
+
+        ContentValues cv29 = new ContentValues();
+        cv29.put(SKILL_NAME, "SQL");
+        cv29.put(CATEGORY_ID, 1);
+        cv29.put(PROFILE_ID, 4);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv29);
+
+        ContentValues cv30 = new ContentValues();
+        cv30.put(SKILL_NAME, "Java");
+        cv30.put(CATEGORY_ID, 1);
+        cv30.put(PROFILE_ID, 5);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv30);
+
+        ContentValues cv31 = new ContentValues();
+        cv31.put(SKILL_NAME, "UI Design");
+        cv31.put(CATEGORY_ID, 2);
+        cv31.put(PROFILE_ID, 6);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv31);
+
+        ContentValues cv32 = new ContentValues();
+        cv32.put(SKILL_NAME, "Exploratory Testing");
+        cv32.put(CATEGORY_ID, 3);
+        cv32.put(PROFILE_ID, 7);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv32);
+
+        ContentValues cv33 = new ContentValues();
+        cv33.put(SKILL_NAME, "Project Bidding");
+        cv33.put(CATEGORY_ID, 4);
+        cv33.put(PROFILE_ID, 8);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv33);
+
+        ContentValues cv34 = new ContentValues();
+        cv34.put(SKILL_NAME, "Test Planning");
+        cv34.put(CATEGORY_ID, 3);
+        cv34.put(PROFILE_ID, 9);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv34);
+
+        ContentValues cv35 = new ContentValues();
+        cv35.put(SKILL_NAME, "UI Design");
+        cv35.put(CATEGORY_ID, 2);
+        cv35.put(PROFILE_ID, 10);
+        db.insert(SKILLS_TABLE, EVENT_ID, cv35);
+
+        ContentValues cv36 = new ContentValues();
+        cv36.put(SKILL_NAME, "Java");
+        cv36.put(CATEGORY_ID, 1);
+        cv36.put(EVENT_ID, 2);
+        db.insert(SKILLS_TABLE, PROFILE_ID, cv36);
 
 
         /////////////////
@@ -2106,28 +2181,102 @@ public class DBHelper extends SQLiteOpenHelper {
         cv15.put(INTEREST_NAME, "Requirements Gathering");
         cv15.put(CATEGORY_ID, 5);
         cv15.put(PROFILE_ID, 3);
-        db.insert(INTERESTS_TABLE, null, cv15);*/
+        db.insert(INTERESTS_TABLE, null, cv15);
+
+        ContentValues cv41 = new ContentValues();
+        cv41.put(INTEREST_NAME, "HTML");
+        cv41.put(CATEGORY_ID, 1);
+        cv41.put(PROFILE_ID, 5);
+        db.insert(INTERESTS_TABLE, null, cv41);
+
+        ContentValues cv42 = new ContentValues();
+        cv42.put(INTEREST_NAME, "Database Management");
+        cv42.put(CATEGORY_ID, 1);
+        cv42.put(PROFILE_ID, 6);
+        db.insert(INTERESTS_TABLE, null, cv42);
+
+        ContentValues cv43 = new ContentValues();
+        cv43.put(INTEREST_NAME, "Requirements Gathering");
+        cv43.put(CATEGORY_ID, 5);
+        cv43.put(PROFILE_ID, 7);
+        db.insert(INTERESTS_TABLE, null, cv15);
 
 
         /////////////////
         //    EVENTS   //
         /////////////////
-        /*ContentValues cv22 = new ContentValues();
-        cv22.put(EVENT_NAME, "Managing Your Time: The Basics");
-        cv22.put(EVENT_DESCRIPTION, "Goes over the basics of how to manage your time when working on complex, fast paced projects, including how to avoid stress and other common issues.");
-        cv22.put(EVENT_LOCATION, "18 Force Road, SW12 4EP, London");
-        cv22.put(EVENT_DATE, "14/12/2018");
-        cv22.put(EVENT_GOOD_FOR, "People that have very time-restricted roles, where time management is an issue");
-        cv22.put(EVENT_PREREQUISITES, "General understanding of the different stages of a project, including deadlines, and due dates.");
-        db.insert(EVENTS_TABLE, EVENT_ID, cv22);*/
+        ContentValues cv37 = new ContentValues();
+        cv37.put(EVENT_NAME, "Managing Your Time: The Basics");
+        cv37.put(EVENT_DESCRIPTION, "Goes over the basics of how to manage your time when working on complex, fast paced projects, including how to avoid stress and other common issues.");
+        cv37.put(EVENT_LOCATION, "18 Force Road, SW12 4EP, London");
+        cv37.put(EVENT_DATE, "14/12/2018 14:30");
+        cv37.put(EVENT_GOOD_FOR, "People that have very time-restricted roles, where time management is an issue");
+        cv37.put(EVENT_PREREQUISITES, "General understanding of the different stages of a project, including deadlines, and due dates.");
+        cv37.put(EVENT_CREATOR, 1);
+        db.insert(EVENTS_TABLE, EVENT_ID, cv37);
+
+        ContentValues cv38 = new ContentValues();
+        cv38.put(EVENT_NAME, "Java Team Apprentice Meet Up!");
+        cv38.put(EVENT_DESCRIPTION, "A chance to get to know other apprentices that are interested in Java development!");
+        cv38.put(EVENT_LOCATION, "17 Angel Hill, SW10 9PA, London");
+        cv38.put(EVENT_DATE, "17/11/2018 18:45");
+        cv38.put(EVENT_GOOD_FOR, "Apprentices looking to meet new people with similar development interests");
+        cv38.put(EVENT_PREREQUISITES, "At least a beginner level understanding of Java development");
+        cv38.put(EVENT_CREATOR, 1);
+        db.insert(EVENTS_TABLE, EVENT_ID, cv38);
 
 
         ////////////////
         //   MODULES  //
         ////////////////
-        ContentValues cv23 = new ContentValues();
-        cv23.put(MODULE_NAME, "Datamining");
-        cv23.put(MODULE_DESCRIPTION, "What is datamining? What is it used for? This module will take you through the uses and applications of datamining, and goes into other subjects such as machine learning, AI, neural networks.");
-        db.insert(MODULES_TABLE, MODULE_ID, cv23);
+        ContentValues cv39 = new ContentValues();
+        cv39.put(MODULE_NAME, "Datamining");
+        cv39.put(MODULE_DESCRIPTION, "What is datamining? What is it used for? This module will take you through the uses and applications of datamining, and goes into other subjects such as machine learning, AI, neural networks.");
+        db.insert(MODULES_TABLE, MODULE_ID, cv39);
+
+        ContentValues cv40 = new ContentValues();
+        cv40.put(MODULE_NAME, "Programming Language Concepts");
+        cv40.put(MODULE_DESCRIPTION, "Goes over the basics and fundamentals of several important programming languages, including Java, Python and SQL");
+        db.insert(MODULES_TABLE, MODULE_ID, cv40);
+
+
+        /////////////////////////
+        //   MODULE DEADLINES  //
+        /////////////////////////
+        ContentValues cv44 = new ContentValues();
+        cv44.put(MODULE_DEADLINE_NAME, "Datamining Lab 1 Test");
+        cv44.put(MODULE_DEADLINE_DATE, "13/09/2018 14:50");
+        cv44.put(MODULE_ID, 1);
+        db.insert(MODULE_DEADLINES_TABLE, MODULE_DEADLINE_ID, cv44);
+
+        ContentValues cv45 = new ContentValues();
+        cv45.put(MODULE_DEADLINE_NAME, "Datamining Lab 2 Test");
+        cv45.put(MODULE_DEADLINE_DATE, "17/09/2018 16:30");
+        cv45.put(MODULE_ID, 1);
+        db.insert(MODULE_DEADLINES_TABLE, MODULE_DEADLINE_ID, cv45);
+
+        ContentValues cv46 = new ContentValues();
+        cv46.put(MODULE_DEADLINE_NAME, "Datamining Final Exam");
+        cv46.put(MODULE_DEADLINE_DATE, "27/10/2018 11:15");
+        cv46.put(MODULE_ID, 1);
+        db.insert(MODULE_DEADLINES_TABLE, MODULE_DEADLINE_ID, cv46);
+
+        ContentValues cv47 = new ContentValues();
+        cv47.put(MODULE_DEADLINE_NAME, "PLC Coursework Definition");
+        cv47.put(MODULE_DEADLINE_DATE, "17/09/2018 17:30");
+        cv47.put(MODULE_ID, 2);
+        db.insert(MODULE_DEADLINES_TABLE, MODULE_DEADLINE_ID, cv47);
+
+        ContentValues cv48 = new ContentValues();
+        cv48.put(MODULE_DEADLINE_NAME, "PLC Lab 1 Test");
+        cv48.put(MODULE_DEADLINE_DATE, "08/09/2018 18:00");
+        cv48.put(MODULE_ID, 2);
+        db.insert(MODULE_DEADLINES_TABLE, MODULE_DEADLINE_ID, cv48);
+
+        ContentValues cv49 = new ContentValues();
+        cv49.put(MODULE_DEADLINE_NAME, "PLC Coursework Final Deadline");
+        cv49.put(MODULE_DEADLINE_DATE, "26/11/2018 13:30");
+        cv49.put(MODULE_ID, 2);
+        db.insert(MODULE_DEADLINES_TABLE, MODULE_DEADLINE_ID, cv49);
     }
 }

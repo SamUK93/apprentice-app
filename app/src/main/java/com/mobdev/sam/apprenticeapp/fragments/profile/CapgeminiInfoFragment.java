@@ -65,22 +65,22 @@ public class CapgeminiInfoFragment extends Fragment {
         // EMAIL
         emailText = myView.findViewById(R.id.emailText);
         if (!owner)
-            emailText.setInputType(InputType.TYPE_NULL);
+            disableEditText(emailText);
 
         // BASE LOCATION
         baseLocationText = myView.findViewById(R.id.baseLocationText);
         if (!owner)
-            baseLocationText.setInputType(InputType.TYPE_NULL);
+            disableEditText(baseLocationText);
 
         // GRADE
         gradeText = myView.findViewById(R.id.gradeText);
         if (!owner)
-            gradeText.setInputType(InputType.TYPE_NULL);
+            disableEditText(gradeText);
 
         // JOB TITLE
         jobTitleText = myView.findViewById(R.id.jobTitleText);
         if (!owner)
-            jobTitleText.setInputType(InputType.TYPE_NULL);
+            disableEditText(jobTitleText);
 
         // JOIN DATE
         joinDateText = myView.findViewById(R.id.joinDateText);
@@ -168,6 +168,12 @@ public class CapgeminiInfoFragment extends Fragment {
             joinDateText.setText(day + "/" + (month + 1) + "/" + year);
         }
     };
+
+
+    private void disableEditText(EditText editText) {
+        editText.setInputType(InputType.TYPE_NULL);
+        editText.setSingleLine(false);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

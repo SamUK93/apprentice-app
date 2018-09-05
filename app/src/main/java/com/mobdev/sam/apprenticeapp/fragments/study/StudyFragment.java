@@ -47,7 +47,7 @@ public class StudyFragment extends android.support.v4.app.Fragment {
     final List<TextView> dates = new ArrayList<>();
 
     // UI Elements
-    private TextView studyInfoBox; //TODO: Update this to card view?
+    //private TextView studyInfoBox; //TODO: Update this to card view?
     private Button myModulesButton;
     private Button notesButton;
     private LinearLayout upcomingDeadlinesSection;
@@ -97,7 +97,7 @@ public class StudyFragment extends android.support.v4.app.Fragment {
         final LinearLayout menuLayout = myView.findViewById(R.id.menuButtonsSection);
 
         // STUDY INFO BOX TODO update this to card view?
-        studyInfoBox = myView.findViewById(R.id.studyInfoBoxText);
+        //studyInfoBox = myView.findViewById(R.id.studyInfoBoxText);
 
         // MY MODULES BUTTON
         myModulesButton = myView.findViewById(R.id.myModulesButton);

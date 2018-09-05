@@ -1,5 +1,6 @@
 package com.mobdev.sam.apprenticeapp.activites;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
 import com.mobdev.sam.apprenticeapp.fragments.admin.AdminFragment;
@@ -159,6 +161,12 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, adminFragment)
                     .commit();
+        } else if (id == R.id.nav_logout) {
+            // Launch the Log In Activity
+            // Start a new main activity and pass the new profile
+            final Intent intent = new Intent(this, LogInActivity.class);
+
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

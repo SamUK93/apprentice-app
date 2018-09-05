@@ -181,6 +181,12 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/skillInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="You must save new events for the first time before adding skills"/>
+
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/currentSkillsSection"
                 android:layout_width="match_parent"
@@ -220,6 +226,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/cancel_attendance_button_text" />
+
+        <Button
+            android:id="@+id/deleteEventButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/delete_event_button_text" />
 
     </LinearLayout>
 </ScrollView>

@@ -60,10 +60,19 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         if (!isNew) {
             // If this is not a new module, get the existing module from the database using the provided ID
             module = dbHelper.getModule(id);
+            // Set main title
+            getActivity().setTitle("Module - " + module.getName());
+        }
+        else {
+            // Set main title
+            getActivity().setTitle("New Module");
         }
 
         // Set if the user is an admin
         isAdmin = userProfile.getIsAdmin();
+
+
+
 
         // LAYOUTS
         final LinearLayout tasksLayout = myView.findViewById(R.id.tasksSection);
@@ -174,6 +183,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         });
 
 
+        /*
         // EDIT TASKS BUTTON
         editTasksButton = myView.findViewById(R.id.editTasksButton);
         if (isNew) {
@@ -184,7 +194,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
             public void onClick(View view) {
                 Toast.makeText(getActivity(), "Feature not yet implemented", Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
 
 
         // SAVE BUTTON
@@ -235,8 +245,7 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         }
         dbHelper = new DBHelper(getContext());
 
-        // Set main title
-        getActivity().setTitle("Module - " + module.getName());
+
 
     }
 }
