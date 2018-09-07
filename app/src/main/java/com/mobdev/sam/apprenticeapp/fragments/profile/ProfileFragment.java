@@ -126,6 +126,9 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         });
 
         // SKILLS
+        if (profile.getSkills().isEmpty()) {
+
+        }
         for (Skill skill : profile.getSkills()) {
             // For each skill, display it in the view.
             TextView skillRow = new TextView(getContext());
@@ -199,15 +202,22 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onClick(View view) {
-                // Save button clicked
-                profile.setName(titleText.getText().toString());
-                profile.setDescription(descriptionText.getText().toString());
+                // Check for empty fields
+                if (titleText.getText().toString().equals("") || descriptionText.getText().toString().equals("")) {
+                    Toast.makeText(getActivity(), "One or more fields are empty, ensure all fields are completed and try again", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    // Save button clicked
+                    profile.setName(titleText.getText().toString());
+                    profile.setDescription(descriptionText.getText().toString());
 
-                // Update profile in the database
-                dbHelper.updateProfile(profile);
+                    // Update profile in the database
+                    dbHelper.updateProfile(profile);
 
-                Toast.makeText(getActivity(), "Profile Saved Successfully!", Toast.LENGTH_LONG).show();
-                getFragmentManager().popBackStackImmediate();
+                    Toast.makeText(getActivity(), "Profile Saved Successfully!", Toast.LENGTH_LONG).show();
+                    getFragmentManager().popBackStackImmediate();
+                }
+
             }
         });
 
@@ -282,6 +292,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
     private void disableEditText(EditText editText) {
         editText.setInputType(InputType.TYPE_NULL);
+        editText.setFocusable(false);
         editText.setSingleLine(false);
     }
 

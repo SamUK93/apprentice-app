@@ -86,7 +86,7 @@
     <string name="category_label_text">Category:</string>
     <string name="cancel_text">CANCEL</string>
     <string name="existing_skill_label_text">Add an existing skill from the community</string>
-    <string name="filter_by_category_text">Filter by category</string>
+    <string name="filter_by_category_text">Category:</string>
     <string name="suggested_people_label_text">Suggested People</string>
     <string name="contacts_text">Contacts</string>
     <string name="find_new_contacts_button_text">FIND NEW CONTACTS</string>
@@ -122,5 +122,6 @@
     <string name="send_message_button_text">SEND MESSAGE</string>
     <string name="delete_event_button_text">DELETE EVENT</string>
     <string name="upcoming_deadlines_label_text">Upcoming Deadlines</string>
+    <string name="existing_skill_name_label">Skill Name:</string>
 
 </resources>

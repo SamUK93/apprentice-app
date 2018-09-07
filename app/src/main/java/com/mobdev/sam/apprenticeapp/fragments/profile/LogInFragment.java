@@ -53,26 +53,29 @@ public class LogInFragment extends android.support.v4.app.Fragment {
             public void onClick(View view) {
                 // Log in button clicked
 
-                // Get the entered ID and use it to get a profile from the database
-                Long id = Long.valueOf(idText.getText().toString());
-                profile = dbHelper.getProfile(id);
-                if (profile == null) {
-                    Toast.makeText(getActivity(), "ID not recognised!", Toast.LENGTH_LONG).show();
-                } else {
-                    // Set the profile skills and interests from the database
-                    profile.setAllSkills(dbHelper.getAllSkillsForProfile(profile.getId()));
-                    profile.setAllInterests(dbHelper.getAllInterestsForProfile(profile.getId()));
-
-                    // Start a new main activity and pass the new profile
-                    final Intent intent = new Intent(getActivity(), MainActivity.class);
-                    intent.putExtra("profile", profile);
-
-                    Toast.makeText(getActivity(), "Hi " + profile.getName() + "!", Toast.LENGTH_LONG).show();
-
-                    startActivity(intent);
+                if (idText.getText().toString().equals("")) {
+                    Toast.makeText(getActivity(), "You must enter an ID!", Toast.LENGTH_LONG).show();
                 }
+                else {
+                    // Get the entered ID and use it to get a profile from the database
+                    Long id = Long.valueOf(idText.getText().toString());
+                    profile = dbHelper.getProfile(id);
+                    if (profile == null) {
+                        Toast.makeText(getActivity(), "ID not recognised!", Toast.LENGTH_LONG).show();
+                    } else {
+                        // Set the profile skills and interests from the database
+                        profile.setAllSkills(dbHelper.getAllSkillsForProfile(profile.getId()));
+                        profile.setAllInterests(dbHelper.getAllInterestsForProfile(profile.getId()));
 
+                        // Start a new main activity and pass the new profile
+                        final Intent intent = new Intent(getActivity(), MainActivity.class);
+                        intent.putExtra("profile", profile);
 
+                        Toast.makeText(getActivity(), "Hi " + profile.getName() + "!", Toast.LENGTH_LONG).show();
+
+                        startActivity(intent);
+                    }
+                }
             }
         });
 

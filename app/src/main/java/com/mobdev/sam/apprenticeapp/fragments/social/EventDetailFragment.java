@@ -161,12 +161,12 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         // TITLE
         titleText = myView.findViewById(R.id.nameText);
         if (!owner)
-            titleText.setInputType(InputType.TYPE_NULL);
+            disableEditText(titleText);
 
         // DESCRIPTION
         descriptionText = myView.findViewById(R.id.descriptionText);
         if (!owner)
-            descriptionText.setInputType(InputType.TYPE_NULL);
+            disableEditText(descriptionText);
 
         viewAttendeesButton = myView.findViewById(R.id.viewAttendeesButton);
         if (isNew) {
@@ -195,17 +195,17 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
         // LOCATION
         locationText = myView.findViewById(R.id.locationText);
         if (!owner)
-            locationText.setInputType(InputType.TYPE_NULL);
+            disableEditText(locationText);
 
         // GOOD FOR
         goodForText = myView.findViewById(R.id.goodForText);
         if (!owner)
-            goodForText.setInputType(InputType.TYPE_NULL);
+            disableEditText(goodForText);
 
         // PREREQUISITES
         prerequisitesText = myView.findViewById(R.id.prerequisitesText);
         if (!owner)
-            prerequisitesText.setInputType(InputType.TYPE_NULL);
+            disableEditText(prerequisitesText);
 
         // SKILL INFO TEXT
         skillInfoText = myView.findViewById(R.id.skillInfoText);
@@ -281,42 +281,50 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View view) {
                 // Save button clicked
-                if (isNew) {
-                    // If this is a new event, create a new Event object, add the values from the fields
-                    // and add it to the database
-                    event = new Event(titleText.getText().toString(),
-                            descriptionText.getText().toString(),
-                            locationText.getText().toString(),
-                            dateText.getText().toString() + " " + timeText.getText().toString(),
-                            goodForText.getText().toString(),
-                            prerequisitesText.getText().toString(),
-                            new ArrayList<Skill>(),
-                            userProfile.getId());
 
-                    event.setEventId(dbHelper.insertEvent(event));
+                if (titleText.getText().toString().equals("") || descriptionText.getText().toString().equals("") || locationText.getText().toString().equals("")
+                        || dateText.getText().toString().equals("") || timeText.getText().toString().equals("") || goodForText.getText().toString().equals("")
+                        || prerequisitesText.getText().toString().equals("")) {
+                    Toast.makeText(getActivity(), "One or more fields are empty, ensure all fields are completed and try again", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    if (isNew) {
+                        // If this is a new event, create a new Event object, add the values from the fields
+                        // and add it to the database
+                        event = new Event(titleText.getText().toString(),
+                                descriptionText.getText().toString(),
+                                locationText.getText().toString(),
+                                dateText.getText().toString() + " " + timeText.getText().toString(),
+                                goodForText.getText().toString(),
+                                prerequisitesText.getText().toString(),
+                                new ArrayList<Skill>(),
+                                userProfile.getId());
 
-                    // Enable the add skill button, because the event now exists
-                    addSkillButton.setVisibility(View.VISIBLE);
-                    isNew = false;
-                    skillInfoText.setVisibility(View.GONE);
-                    saveButton.setText("SAVE EVENT");
+                        event.setEventId(dbHelper.insertEvent(event));
+
+                        // Enable the add skill button, because the event now exists
+                        addSkillButton.setVisibility(View.VISIBLE);
+                        isNew = false;
+                        skillInfoText.setVisibility(View.GONE);
+                        saveButton.setText("SAVE EVENT");
 
 
-                    Toast.makeText(getActivity(), "New Event Created Successfully!", Toast.LENGTH_LONG).show();
-                } else {
+                        Toast.makeText(getActivity(), "New Event Created Successfully!", Toast.LENGTH_LONG).show();
+                    } else {
 
-                    // This is not a new event, so update the existing event in the database
-                    event.setName(titleText.getText().toString());
-                    event.setDescription(descriptionText.getText().toString());
-                    event.setDate(dateText.getText().toString() + " " + timeText.getText().toString());
-                    event.setLocation(locationText.getText().toString());
-                    event.setGoodFor(goodForText.getText().toString());
-                    event.setPrerequisites(prerequisitesText.getText().toString());
+                        // This is not a new event, so update the existing event in the database
+                        event.setName(titleText.getText().toString());
+                        event.setDescription(descriptionText.getText().toString());
+                        event.setDate(dateText.getText().toString() + " " + timeText.getText().toString());
+                        event.setLocation(locationText.getText().toString());
+                        event.setGoodFor(goodForText.getText().toString());
+                        event.setPrerequisites(prerequisitesText.getText().toString());
 
-                    dbHelper.updateEvent(event);
+                        dbHelper.updateEvent(event);
 
-                    Toast.makeText(getActivity(), "Event Saved Successfully!", Toast.LENGTH_LONG).show();
-                    getFragmentManager().popBackStackImmediate();
+                        Toast.makeText(getActivity(), "Event Saved Successfully!", Toast.LENGTH_LONG).show();
+                        getFragmentManager().popBackStackImmediate();
+                    }
                 }
             }
         });
@@ -474,6 +482,13 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
             dateText.setText(day + "/" + (month + 1) + "/" + year);
         }
     };
+
+
+    private void disableEditText(EditText editText) {
+        editText.setInputType(InputType.TYPE_NULL);
+        editText.setFocusable(false);
+        editText.setSingleLine(false);
+    }
 
 
     @Override

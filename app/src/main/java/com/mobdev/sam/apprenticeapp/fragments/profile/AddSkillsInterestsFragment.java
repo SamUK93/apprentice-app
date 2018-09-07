@@ -49,6 +49,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
 
     // UI Elements
     private TextView titleText;
+    private TextView addNewTitle;
     private EditText newSkillText;
     private Spinner categorySpinner;
     private Button addSkillButton;
@@ -75,10 +76,14 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
         skillButtonSection = myView.findViewById(R.id.skillButtonsSection);
 
         titleText = myView.findViewById(R.id.currentSkillsLabel);
-        if (type == "skills" || type == "event")
+        addNewTitle = myView.findViewById(R.id.newSkillLabel);
+        if (type == "skills" || type == "event") {
             titleText.setText("Current Skills");
+            addNewTitle.setText("Add a new skill");
+        }
         else {
             titleText.setText("Current Interests");
+            addNewTitle.setText("Add a new interest");
         }
 
 
@@ -140,91 +145,97 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
             @Override
             public void onClick(View view) {
 
-                boolean alreadyHasSkill = false;
-                boolean skillAlreadyExists = false;
-                Skill existingSkill = null;
-
-                // Add skill button clicked
-                // Get a list of all the exiting unique skills (of all users)
-                List<Skill> allExistingSkills = dbHelper.getAllSkillsInterestsUnique();
-
-                // Get the current skills and interests of the user or event
-                List<Skill> existingSkills = new ArrayList<>();
-                if (type == "skills" || type == "interests") {
-                    existingSkills = dbHelper.getAllSkillsAndInterestsForProfile(profile.getId());
-                } else if (type == "event") {
-                    existingSkills = dbHelper.getAllSkillsForEvent(event.getEventId());
+                if (newSkillText.getText().toString().equals("")) {
+                    Toast.makeText(getActivity(), "You must enter a skill name!", Toast.LENGTH_LONG).show();
                 }
+                else {
+                    boolean alreadyHasSkill = false;
+                    boolean skillAlreadyExists = false;
+                    Skill existingSkill = null;
 
-                // Get the skill name that the user is trying to add
-                String skillName = newSkillText.getText().toString();
+                    // Add skill button clicked
+                    // Get a list of all the exiting unique skills (of all users)
+                    List<Skill> allExistingSkills = dbHelper.getAllSkillsInterestsUnique();
 
-                // Check if the user or event has the skill already
-                for (Skill skill : existingSkills) {
-                    if (skillName.toUpperCase().equals(skill.getName().toUpperCase())) {
-                        alreadyHasSkill = true;
-                        break;
+                    // Get the current skills and interests of the user or event
+                    List<Skill> existingSkills = new ArrayList<>();
+                    if (type == "skills" || type == "interests") {
+                        existingSkills = dbHelper.getAllSkillsAndInterestsForProfile(profile.getId());
+                    } else if (type == "event") {
+                        existingSkills = dbHelper.getAllSkillsForEvent(event.getEventId());
                     }
-                }
 
-                // Check if the skill already exists in the database, and if it does, use
-                // that one rather than creating a duplicate
-                for (Skill skill : allExistingSkills) {
-                    if (skillName.toUpperCase().equals(skill.getName().toUpperCase())) {
-                        skillAlreadyExists = true;
-                        existingSkill = skill;
+                    // Get the skill name that the user is trying to add
+                    String skillName = newSkillText.getText().toString();
+
+                    // Check if the user or event has the skill already
+                    for (Skill skill : existingSkills) {
+                        if (skillName.toUpperCase().equals(skill.getName().toUpperCase())) {
+                            alreadyHasSkill = true;
+                            break;
+                        }
+                    }
+
+                    // Check if the skill already exists in the database, and if it does, use
+                    // that one rather than creating a duplicate
+                    for (Skill skill : allExistingSkills) {
+                        if (skillName.toUpperCase().equals(skill.getName().toUpperCase())) {
+                            skillAlreadyExists = true;
+                            existingSkill = skill;
+                            if (type == "skills" || type == "interests") {
+                                existingSkill.setEventId(null);
+                                existingSkill.setProfileId(profile.getId());
+                            } else if (type == "event") {
+                                existingSkill.setProfileId(null);
+                                existingSkill.setEventId(event.getEventId());
+                            }
+
+                            break;
+                        }
+                    }
+
+                    // If the user doesn't already have the skill
+                    Skill skill = null;
+                    if (!alreadyHasSkill) {
                         if (type == "skills" || type == "interests") {
-                            existingSkill.setEventId(null);
-                            existingSkill.setProfileId(profile.getId());
+                            skill = new Skill(skillName, newSkillCategoryId, profile.getId(), null);
                         } else if (type == "event") {
-                            existingSkill.setProfileId(null);
-                            existingSkill.setEventId(event.getEventId());
+                            skill = new Skill(skillName, newSkillCategoryId, null, event.getEventId());
                         }
 
-                        break;
+
+                        if (skillAlreadyExists) {
+                            // Skill already exists in database, so use that skill rather than creating a new one
+                            Toast.makeText(getActivity(), "Skill with same name already exists, added with category - " + existingSkill.getCategoryId(), Toast.LENGTH_LONG).show();
+                            skill = existingSkill;
+                        }
+                        newSkillsNum++;
+
+                        if (type == "skills") {
+                            // Add the skill to the profile and update database
+                            profile.addSkill(skill);
+                            dbHelper.updateSkillsProfile(profile.getId(), profile.getSkills());
+                        } else if (type == "interests") {
+                            // Add the interest to the profile and update database
+                            profile.addInterest(skill);
+                            dbHelper.updateInterests(profile.getId(), profile.getInterests());
+                        } else if (type == "event") {
+                            // Add the skill to the event and update the database
+                            event.addRelatedSkill(skill);
+                            dbHelper.updateSkillsEvent(event.getEventId(), event.getRelatedSkills());
+                        }
+                        // Add the skill to the UI
+                        addSkill(skill, type);
+                    } else {
+                        if (type == "event") {
+                            Toast.makeText(getActivity(), "The event already has that related skill!", Toast.LENGTH_LONG).show();
+                        } else if (type == "skills" || type == "interests") {
+                            Toast.makeText(getActivity(), "You already have that skill or interest!", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
-
-                // If the user doesn't already have the skill
-                Skill skill = null;
-                if (!alreadyHasSkill) {
-                    if (type == "skills" || type == "interests") {
-                        skill = new Skill(skillName, newSkillCategoryId, profile.getId(), null);
-                    } else if (type == "event") {
-                        skill = new Skill(skillName, newSkillCategoryId, null, event.getEventId());
-                    }
-
-
-                    if (skillAlreadyExists) {
-                        // Skill already exists in database, so use that skill rather than creating a new one
-                        Toast.makeText(getActivity(), "Skill with same name already exists, added with category - " + existingSkill.getCategoryId(), Toast.LENGTH_LONG).show();
-                        skill = existingSkill;
-                    }
-                    newSkillsNum++;
-
-                    if (type == "skills") {
-                        // Add the skill to the profile and update database
-                        profile.addSkill(skill);
-                        dbHelper.updateSkillsProfile(profile.getId(), profile.getSkills());
-                    } else if (type == "interests") {
-                        // Add the interest to the profile and update database
-                        profile.addInterest(skill);
-                        dbHelper.updateInterests(profile.getId(), profile.getInterests());
-                    } else if (type == "event") {
-                        // Add the skill to the event and update the database
-                        event.addRelatedSkill(skill);
-                        dbHelper.updateSkillsEvent(event.getEventId(), event.getRelatedSkills());
-                    }
-                    // Add the skill to the UI
-                    addSkill(skill, type);
-                } else {
-                    if (type == "event") {
-                        Toast.makeText(getActivity(), "The event already has that related skill!", Toast.LENGTH_LONG).show();
-                    } else if (type == "skills" || type == "interests") {
-                        Toast.makeText(getActivity(), "You already have that skill or interest!", Toast.LENGTH_LONG).show();
-                    }
                 }
-            }
+
         });
 
 
@@ -339,6 +350,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
             @Override
             public void onClick(View view) {
                 // Save button clicked, return to previous screen
+                Toast.makeText(getActivity(), "Skills / Interests Saved Successfully! - ", Toast.LENGTH_LONG).show();
                 getFragmentManager().popBackStackImmediate();
             }
         });

@@ -124,22 +124,28 @@ public class ModuleDeadlineDetailFragment extends android.support.v4.app.Fragmen
                 @Override
                 public void onClick(View view) {
                     // Save button clicked
-                    String name = deadlineNameText.getText().toString();
-                    String date = dateText.getText().toString();
-                    String time = timeText.getText().toString();
-                    String fullDate = date + " " + time;
-                    Deadline newDeadline = new Deadline(name, fullDate, module.getModuleId());
 
-                    if (isNew) {
-                        // If this is a new deadline, add it as a new entry in the database.
-                        dbHelper.insertDeadlines(module.getModuleId(), new ArrayList<>(Arrays.asList(newDeadline)));
+                    if (deadlineNameText.getText().toString().equals("") || dateText.getText().toString().equals("") || timeText.getText().toString().equals("")) {
+                        Toast.makeText(getActivity(), "One or more fields are empty, ensure all fields are completed and try again", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        String name = deadlineNameText.getText().toString();
+                        String date = dateText.getText().toString();
+                        String time = timeText.getText().toString();
+                        String fullDate = date + " " + time;
+                        Deadline newDeadline = new Deadline(name, fullDate, module.getModuleId());
 
-                        Toast.makeText(getActivity(), "New Deadline Created Successfully!", Toast.LENGTH_LONG).show();
-                        getFragmentManager().popBackStackImmediate();
-                    } else {
-                        // If this is not a new deadline, update the existing entry in the database
-                        newDeadline.setDeadlineId(deadline.getDeadlineId());
-                        dbHelper.updateDeadline(newDeadline);
+                        if (isNew) {
+                            // If this is a new deadline, add it as a new entry in the database.
+                            dbHelper.insertDeadlines(module.getModuleId(), new ArrayList<>(Arrays.asList(newDeadline)));
+
+                            Toast.makeText(getActivity(), "New Deadline Created Successfully!", Toast.LENGTH_LONG).show();
+                            getFragmentManager().popBackStackImmediate();
+                        } else {
+                            // If this is not a new deadline, update the existing entry in the database
+                            newDeadline.setDeadlineId(deadline.getDeadlineId());
+                            dbHelper.updateDeadline(newDeadline);
+                        }
                     }
                 }
             });

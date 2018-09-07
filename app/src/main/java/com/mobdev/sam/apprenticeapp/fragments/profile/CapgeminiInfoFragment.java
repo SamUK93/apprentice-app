@@ -24,6 +24,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The 'Capgemini Info' fragment. Displays the capgemini info for a profile, and allows the user to
@@ -108,19 +110,30 @@ public class CapgeminiInfoFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
-                // Save button clicked, save all details to the database
-                profile.setEmail(emailText.getText().toString());
-                profile.setBaseLocation(baseLocationText.getText().toString());
-                profile.setGrade(Integer.parseInt(gradeText.getText().toString()));
-                profile.setJobTitle(jobTitleText.getText().toString());
-                profile.setJoinDate(joinDateText.getText().toString());
+                if (emailText.getText().toString().equals("") || baseLocationText.getText().toString().equals("") || gradeText.getText().toString().equals("")
+                        || jobTitleText.getText().toString().equals("") || joinDateText.getText().toString().equals("")) {
+                    Toast.makeText(getActivity(), "One or more fields are empty, ensure all fields are completed and try again", Toast.LENGTH_LONG).show();
+                }
+                else if (!isValidEmail(emailText.getText().toString())) {
+                    Toast.makeText(getActivity(), "That is not a valid email address, enter a valid one and try again", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    // Save button clicked, save all details to the database
+                    profile.setEmail(emailText.getText().toString());
+                    profile.setBaseLocation(baseLocationText.getText().toString());
+                    profile.setGrade(Integer.parseInt(gradeText.getText().toString()));
+                    profile.setJobTitle(jobTitleText.getText().toString());
+                    profile.setJoinDate(joinDateText.getText().toString());
 
-                dbHelper.updateProfile(profile);
+                    dbHelper.updateProfile(profile);
 
-                Toast.makeText(getActivity(), "Capgemini Info Saved Successfully!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Capgemini Info Saved Successfully!", Toast.LENGTH_LONG).show();
 
-                // Return to previous screen
-                getFragmentManager().popBackStackImmediate();
+                    // Return to previous screen
+                    getFragmentManager().popBackStackImmediate();
+                }
+
+
 
             }
         });
@@ -135,6 +148,12 @@ public class CapgeminiInfoFragment extends Fragment {
 
 
         return myView;
+    }
+
+    private boolean isValidEmail(String emailAddress) {
+        Pattern pattern = Pattern.compile("^.+@.+\\..+$");
+        Matcher matcher = pattern.matcher(emailAddress);
+        return matcher.matches();
     }
 
 
@@ -172,6 +191,7 @@ public class CapgeminiInfoFragment extends Fragment {
 
     private void disableEditText(EditText editText) {
         editText.setInputType(InputType.TYPE_NULL);
+        editText.setFocusable(false);
         editText.setSingleLine(false);
     }
 

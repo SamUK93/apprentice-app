@@ -80,13 +80,13 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         // TITLE
         titleText = myView.findViewById(R.id.nameText);
         if (!isAdmin)
-            titleText.setInputType(InputType.TYPE_NULL);
+            disableEditText(titleText);
 
 
         // DESCRIPTION
         descriptionText = myView.findViewById(R.id.descriptionText);
         if (!isAdmin)
-            titleText.setInputType(InputType.TYPE_NULL);
+            disableEditText(descriptionText);
 
 
         // VIEW PARTICIPANTS BUTTON
@@ -183,47 +183,45 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         });
 
 
-        /*
-        // EDIT TASKS BUTTON
-        editTasksButton = myView.findViewById(R.id.editTasksButton);
-        if (isNew) {
-            editTasksButton.setVisibility(View.GONE);
-        }
-        editTasksButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity(), "Feature not yet implemented", Toast.LENGTH_LONG).show();
-            }
-        });*/
-
 
         // SAVE BUTTON
         saveButton = myView.findViewById(R.id.saveModuleButton);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Save button clicked
-                if (isNew) {
-                    // If this is a new module, add a new entry into the database
-                    module = new Module(titleText.getText().toString(),
-                            descriptionText.getText().toString(),
-                            new ArrayList<Deadline>(),
-                            new ArrayList<Long>());
+        if (!isAdmin)
+            saveButton.setVisibility(View.GONE);
+        else {
+            saveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Save button clicked
 
-                    dbHelper.insertModule(module);
-                    Toast.makeText(getActivity(), "New Module Created Successfully!", Toast.LENGTH_LONG).show();
-                    getFragmentManager().popBackStackImmediate();
-                } else {
-                    // This not a new module, so update the existing entry in the database
-                    module.setName(titleText.getText().toString());
-                    module.setDescription(descriptionText.getText().toString());
+                    if (titleText.getText().toString().equals("") || descriptionText.getText().toString().equals("")) {
+                        Toast.makeText(getActivity(), "One or more fields are empty, ensure all fields are completed and try again", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        if (isNew) {
+                            // If this is a new module, add a new entry into the database
+                            module = new Module(titleText.getText().toString(),
+                                    descriptionText.getText().toString(),
+                                    new ArrayList<Deadline>(),
+                                    new ArrayList<Long>());
 
-                    dbHelper.updateModule(module);
-                    Toast.makeText(getActivity(), "Module Saved Successfully!", Toast.LENGTH_LONG).show();
-                    getFragmentManager().popBackStackImmediate();
+                            dbHelper.insertModule(module);
+                            Toast.makeText(getActivity(), "New Module Created Successfully!", Toast.LENGTH_LONG).show();
+                            getFragmentManager().popBackStackImmediate();
+                        } else {
+                            // This not a new module, so update the existing entry in the database
+                            module.setName(titleText.getText().toString());
+                            module.setDescription(descriptionText.getText().toString());
+
+                            dbHelper.updateModule(module);
+                            Toast.makeText(getActivity(), "Module Saved Successfully!", Toast.LENGTH_LONG).show();
+                            getFragmentManager().popBackStackImmediate();
+                        }
+                    }
                 }
-            }
-        });
+            });
+        }
+
 
         // Set all values to the current module
         if (!isNew) {
@@ -234,12 +232,17 @@ public class ModuleDetailFragment extends android.support.v4.app.Fragment {
         return myView;
     }
 
+    private void disableEditText(EditText editText) {
+        editText.setInputType(InputType.TYPE_NULL);
+        editText.setFocusable(false);
+        editText.setSingleLine(false);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             userProfile = (Profile) getArguments().getSerializable("userProfile");
-            Log.i("YOUR PROFILE", "YO PROFILE ID IS " + userProfile.getId());
             id = getArguments().getLong("moduleId");
             isNew = getArguments().getBoolean("isNew");
         }

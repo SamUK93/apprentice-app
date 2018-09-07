@@ -932,9 +932,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public List<Skill> getAllSkillsInterestsUnique() {
         List<Skill> skills = getAllSkillsUnique();
         List<Skill> interests = getAllInterestsUnique();
+        List<String> skillNames = new ArrayList<>();
+
+        for (Skill skill : skills) {
+            skillNames.add(skill.getName());
+        }
 
         for (Skill interest : interests) {
-            if (!skills.contains(interest)) {
+            if (!skillNames.contains(interest.getName())) {
                 skills.add(interest);
             }
         }
@@ -951,9 +956,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public List<Skill> getAllSkillsInterestsUniqueInCategory(Long categoryId) {
         List<Skill> skills = getAllSkillsUniqueInCategory(categoryId);
         List<Skill> interests = getAllInterestsUniqueInCategory(categoryId);
+        List<String> skillNames = new ArrayList<>();
+
+        for (Skill skill : skills) {
+            skillNames.add(skill.getName());
+        }
 
         for (Skill interest : interests) {
-            if (!skills.contains(interest)) {
+            if (!skillNames.contains(interest.getName())) {
                 skills.add(interest);
             }
         }

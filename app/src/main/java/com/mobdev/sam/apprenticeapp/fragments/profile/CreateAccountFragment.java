@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
@@ -23,6 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The 'Create Account' fragment, that lets the user create a new account and assigns them an ID.
@@ -41,7 +44,7 @@ public class CreateAccountFragment extends android.support.v4.app.Fragment {
     private EditText gradeText;
     private EditText jobTitleText;
     private Button setJoinDateButton;
-    private EditText joinDateText;
+    private TextView joinDateText;
     private Button createAccountButton;
 
     // Date format
@@ -97,26 +100,37 @@ public class CreateAccountFragment extends android.support.v4.app.Fragment {
             public void onClick(View view) {
                 // Create account button clicked
 
-                // Get all fields
-                String name = titleText.getText().toString();
-                String description = descriptionText.getText().toString();
-                String email = emailText.getText().toString();
-                String baseLocation = baseLocationText.getText().toString();
-                Integer grade = Integer.valueOf(gradeText.getText().toString());
-                String jobTitle = jobTitleText.getText().toString();
-                String joinDate = joinDateText.getText().toString();
+                if (titleText.getText().toString().equals("") || descriptionText.getText().toString().equals("") || emailText.getText().toString().equals("")
+                        || baseLocationText.getText().toString().equals("") || gradeText.getText().toString().equals("") || jobTitleText.getText().toString().equals("")
+                        || joinDateText.getText().toString().equals("")) {
+                    Toast.makeText(getActivity(), "One or more fields are empty, ensure all fields are completed and try again", Toast.LENGTH_LONG).show();
+                }
+                else if (!isValidEmail(emailText.getText().toString())) {
+                    Toast.makeText(getActivity(), "That is not a valid email address, enter a valid one and try again", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    // Get all fields
+                    String name = titleText.getText().toString();
+                    String description = descriptionText.getText().toString();
+                    String email = emailText.getText().toString();
+                    String baseLocation = baseLocationText.getText().toString();
+                    Integer grade = Integer.valueOf(gradeText.getText().toString());
+                    String jobTitle = jobTitleText.getText().toString();
+                    String joinDate = joinDateText.getText().toString();
 
-                // Create a new profile object
-                Profile profile = new Profile(name, description, new ArrayList<Skill>(), new ArrayList<Skill>(), email, baseLocation, grade, jobTitle, joinDate, null, null, null, false);
+                    // Create a new profile object
+                    Profile profile = new Profile(name, description, new ArrayList<Skill>(), new ArrayList<Skill>(), email, baseLocation, grade, jobTitle, joinDate, null, null, null, false);
 
-                // Add the new account to the database
-                Long id = dbHelper.insertProfile(profile);
+                    // Add the new account to the database
+                    Long id = dbHelper.insertProfile(profile);
 
-                // Success toast message
-                Toast.makeText(getActivity(), "Account created! Your id is - " + id, Toast.LENGTH_LONG).show();
+                    // Success toast message
+                    Toast.makeText(getActivity(), "Account created! Your id is - " + id, Toast.LENGTH_LONG).show();
 
-                // Pop the fragment to go back to the log in screen
-                getFragmentManager().popBackStackImmediate();
+                    // Pop the fragment to go back to the log in screen
+                    getFragmentManager().popBackStackImmediate();
+                }
+
             }
         });
 
@@ -146,6 +160,13 @@ public class CreateAccountFragment extends android.support.v4.app.Fragment {
             joinDateText.setText(day + "/" + (month + 1) + "/" + year);
         }
     };
+
+
+    private boolean isValidEmail(String emailAddress) {
+        Pattern pattern = Pattern.compile("^.+@.+\\..+$");
+        Matcher matcher = pattern.matcher(emailAddress);
+        return matcher.matches();
+    }
 
 
     @Override
