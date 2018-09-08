@@ -73,6 +73,7 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
     private Button saveButton;
     private Button cancelAttendanceButton;
     private Button deleteEventButton;
+    private TextView noSkillsLabel;
 
     // Date formats
     SimpleDateFormat dateFormatFull = new SimpleDateFormat(
@@ -248,6 +249,10 @@ public class EventDetailFragment extends android.support.v4.app.Fragment {
                 skillRow.setText(skill.getName());
                 skillsLayout.addView(skillRow);
             }
+        }
+        else if (!isNew) {
+            noSkillsLabel = myView.findViewById(R.id.noSkillsLabel);
+                noSkillsLabel.setVisibility(View.VISIBLE);
         }
 
 

@@ -54,6 +54,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     private Button addContactButton;
     private Button removeContactButton;
     private Button sendMessageButton;
+    private TextView noSkillsLabel;
+    private TextView noInterestsLabel;
 
     @Nullable
     @Override
@@ -126,8 +128,9 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         });
 
         // SKILLS
+        noSkillsLabel = myView.findViewById(R.id.noSkillsLabel);
         if (profile.getSkills().isEmpty()) {
-
+            noSkillsLabel.setVisibility(View.VISIBLE);
         }
         for (Skill skill : profile.getSkills()) {
             // For each skill, display it in the view.
@@ -164,6 +167,10 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         });
 
         // INTERESTS
+        noInterestsLabel = myView.findViewById(R.id.noInterestsLabel);
+        if (profile.getInterests().isEmpty()) {
+            noInterestsLabel.setVisibility(View.VISIBLE);
+        }
         for (Skill interest : profile.getInterests()) {
             // For each interest on the profile, add it to the view
             TextView interestRow = new TextView(getContext());

@@ -87,6 +87,19 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <TextView
+                        android:id="@+id/noSkillsLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_weight="1"
+                        android:text="This user currently has no skills selected"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -126,6 +139,27 @@
                         android:layout_marginTop="20dp"
                         android:layout_weight="1"
                         android:text="@string/edit_button_text" />
+
+                </LinearLayout>
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/currentInterestsSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/noInterestsLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_weight="1"
+                        android:text="This user currently has no interests selected"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:visibility="gone"/>
 
                 </LinearLayout>
 
