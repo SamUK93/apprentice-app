@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
 import com.mobdev.sam.apprenticeapp.fragments.NotesSearchFragment;
@@ -128,7 +129,7 @@ public class StudyFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onClick(View view) {
-                // Create a new Notes fragment
+                /*// Create a new Notes fragment
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("userProfile", myProfile);
                 Fragment modulesFragment = new NotesSearchFragment();
@@ -139,7 +140,10 @@ public class StudyFragment extends android.support.v4.app.Fragment {
                 transaction.replace(R.id.content_frame, modulesFragment);
                 // Add transaction to the back stack and commit
                 transaction.addToBackStack(null);
-                transaction.commit();
+                transaction.commit();*/
+
+                Toast.makeText(getActivity(), "Notes Feature Not Yet Implemented", Toast.LENGTH_LONG).show();
+
             }
         });
 

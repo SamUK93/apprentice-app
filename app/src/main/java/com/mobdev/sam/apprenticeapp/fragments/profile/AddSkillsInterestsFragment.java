@@ -194,7 +194,7 @@ public class AddSkillsInterestsFragment extends android.support.v4.app.Fragment 
                         }
                     }
 
-                    // If the user doesn't already have the skill
+                    // If the user or event doesn't already have the skill
                     Skill skill = null;
                     if (!alreadyHasSkill) {
                         if (type == "skills" || type == "interests") {

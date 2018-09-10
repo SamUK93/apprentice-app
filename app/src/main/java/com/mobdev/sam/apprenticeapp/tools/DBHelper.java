@@ -896,9 +896,6 @@ public class DBHelper extends SQLiteOpenHelper {
         List<ProfileReason> matchingSkills = getAllProfilesSameSkills(skills);
         List<ProfileReason> matchingInterests = getAllProfilesSameInterests(skills);
 
-        Log.i("EVENTMATCH::", "MATCHED " + matchingSkills.size() + " profiles for skills!");
-        Log.i("EVENTMATCH::", "MATCHED " + matchingInterests.size() + " profiles for interests!");
-
         List<ProfileReason> newProfilesToAdd = new ArrayList<>();
 
         for (ProfileReason interestMatch : matchingInterests) {
@@ -907,7 +904,6 @@ public class DBHelper extends SQLiteOpenHelper {
             for (ProfileReason skillMatch : matchingSkills) {
                 // Check all matching skills, if same profile, append interests
                 if (skillMatch.profile.getId().equals(interestMatch.profile.getId())) {
-                    Log.i("CONTACTMATCH::", "Profile already has match, appending");
                     skillMatch.reason += "\nand\n" + interestMatch.reason;
                     newProfile = false;
                     break;

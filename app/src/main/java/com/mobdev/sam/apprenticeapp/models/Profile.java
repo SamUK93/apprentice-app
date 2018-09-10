@@ -27,7 +27,8 @@ public class Profile implements Serializable {
     private String joinDate;
     private boolean isAdmin;
 
-    //Database/storage/associations
+    //Database/storage/associations (NOTE: the following three are not currently used in this implementation
+    // and are simply there for future use.
     List<Note> associatedNotes;
     List<Event> eventsAttending;
     List<Module> assignedModules;

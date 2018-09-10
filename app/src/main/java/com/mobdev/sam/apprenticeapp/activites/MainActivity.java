@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mobdev.sam.apprenticeapp.R;
@@ -64,6 +65,9 @@ public class MainActivity extends AppCompatActivity
             navMenu.findItem(R.id.nav_admin).setVisible(false);
         }
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Welcome the user to the app
+        Toast.makeText(this, "Welcome to the Apprentice app! Drag the navigation menu from the left to begin!", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -111,14 +115,7 @@ public class MainActivity extends AppCompatActivity
         // Instantiate Fragment manager
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if (id == R.id.nav_home) {
-            // Switch the current fragment to the 'Home' Fragment
-            HomeFragment homeFragment = new HomeFragment();
-            homeFragment.setArguments(bundle);
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, homeFragment)
-                    .commit();
-        } else if (id == R.id.nav_study) {
+        if (id == R.id.nav_study) {
             // Switch the current fragment to the 'Study' Fragment
             StudyFragment studyFragment = new StudyFragment();
             studyFragment.setArguments(bundle);
@@ -132,13 +129,6 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, socialFragment)
                     .commit();
-        } else if (id == R.id.nav_calendar) {
-            // Switch the current fragment to the 'Calendar' Fragment
-            CalendarFragment calendarFragment = new CalendarFragment();
-            calendarFragment.setArguments(bundle);
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, calendarFragment)
-                    .commit();
         } else if (id == R.id.nav_profile) {
             bundle.putBoolean("owner", true);
             ProfileFragment profileFragment = new ProfileFragment();
@@ -146,13 +136,6 @@ public class MainActivity extends AppCompatActivity
             // Switch the current fragment to the 'Profile' Fragment
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, profileFragment)
-                    .commit();
-        } else if (id == R.id.nav_settings) {
-            // Switch the current fragment to the 'Settings' Fragment
-            SettingsFragment settingsFragment = new SettingsFragment();
-            settingsFragment.setArguments(bundle);
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, new SettingsFragment())
                     .commit();
         } else if (id == R.id.nav_admin) {
             // Switch the current fragment to the 'Admin' Fragment

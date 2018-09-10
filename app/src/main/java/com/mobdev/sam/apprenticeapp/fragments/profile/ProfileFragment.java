@@ -29,7 +29,7 @@ import java.util.List;
  * <p>
  * If the profile is the logged in user's then they may edit the fields and save changes to the database.
  * <p>
- * If the profile is another users, then they can be added as a contact, or sent a message.
+ * If the profile is another user's, then they can be added as a contact, or sent a message.
  */
 
 public class ProfileFragment extends android.support.v4.app.Fragment {
@@ -64,12 +64,17 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
 
         // Check if this profile is a contact of the logged in user.
         if (!owner) {
+            // If they are not the owner of this profile, get all their contacts from the db
             List<Contact> contacts = dbHelper.getAllContactsForProfile(userProfile.getId());
             if (contacts.size() < 1) {
+                // If they don't have any contacts, this obviously isn't a contact
                 isContact = false;
             }
             for (Contact contact : contacts) {
+                // If they do have some contacts, for each one
                 if (contact.getContactId().equals(profile.getId())) {
+                    // Check if their ID matches that of this profile, if it does, then it is
+                    // a contact.
                     isContact = true;
                     break;
                 } else
