@@ -12,11 +12,9 @@ public class Module implements Serializable {
     private Long moduleId;
     private String name;
     private String description;
-    // TODO: convert date type
     private List<Deadline> deadlines;
     private List<Long> moduleParticipants;
 
-    //TODO: Does this class need extending? Recives note and tasks from other models, so perhaps not?
 
     // Constructor
     public Module(String name, String description, List<Deadline> deadlines, List<Long> moduleParticipants) {

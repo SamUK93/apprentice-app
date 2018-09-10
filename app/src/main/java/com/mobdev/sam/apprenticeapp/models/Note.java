@@ -12,7 +12,6 @@ public class Note {
     private Long noteId;
     private String name;
     private String content;
-    //TODO Should tags be a string? Return to this when known
     private List<String> tags;
     private List<Long> moduleIds;
     private boolean openToPublic;

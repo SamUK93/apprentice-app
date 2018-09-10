@@ -13,7 +13,6 @@ public class Event implements Serializable {
     private String name;
     private String description;
     private String location;
-    //TODO: Convert to date format
     private String date;
     private String goodFor;
     private String prerequisites;

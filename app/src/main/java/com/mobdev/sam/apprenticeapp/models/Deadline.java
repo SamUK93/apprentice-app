@@ -13,8 +13,6 @@ public class Deadline implements Serializable {
     private String date;
     private Long moduleId;
 
-    // TODO: Should tasks have a more detailed view with content, or is name enough?
-
     // Constructor
     public Deadline(String name, String date, Long moduleId) {
         setName(name);

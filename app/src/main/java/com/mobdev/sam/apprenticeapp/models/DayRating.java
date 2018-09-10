@@ -7,7 +7,6 @@ package com.mobdev.sam.apprenticeapp.models;
 public class DayRating {
 
     // Fields
-    //TODO: Make date type? Needs to be compatible/convertable to database object. Also used as primary key in table?
     private String date;
     private String positive;
     private String negative;

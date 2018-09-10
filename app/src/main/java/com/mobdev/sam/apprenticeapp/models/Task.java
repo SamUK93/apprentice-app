@@ -11,7 +11,6 @@ public class Task {
     private String date;
     private Long moduleId;
 
-    // TODO: Should tasks have a more detailed view with content, or is name enough?
 
     // Constructor
     public Task(String name, String date, Long moduleId) {
